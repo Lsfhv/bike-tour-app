@@ -11,8 +11,3 @@ class BikePoints extends GetApi {
     return _locations;
   }
 }
-
-// test
-void main() {
-  var x = BikePoints(["AL4"]);
-}
