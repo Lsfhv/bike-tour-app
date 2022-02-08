@@ -7,8 +7,3 @@ class GetApi {
     return http.get(Uri.parse('https://api.tfl.gov.uk/BikePoint/'));
   }
 }
-
-// void main() {
-//   var x = GetApi();
-//   print(jsonDecode(x.fetchBikePoints()));
-// }

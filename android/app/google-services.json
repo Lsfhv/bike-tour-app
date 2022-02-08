@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "665235210465",
+    "project_id": "londoncyclee",
+    "storage_bucket": "londoncyclee.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:665235210465:android:dc80099d176677443f77a0",
+        "android_client_info": {
+          "package_name": "com.example.bike_tour_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "665235210465-8gdt4458tf7n8bt31dpbt6k0cfcmir0l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlWCgFmSe2c1GFyuafje8xdhHQY144hns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "665235210465-8gdt4458tf7n8bt31dpbt6k0cfcmir0l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

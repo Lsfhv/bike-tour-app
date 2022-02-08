@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
 
-void main() {
+import 'package:firebase_core/firebase_core.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      apiKey: "XXX",
+      appId: "XXX",
+      messagingSenderId: "XXX",
+      projectId: "XXX",
+    ),
+  );
   runApp(const MyApp());
 }
 
@@ -15,7 +26,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'my amazing counter app'),
     );
   }
 }
