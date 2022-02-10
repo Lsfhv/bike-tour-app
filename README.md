@@ -1,6 +1,6 @@
 # bike_tour_app
 
-A new Flutter project. Test
+A new Flutter project.
 
 ## Getting Started
 
