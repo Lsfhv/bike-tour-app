@@ -1,78 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'dart:convert';
 
-import 'package:firebase_core/firebase_core.dart';
+void main() => runApp(MyApp());
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: FirebaseOptions(
-      apiKey: "XXX",
-      appId: "XXX",
-      messagingSenderId: "XXX",
-      projectId: "XXX",
-    ),
-  );
-  runApp(const MyApp());
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class _MyAppState extends State<MyApp> {
+  var _postJson = [];
+  final url = "https://api.tfl.gov.uk/BikePoint/";
+  void fetchPosts() async {
+    try {
+      final response = await get(Uri.parse(url));
+      final jsonData = jsonDecode(response.body) as List;
 
-  // This widget is the root of your application.
+      setState(() {
+        _postJson = jsonData;
+      });
+    } catch (err) {}
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchPosts();
+  }
+
   @override
   Widget build(BuildContext context) {
+    //fetchPosts();
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'my amazing counter app'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      home: Scaffold(
+        body: ListView.builder(
+            itemCount: _postJson.length,
+            itemBuilder: (context, i) {
+              final post = _postJson[i];
+              return Text("Street name: ${post["commonName"]}\n lat: ${post["lat"]}\n lon: ${post["lon"]}\n\n");
+            }),
       ),
     );
   }
