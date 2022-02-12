@@ -3,46 +3,33 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      apiKey: "XXX",
-      appId: "XXX",
-      messagingSenderId: "XXX",
-      projectId: "XXX",
-    ),
-  );
-  runApp(MyApp());
-}
+void main() => runApp(const MyApp());
 
 class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  Completer<GoogleMapController> _controller = Completer();
+  late GoogleMapController mapController;
 
-  static const LatLng _center = const LatLng(45.521563, -122.677433);
+  final LatLng _center = const LatLng(51.507399, -0.127689);
 
   void _onMapCreated(GoogleMapController controller) {
-    _controller.complete(controller);
+    mapController = controller;
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: Text('Maps Sample App'),
-          backgroundColor: Colors.green[700],
-        ),
         body: GoogleMap(
           onMapCreated: _onMapCreated,
           initialCameraPosition: CameraPosition(
             target: _center,
-            zoom: 11.0,
+            zoom: 15,
           ),
         ),
       ),
