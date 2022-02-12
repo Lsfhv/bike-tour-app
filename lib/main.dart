@@ -25,14 +25,32 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: GoogleMap(
-          onMapCreated: _onMapCreated,
-          initialCameraPosition: CameraPosition(
-            target: _center,
-            zoom: 15,
+          body: Center(
+            child: GoogleMap(
+              onMapCreated: _onMapCreated,
+              initialCameraPosition: CameraPosition(target: _center, zoom: 15),
+            ),
           ),
-        ),
-      ),
+          floatingActionButton: Stack(
+            children: <Widget>[
+              Align(
+                alignment: Alignment(1, -0.8),
+                child: FloatingActionButton(
+                  onPressed: () {},
+                  backgroundColor: Color.fromARGB(202, 85, 190, 56),
+                  child: const Icon(Icons.settings),
+                ),
+              ),
+              Align(
+                alignment: Alignment(-0.8, -0.8),
+                child: FloatingActionButton(
+                  onPressed: () {},
+                  backgroundColor: Color.fromARGB(202, 85, 190, 56),
+                  child: const Icon(Icons.person),
+                ),
+              ),
+            ],
+          )),
     );
   }
 }
