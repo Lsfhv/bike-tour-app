@@ -59,9 +59,9 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () {
                 //TODO FORGOT PASSWORD SCREEN GOES HERE
               },
-              child: Text(
-                'Forgot Password',
-                style: TextStyle(color: Colors.blue, fontSize: 15),
+              child: Text("Forgot Password"),
+              style: TextButton.styleFrom(
+                primary: Colors.blue,
               ),
             ),
             Container(
@@ -83,7 +83,13 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(
               height: 130,
             ),
-            Text('New User? Create Account')
+            TextButton(
+              onPressed: () {},
+              child: Text("New User? Create Account"),
+              style: TextButton.styleFrom(
+                primary: Colors.blue,
+              ),
+            ),
           ],
         ),
       ),
