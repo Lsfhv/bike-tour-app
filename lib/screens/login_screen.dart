@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:bike_tour_app/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -73,6 +74,8 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () {
                   // Navigator.push(
                   //     context, MaterialPageRoute(builder: (_) => HomePage()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const SignUp()));
                 },
                 child: Text(
                   'Login',
