@@ -1,18 +1,20 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors
 
-import 'package:bike_tour_app/screens/signup_screen.dart';
+import 'package:bike_tour_app/services/auth.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class SignIn extends StatefulWidget {
+  const SignIn({Key? key}) : super(key: key);
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _SignInState createState() => _SignInState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignInState extends State<SignIn> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  // final AuthService _auth = AuthService();
 
   @override
   void dispose() {
@@ -83,10 +85,17 @@ class _LoginPageState extends State<LoginPage> {
               decoration: BoxDecoration(
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: TextButton(
-                onPressed: () {
+                onPressed: () async {
                   emailController.text;
                   passwordController.text;
                   // Navigator.pushNamed(context, '/sign_up');
+                  // dynamic result = await _auth.signInAnon();
+                  // if (result == null) {
+                  //   print("eroor");
+                  // } else {
+                  //   print("signed in");
+                  //   print(result);
+                  // }
                 },
                 child: Text(
                   'Login',
@@ -108,5 +117,6 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+    ;
   }
 }
