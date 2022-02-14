@@ -45,8 +45,8 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Created by https://www.toptal.com/developers/gitignore/api/flutter,dart,darteditor,visualstudiocode,windows,linux,macos,android,androidstudio,xcode,xcodeinjection
-# Edit at https://www.toptal.com/developers/gitignore?templates=flutter,dart,darteditor,visualstudiocode,windows,linux,macos,android,androidstudio,xcode,xcodeinjection
+# Created by https://www.toptal.com/developers/gitignore/api/flutter,dart,darteditor,visualstudiocode,windows,linux,macos,android,androidstudio,xcode,xcodeinjection,firebase
+# Edit at https://www.toptal.com/developers/gitignore?templates=flutter,dart,darteditor,visualstudiocode,windows,linux,macos,android,androidstudio,xcode,xcodeinjection,firebase
 
 ### Android ###
 # Gradle files
@@ -121,6 +121,15 @@ doc/api/
 ### DartEditor ###
 .project
 .buildlog
+
+### Firebase ###
+.idea
+**/node_modules/*
+**/.firebaserc
+
+### Firebase Patch ###
+.runtimeconfig.json
+.firebase/
 
 ### Flutter ###
 # Flutter/Dart/Pub related
@@ -416,4 +425,4 @@ fabric.properties
 
 !/gradle/wrapper/gradle-wrapper.jar
 
-# End of https://www.toptal.com/developers/gitignore/api/flutter,dart,darteditor,visualstudiocode,windows,linux,macos,android,androidstudio,xcode,xcodeinjection
+# End of https://www.toptal.com/developers/gitignore/api/flutter,dart,darteditor,visualstudiocode,windows,linux,macos,android,androidstudio,xcode,xcodeinjection,firebase
