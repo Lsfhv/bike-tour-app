@@ -72,8 +72,6 @@ class _LoginPageState extends State<LoginPage> {
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: TextButton(
                 onPressed: () {
-                  // Navigator.push(
-                  //     context, MaterialPageRoute(builder: (_) => HomePage()));
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => const SignUp()));
                 },
