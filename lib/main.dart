@@ -12,14 +12,14 @@ import 'config/config.dart';
 
 void main() async {
   var config = Config();
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: FirebaseOptions(
-        apiKey: config.apiKey,
-        appId: config.appId,
-        messagingSenderId: config.messagingSenderId,
-        projectId: config.projectId),
-  );
+  // WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp(
+  //   options: FirebaseOptions(
+  //       apiKey: config.apiKey,
+  //       appId: config.appId,
+  //       messagingSenderId: config.messagingSenderId,
+  //       projectId: config.projectId),
+  // );
   runApp(const MyApp());
 }
 
