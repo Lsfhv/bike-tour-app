@@ -3,11 +3,28 @@
 import 'dart:async';
 import 'package:bike_tour_app/screens/authenticate/authenticate.dart';
 import 'package:bike_tour_app/screens/wrapper.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-void main() => runApp(const MyApp());
+import 'config/config.dart';
+
+void main() async {
+  // final _auth = FirebaseAuth.instance;
+
+  // var x = FirebaseAuth.instance;
+  var config = Config();
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+      options: FirebaseOptions(
+    apiKey: config.apiKey,
+    appId: config.appId,
+    messagingSenderId: config.messagingSenderId,
+    projectId: config.projectId,
+  ));
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -26,6 +43,8 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
 
 // class MyApp extends StatefulWidget {
 //   const MyApp({Key? key}) : super(key: key);

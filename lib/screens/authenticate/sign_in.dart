@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:bike_tour_app/services/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SignIn extends StatefulWidget {
@@ -16,6 +17,8 @@ class _SignInState extends State<SignIn> {
 
   // final AuthService _auth = AuthService();
 
+  final _auth = FirebaseAuth.instance;
+
   @override
   void dispose() {
     emailController.dispose();
@@ -25,6 +28,7 @@ class _SignInState extends State<SignIn> {
 
   @override
   Widget build(BuildContext context) {
+    // print(_auth.toString());
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
