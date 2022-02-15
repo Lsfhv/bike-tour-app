@@ -1,79 +1,97 @@
+// ignore_for_file: prefer_const_constructors
+
+import 'dart:async';
+import 'package:bike_tour_app/screens/authenticate/authenticate.dart';
+import 'package:bike_tour_app/screens/wrapper.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'package:firebase_core/firebase_core.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-Future<void> main() async {
+import 'config/config.dart';
+
+void main() async {
+  // final _auth = FirebaseAuth.instance;
+
+  // var x = FirebaseAuth.instance;
+  var config = Config();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: FirebaseOptions(
-      apiKey: "XXX",
-      appId: "XXX",
-      messagingSenderId: "XXX",
-      projectId: "XXX",
-    ),
-  );
+      options: FirebaseOptions(
+    apiKey: config.apiKey,
+    appId: config.appId,
+    messagingSenderId: config.messagingSenderId,
+    projectId: config.projectId,
+  ));
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'London Cycle',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.red,
       ),
-      home: const MyHomePage(title: 'my amazing counter app'),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => Authenticate(),
+      },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
-  final String title;
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
+// class MyApp extends StatefulWidget {
+//   const MyApp({Key? key}) : super(key: key);
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+//   @override
+//   _MyAppState createState() => _MyAppState();
+// }
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+// class _MyAppState extends State<MyApp> {
+//   late GoogleMapController mapController;
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-}
+//   final LatLng _center = const LatLng(51.507399, -0.127689);
+
+//   void _onMapCreated(GoogleMapController controller) {
+//     mapController = controller;
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       home: Scaffold(
+//           body: Center(
+//             child: GoogleMap(
+//               onMapCreated: _onMapCreated,
+//               initialCameraPosition: CameraPosition(target: _center, zoom: 15),
+//             ),
+//           ),
+//           floatingActionButton: Stack(
+//             children: <Widget>[
+//               Align(
+//                 alignment: Alignment(1, -0.8),
+//                 child: FloatingActionButton(
+//                   onPressed: () {},
+//                   backgroundColor: Color.fromARGB(202, 85, 190, 56),
+//                   child: const Icon(Icons.settings),
+//                 ),
+//               ),
+//               Align(
+//                 alignment: Alignment(-0.8, -0.8),
+//                 child: FloatingActionButton(
+//                   onPressed: () {},
+//                   backgroundColor: Color.fromARGB(202, 85, 190, 56),
+//                   child: const Icon(Icons.person),
+//                 ),
+//               ),
+//             ],
+//           )),
+//     );
+//   }
+// }
