@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:bike_tour_app/main.dart';
 import 'package:bike_tour_app/screens/authenticate/sign_up.dart';
 // import 'package:bike_tour_app/services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -101,6 +102,9 @@ class _SignInState extends State<SignIn> {
                   //   print("signed in");
                   //   print(result);
                   // }
+                  _auth.signInWithEmailAndPassword(
+                      email: "sudo@example.org", password: "Password123");
+                  print("is this getti nccaled??!?!");
                 },
                 child: Text(
                   'Login',
@@ -121,6 +125,13 @@ class _SignInState extends State<SignIn> {
                 primary: Colors.blue,
               ),
             ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => MyApp1()));
+              },
+              child: Text("go tot maps"),
+            )
           ],
         ),
       ),
