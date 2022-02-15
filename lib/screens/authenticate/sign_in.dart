@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:bike_tour_app/services/auth.dart';
+import 'package:bike_tour_app/screens/authenticate/sign_up.dart';
 import 'package:flutter/material.dart';
 
 class SignIn extends StatefulWidget {
@@ -36,7 +36,7 @@ class _SignInState extends State<SignIn> {
             Padding(
               padding: const EdgeInsets.only(top: 60.0),
               child: Center(
-                child: Container(
+                child: SizedBox(
                   width: 200,
                   height: 150,
                   /*decoration: BoxDecoration(
@@ -72,7 +72,7 @@ class _SignInState extends State<SignIn> {
             ),
             TextButton(
               onPressed: () {
-                //TODO FORGOT PASSWORD SCREEN GOES HERE
+                //TO DO FORGOT PASSWORD SCREEN GOES HERE
               },
               child: Text("Forgot Password"),
               style: TextButton.styleFrom(
@@ -107,7 +107,10 @@ class _SignInState extends State<SignIn> {
               height: 130,
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => SignUp()));
+              },
               child: Text("New User? Create Account"),
               style: TextButton.styleFrom(
                 primary: Colors.blue,
@@ -117,6 +120,5 @@ class _SignInState extends State<SignIn> {
         ),
       ),
     );
-    ;
   }
 }
