@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MainMap extends StatefulWidget {
   const MainMap({Key? key}) : super(key: key);
@@ -44,6 +45,23 @@ class _MainMapState extends State<MainMap> {
                   onPressed: () {},
                   backgroundColor: Color.fromARGB(202, 85, 190, 56),
                   child: const Icon(Icons.person),
+                ),
+              ),
+              Align(
+                alignment: Alignment(0.2, 0.63),
+                child: SizedBox(
+                  width: 250.0,
+                  height: 75.0,
+                  // ignore: deprecated_member_use
+                  child: RaisedButton(
+                    child: Text(
+                      'Plan Journey',
+                      style:
+                          GoogleFonts.lato(color: Colors.white, fontSize: 16.5),
+                    ),
+                    color: Color.fromARGB(202, 85, 190, 56).withOpacity(1),
+                    onPressed: () {},
+                  ),
                 ),
               ),
             ],
