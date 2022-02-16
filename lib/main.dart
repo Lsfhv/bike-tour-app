@@ -9,10 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'config/config.dart';
+//import 'config/config.dart';
 
 void main() async {
-  var config = Config();
+  //var config = Config();
   // WidgetsFlutterBinding.ensureInitialized();
   // await Firebase.initializeApp(
   //   options: FirebaseOptions(
