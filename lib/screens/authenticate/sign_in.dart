@@ -19,7 +19,7 @@ class _SignInState extends State<SignIn> {
 
   // final AuthService _auth = AuthService();
 
-  // final _auth = FirebaseAuth.instance;
+  final _auth = FirebaseAuth.instance;
 
   @override
   void dispose() {
@@ -102,9 +102,9 @@ class _SignInState extends State<SignIn> {
                   //   print("signed in");
                   //   print(result);
                   // }
-                  // _auth.signInWithEmailAndPassword(
-                  //     email: "sudo@example.org", password: "Password123");
-                  // print("is this getti nccaled??!?!");
+                  _auth.signInWithEmailAndPassword(
+                      email: "sudo@example.org", password: "Password123");
+                  print("is this getti nccaled??!?!");
                 },
                 child: Text(
                   'Login',
