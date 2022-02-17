@@ -1,6 +1,6 @@
 import json
 import requests
-import numpy as np
+import googlemaps
 
 class BikeDataPull:
     def __init__(self, url = "https://api.tfl.gov.uk/BikePoint/" , points = None):
@@ -15,64 +15,45 @@ class BikeDataPull:
             response = requests.get(self.url)
             datas =  json.loads(response.text)
             for data in datas:
-                coords = np.array((1,2))
                 common_names, lat, lon = data['commonName'], data['lat'], data['lon'] 
                 self.points[common_names] = (lat, lon)
-            print(datas[0].keys())
-            print(datas[0]['id'])
         except requests.ConnectionError:
-           print("i fucked up") 
+           print("error") 
 
-  ##  class _MyAppState extends State<MyApp> {
-  ##var _postJson = [];
-  ##final url = "https://api.tfl.gov.uk/BikePoint/";
-  ##void fetchPosts() async {
-  ##  try {
-  ##    final response = await get(Uri.parse(url));
-  ##    final jsonData = jsonDecode(response.body) as List;
-##      
-  ##    setState(() {
-  ##      _postJson = jsonData;
-  ##    });
-  ##  } catch (err) {}
-  ##}
-##
-  ##@override
-  ##void initState() {
-  ##  super.initState();
-  ##  fetchPosts();
-  ##}
-##
-  ##@override
-  ##Widget build(BuildContext context) {
-  ##  //fetchPosts();
-  ##  return MaterialApp(
-  ##    home: Scaffold(
-  ##      body: ListView.builder(
-  ##          itemCount: _postJson.length,
-  ##          itemBuilder: (context, i) {
-  ##            final post = _postJson[i];
-  ##            return Text("Street name: ${post["commonName"]}\n lat: ${post["lat"]}\n lon: ${post["lon"]}\n\n");
-  ##          }),
-  ##    ),
-  ##  );
-  ##}
-    pass
 
 class BikeDataProcessor:
+    limit = 500
+    client = googlemaps.Client(key="AIzaSyDN4RDUVv8lX81W1CeoqKVIAObUdAA0mQI")
+    #parameters are coordinates
+    @staticmethod
+    def calculate_distance(origin, destination):
+        try:
+            response = BikeDataProcessor.client.distance_matrix(origin,destination, mode='walking', units = "metric", avoid = 'highways')
+            dist = response['rows'][0]['elements'][0]['distance']['value']
+            return dist
+            #data = json.load(response)
+            #distance = data['rows']['elements']['distance']
+            #return distance
+        except googlemaps.exceptions.ApiError :
+            print("error with API key")
+    
     
     @staticmethod
-    def calculate_distance(coord_1, coord_2):
-        pass
-       # distance = coord_1[0] -
-    
-    
-    @staticmethod
-    def filter_based_on_distance(distance, data):
-        pass    
-    
-    pass
+    def filter_based_on_distance(origin,limit, data):
+        points_within_range = list()
+        for d in data.keys():
+            destination = data[d]
+            if(BikeDataProcessor.calculate_distance(origin,destination) > limit):
+                points_within_range.append(destination)
+        return destination
 
 if __name__ == "__main__":
     b = BikeDataPull()
     b.pull_data()
+    curr_coord = (51.5044584,-0.105681) #test
+    #destination = b.points['Tanner Street, Bermondsey']
+    #destination = (51.5007,0.0858)
+    #a = BikeDataProcessor.calculate_distance(curr_coord,destination)
+    #print(a)
+    list = BikeDataProcessor.filter_based_on_distance(curr_coord,500,b.points)
+    print(list)
