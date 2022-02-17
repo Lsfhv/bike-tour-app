@@ -1,3 +1,4 @@
+from audioop import add
 import json
 import requests
 import googlemaps
@@ -9,7 +10,6 @@ class BikeDataPull:
             points = {}
         self.points = points
         
-    
     def pull_data(self):
         try:
             response = requests.get(self.url)
@@ -25,6 +25,19 @@ class BikeDataProcessor:
     limit = 500
     client = googlemaps.Client(key="AIzaSyDN4RDUVv8lX81W1CeoqKVIAObUdAA0mQI")
     #parameters are coordinates
+    
+    @staticmethod
+    def postcode(latlng):
+        address = client.reverse_geocode(latlng = latlng)
+        postcode = address[0]['address_components'][-1]['long_name']
+        return postcode
+    
+    @staticmethod
+    def map_postcode_to_lanlng(data):
+        mappings = {}
+        for d in data.keys(): 
+            mappings[BikeDataProcessor.postcode(d)] = d
+    
     @staticmethod
     def calculate_distance(origin, destination):
         try:
@@ -48,12 +61,17 @@ class BikeDataProcessor:
         return destination
 
 if __name__ == "__main__":
+    client = googlemaps.Client(key="AIzaSyDN4RDUVv8lX81W1CeoqKVIAObUdAA0mQI")
     b = BikeDataPull()
     b.pull_data()
+    
+    
+    
     curr_coord = (51.5044584,-0.105681) #test
+    BikeDataProcessor.postcode(curr_coord)
     #destination = b.points['Tanner Street, Bermondsey']
     #destination = (51.5007,0.0858)
     #a = BikeDataProcessor.calculate_distance(curr_coord,destination)
     #print(a)
-    list = BikeDataProcessor.filter_based_on_distance(curr_coord,500,b.points)
-    print(list)
+    #list = BikeDataProcessor.filter_based_on_distance(curr_coord,500,b.points)
+    #print(list)
