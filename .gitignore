@@ -429,3 +429,11 @@ fabric.properties
 !/gradle/wrapper/gradle-wrapper.jar
 
 # End of https://www.toptal.com/developers/gitignore/api/flutter,dart,darteditor,visualstudiocode,windows,linux,macos,android,androidstudio,xcode,xcodeinjection,firebase
+.flutter-plugins 2
+.flutter-plugins 3
+.flutter-plugins-dependencies 2
+.flutter-plugins-dependencies 3
+.packages 2
+.packages 3
+ios/Flutter/Flutter 2.podspec
+ios/Flutter/Flutter 3.podspec
