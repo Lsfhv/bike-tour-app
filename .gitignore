@@ -437,3 +437,7 @@ fabric.properties
 .packages 3
 ios/Flutter/Flutter 2.podspec
 ios/Flutter/Flutter 3.podspec
+ios/Flutter/flutter_export_environment 2.sh
+ios/Flutter/Generated 3.xcconfig
+ios/Flutter/Generated 2.xcconfig
+ios/Flutter/flutter_export_environment 3.sh
