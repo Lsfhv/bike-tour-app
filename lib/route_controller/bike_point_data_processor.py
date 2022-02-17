@@ -19,7 +19,12 @@ class BikeDataPull:
                 self.points[common_names] = (lat, lon)
         except requests.ConnectionError:
            print("error") 
+    
+    # def pull_test(self):
 
+    #     data = json.loads(requests.get(self.url).text)
+    #     print(type(data))
+    
 
 class BikeDataProcessor:
     limit = 500
@@ -64,7 +69,7 @@ if __name__ == "__main__":
     client = googlemaps.Client(key="AIzaSyDN4RDUVv8lX81W1CeoqKVIAObUdAA0mQI")
     b = BikeDataPull()
     b.pull_data()
-    
+    b.pull_test()
     
     
     curr_coord = (51.5044584,-0.105681) #test
