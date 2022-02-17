@@ -1,18 +1,25 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors
 
-import 'package:bike_tour_app/screens/signup_screen.dart';
+import 'package:bike_tour_app/main.dart';
+import 'package:bike_tour_app/screens/authenticate/sign_up.dart';
+// import 'package:bike_tour_app/services/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class SignIn extends StatefulWidget {
+  const SignIn({Key? key}) : super(key: key);
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _SignInState createState() => _SignInState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignInState extends State<SignIn> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  // final AuthService _auth = AuthService();
+
+  // final _auth = FirebaseAuth.instance;
 
   @override
   void dispose() {
@@ -23,6 +30,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    // print(_auth.toString());
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -34,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
             Padding(
               padding: const EdgeInsets.only(top: 60.0),
               child: Center(
-                child: Container(
+                child: SizedBox(
                   width: 200,
                   height: 150,
                   /*decoration: BoxDecoration(
@@ -70,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             TextButton(
               onPressed: () {
-                //TODO FORGOT PASSWORD SCREEN GOES HERE
+                //TO DO FORGOT PASSWORD SCREEN GOES HERE
               },
               child: Text("Forgot Password"),
               style: TextButton.styleFrom(
@@ -83,10 +91,20 @@ class _LoginPageState extends State<LoginPage> {
               decoration: BoxDecoration(
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: TextButton(
-                onPressed: () {
+                onPressed: () async {
                   emailController.text;
                   passwordController.text;
                   // Navigator.pushNamed(context, '/sign_up');
+                  // dynamic result = await _auth.signInAnon();
+                  // if (result == null) {
+                  //   print("eroor");
+                  // } else {
+                  //   print("signed in");
+                  //   print(result);
+                  // }
+                  // _auth.signInWithEmailAndPassword(
+                  //     email: "sudo@example.org", password: "Password123");
+                  // print("is this getti nccaled??!?!");
                 },
                 child: Text(
                   'Login',
@@ -98,12 +116,22 @@ class _LoginPageState extends State<LoginPage> {
               height: 130,
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => SignUp()));
+              },
               child: Text("New User? Create Account"),
               style: TextButton.styleFrom(
                 primary: Colors.blue,
               ),
             ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => MyApp1()));
+              },
+              child: Text("go tot maps"),
+            )
           ],
         ),
       ),
