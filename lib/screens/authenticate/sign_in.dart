@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:bike_tour_app/main.dart';
+import 'package:bike_tour_app/screens/navigation/main_map.dart';
 import 'package:bike_tour_app/screens/authenticate/sign_up.dart';
 // import 'package:bike_tour_app/services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -127,8 +128,8 @@ class _SignInState extends State<SignIn> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => MyApp1()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => MainMap()));
               },
               child: Text("go tot maps"),
             )
