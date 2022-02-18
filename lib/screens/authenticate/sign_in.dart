@@ -7,6 +7,7 @@ import 'package:bike_tour_app/services/auth.dart';
 // import 'package:bike_tour_app/services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({Key? key}) : super(key: key);
@@ -94,11 +95,16 @@ class _SignInState extends State<SignIn> {
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: TextButton(
                 onPressed: () async {
-                  AuthService authService = AuthService(FirebaseAuth.instance);
-                  authService.signIn(
-                    email: emailController.text,
-                    password: passwordController.text,
-                  );
+                  // AuthService authService = AuthService(FirebaseAuth.instance);
+                  // Future<String> result = authService.signIn(
+                  //   email: emailController.text,
+                  //   password: passwordController.text,
+                  // );
+                  // print(result);
+                  context.read<AuthService>().signIn(
+                        email: emailController.text,
+                        password: passwordController.text,
+                      );
                 },
                 child: Text(
                   'Login',

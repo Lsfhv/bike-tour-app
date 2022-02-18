@@ -1,5 +1,6 @@
+// ignore_for_file: avoid_print
+
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/scheduler.dart';
 
 class AuthService {
   final FirebaseAuth _firebaseAuth;
@@ -13,18 +14,10 @@ class AuthService {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
-      print("signed in");
-      _firebaseAuth.userChanges().listen((User? user) {
-        if (user == null) {
-          print("no");
-        } else {
-          print("yes");
-        }
-      });
       return "Signed in";
     } on FirebaseAuthException catch (exception) {
-      print("didnt work");
-      return exception.toString();
+      print(exception.toString());
+      return "";
     }
   }
 
@@ -35,7 +28,8 @@ class AuthService {
           email: email, password: password);
       return "Signed up";
     } on FirebaseAuthException catch (exception) {
-      return exception.toString();
+      print(exception.toString());
+      return "";
     }
   }
 }
