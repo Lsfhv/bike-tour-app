@@ -95,12 +95,6 @@ class _SignInState extends State<SignIn> {
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: TextButton(
                 onPressed: () async {
-                  // AuthService authService = AuthService(FirebaseAuth.instance);
-                  // Future<String> result = authService.signIn(
-                  //   email: emailController.text,
-                  //   password: passwordController.text,
-                  // );
-                  // print(result);
                   context.read<AuthService>().signIn(
                         email: emailController.text,
                         password: passwordController.text,

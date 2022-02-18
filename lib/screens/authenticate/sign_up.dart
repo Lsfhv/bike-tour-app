@@ -1,7 +1,25 @@
+// ignore_for_file: prefer_const_constructors
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class SignUp extends StatelessWidget {
+class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
+
+  @override
+  _SignUpState createState() => _SignUpState();
+}
+
+class _SignUpState extends State<SignUp> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,28 +34,30 @@ class SignUp extends StatelessWidget {
           children: <Widget>[
             Column(
               children: <Widget>[
-                const TextField(
+                TextField(
                   decoration: InputDecoration(
                     labelText: "First name",
                   ),
                 ),
-                const TextField(
+                TextField(
                   decoration: InputDecoration(
                     labelText: "Last name",
                   ),
                 ),
-                const TextField(
+                TextField(
+                  controller: emailController,
                   decoration: InputDecoration(
                     labelText: "Email",
                   ),
                 ),
-                const TextField(
+                TextField(
+                  controller: passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: "Password",
                   ),
                 ),
-                const TextField(
+                TextField(
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: "Confirm Password",
@@ -50,7 +70,13 @@ class SignUp extends StatelessWidget {
                       color: Colors.blue,
                       borderRadius: BorderRadius.circular(20)),
                   child: TextButton(
-                    onPressed: () async {},
+                    onPressed: () async {
+                      FirebaseAuth.instance.createUserWithEmailAndPassword(
+                        email: emailController.text,
+                        password: passwordController.text,
+                      );
+                      Navigator.pop(context);
+                    },
                     child: const Text(
                       'Register',
                       style: TextStyle(color: Colors.white, fontSize: 25),
