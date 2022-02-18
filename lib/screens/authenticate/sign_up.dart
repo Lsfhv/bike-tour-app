@@ -75,7 +75,6 @@ class _SignUpState extends State<SignUp> {
                         email: emailController.text,
                         password: passwordController.text,
                       );
-                      Navigator.pop(context);
                     },
                     child: const Text(
                       'Register',
