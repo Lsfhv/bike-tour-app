@@ -1,10 +1,13 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:bike_tour_app/main.dart';
+import 'package:bike_tour_app/screens/navigation/main_map.dart';
 import 'package:bike_tour_app/screens/authenticate/sign_up.dart';
+import 'package:bike_tour_app/services/auth.dart';
 // import 'package:bike_tour_app/services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({Key? key}) : super(key: key);
@@ -19,7 +22,7 @@ class _SignInState extends State<SignIn> {
 
   // final AuthService _auth = AuthService();
 
-  // final _auth = FirebaseAuth.instance;
+  final _auth = FirebaseAuth.instance;
 
   @override
   void dispose() {
@@ -92,19 +95,16 @@ class _SignInState extends State<SignIn> {
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: TextButton(
                 onPressed: () async {
-                  emailController.text;
-                  passwordController.text;
-                  // Navigator.pushNamed(context, '/sign_up');
-                  // dynamic result = await _auth.signInAnon();
-                  // if (result == null) {
-                  //   print("eroor");
-                  // } else {
-                  //   print("signed in");
-                  //   print(result);
-                  // }
-                  // _auth.signInWithEmailAndPassword(
-                  //     email: "sudo@example.org", password: "Password123");
-                  // print("is this getti nccaled??!?!");
+                  // AuthService authService = AuthService(FirebaseAuth.instance);
+                  // Future<String> result = authService.signIn(
+                  //   email: emailController.text,
+                  //   password: passwordController.text,
+                  // );
+                  // print(result);
+                  context.read<AuthService>().signIn(
+                        email: emailController.text,
+                        password: passwordController.text,
+                      );
                 },
                 child: Text(
                   'Login',
@@ -127,8 +127,8 @@ class _SignInState extends State<SignIn> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => MyApp1()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => MainMap()));
               },
               child: Text("go tot maps"),
             )
