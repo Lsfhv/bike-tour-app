@@ -8,12 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 
-void main() => runApp(MyApp());
+//void main() => runApp(MyApp());
 
-import 'config/config.dart';
+//import 'config/config.dart';
 
 void main() async {
-  var config = Config();
+ // var config = Config();
   // WidgetsFlutterBinding.ensureInitialized();
   // await Firebase.initializeApp(
   //   options: FirebaseOptions(
@@ -81,7 +81,7 @@ class _MyAppState1 extends State<MyApp1> {
     mapController = controller;
   }
 
-  @override
+  @override       
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
