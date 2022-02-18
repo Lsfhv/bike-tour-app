@@ -1,7 +1,28 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: prefer_const_constructors
 
-class SignUp extends StatelessWidget {
+import 'package:bike_tour_app/screens/authenticate/sign_up_form.dart';
+import 'package:bike_tour_app/services/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/src/provider.dart';
+
+class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
+
+  @override
+  _SignUpState createState() => _SignUpState();
+}
+
+class _SignUpState extends State<SignUp> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,57 +32,7 @@ class SignUp extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Sign up"),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Column(
-              children: <Widget>[
-                const TextField(
-                  decoration: InputDecoration(
-                    labelText: "First name",
-                  ),
-                ),
-                const TextField(
-                  decoration: InputDecoration(
-                    labelText: "Last name",
-                  ),
-                ),
-                const TextField(
-                  decoration: InputDecoration(
-                    labelText: "Email",
-                  ),
-                ),
-                const TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: "Password",
-                  ),
-                ),
-                const TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: "Confirm Password",
-                  ),
-                ),
-                Container(
-                  height: 50,
-                  width: 250,
-                  decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(20)),
-                  child: TextButton(
-                    onPressed: () async {},
-                    child: const Text(
-                      'Register',
-                      style: TextStyle(color: Colors.white, fontSize: 25),
-                    ),
-                  ),
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
+      body: SignUpForm(),
     );
   }
 }

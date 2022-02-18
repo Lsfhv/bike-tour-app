@@ -1,5 +1,8 @@
 // ignore_for_file: avoid_print
 
+/// The authentication service provider for firebase to authenticate
+/// users to sign in, register and more.
+
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
