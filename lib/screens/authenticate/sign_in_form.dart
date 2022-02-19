@@ -13,8 +13,8 @@ class SignInForm extends StatefulWidget {
 }
 
 class _SignInFormState extends State<SignInForm> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   final RegExp _vaidEmailRegExp = RegExp(
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
@@ -24,8 +24,8 @@ class _SignInFormState extends State<SignInForm> {
 
   @override
   void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
@@ -56,7 +56,7 @@ class _SignInFormState extends State<SignInForm> {
                       return 'Not a valid email';
                     }
                   },
-                  controller: emailController,
+                  controller: _emailController,
                   decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Email',
@@ -71,7 +71,7 @@ class _SignInFormState extends State<SignInForm> {
                     return 'Password must contain an upper case character, a number and a special character';
                   }
                 },
-                controller: passwordController,
+                controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
@@ -99,8 +99,8 @@ class _SignInFormState extends State<SignInForm> {
                     ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Trying to Log in!')));
                     String value = await context.read<AuthService>().signIn(
-                          email: emailController.text,
-                          password: passwordController.text,
+                          email: _emailController.text,
+                          password: _passwordController.text,
                         );
                     if (value == "") {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

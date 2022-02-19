@@ -22,6 +22,12 @@ class _SignUpFormState extends State<SignUpForm> {
   final lastNameController = TextEditingController();
   final passwordConfirmationController = TextEditingController();
 
+  final RegExp _vaidEmailRegExp = RegExp(
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+
+  final RegExp _validPasswordRegExp =
+      RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+
   @override
   void dispose() {
     emailController.dispose();
@@ -55,20 +61,35 @@ class _SignUpFormState extends State<SignUpForm> {
                     labelText: "Last name",
                   ),
                 ),
-                TextField(
+                TextFormField(
+                  validator: (value) {
+                    if (!_vaidEmailRegExp.hasMatch(value!)) {
+                      return 'Not a valid email';
+                    }
+                  },
                   controller: emailController,
                   decoration: InputDecoration(
                     labelText: "Email",
                   ),
                 ),
-                TextField(
+                TextFormField(
+                  validator: (value) {
+                    if (!_validPasswordRegExp.hasMatch(value!)) {
+                      return 'Password must contain an upper case character, a number and a special character';
+                    }
+                  },
                   controller: passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: "Password",
                   ),
                 ),
-                TextField(
+                TextFormField(
+                  validator: (value) {
+                    if (value != passwordController.text) {
+                      return 'Passwords do not match';
+                    }
+                  },
                   controller: passwordConfirmationController,
                   obscureText: true,
                   decoration: InputDecoration(
@@ -83,19 +104,28 @@ class _SignUpFormState extends State<SignUpForm> {
                       borderRadius: BorderRadius.circular(20)),
                   child: TextButton(
                     onPressed: () async {
-                      await context.read<AuthService>().signUp(
-                            email: emailController.text.trim(),
-                            password: passwordController.text,
-                          );
-                      User? user = context.read<AuthService>().currentUser;
-                      UserData userData = UserData(
-                        firstNameController.text.trim(),
-                        lastNameController.text.trim(),
-                        emailController.text.trim(),
-                      );
-                      SetData()
-                          .saveUserData(userData: userData, uid: user!.uid);
-                      Navigator.pop(context);
+                      if (_formKey.currentState!.validate()) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Registering!')));
+                        await context.read<AuthService>().signUp(
+                              email: emailController.text.trim(),
+                              password: passwordController.text,
+                            );
+                        User? user = context.read<AuthService>().currentUser;
+                        UserData userData = UserData(
+                          firstNameController.text.trim(),
+                          lastNameController.text.trim(),
+                          emailController.text.trim(),
+                        );
+                        SetData()
+                            .saveUserData(userData: userData, uid: user!.uid);
+                        Navigator.pop(context);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content:
+                                    Text('Please enter valid credentials')));
+                      }
                     },
                     child: const Text(
                       'Register',

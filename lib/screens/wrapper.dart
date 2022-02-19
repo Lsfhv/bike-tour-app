@@ -6,6 +6,7 @@ import 'package:provider/src/provider.dart';
 
 /// The Wrapper.
 /// The section where if user is authenticated, we show them the main screen
+/// if not, they need to login
 
 class Wrapper extends StatelessWidget {
   const Wrapper({Key? key}) : super(key: key);
