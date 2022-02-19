@@ -1,7 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:bike_tour_app/screens/authenticate/user_data.dart';
+import 'package:bike_tour_app/models/user_data.dart';
 import 'package:bike_tour_app/services/auth.dart';
+import 'package:bike_tour_app/services/set_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -87,14 +88,13 @@ class _SignUpFormState extends State<SignUpForm> {
                             password: passwordController.text,
                           );
                       User? user = context.read<AuthService>().currentUser;
-                      var collection =
-                          FirebaseFirestore.instance.collection('users');
                       UserData userData = UserData(
                         firstNameController.text.trim(),
                         lastNameController.text.trim(),
                         emailController.text.trim(),
                       );
-                      await collection.doc(user!.uid).set(userData.toJson());
+                      SetData()
+                          .saveUserData(userData: userData, uid: user!.uid);
                       Navigator.pop(context);
                     },
                     child: const Text(
