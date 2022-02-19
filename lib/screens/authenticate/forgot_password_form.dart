@@ -1,4 +1,6 @@
+import 'package:bike_tour_app/services/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/src/provider.dart';
 
 class ForgotPasswordFrom extends StatefulWidget {
   const ForgotPasswordFrom({Key? key}) : super(key: key);
@@ -59,7 +61,14 @@ class _ForgotPasswordFromState extends State<ForgotPasswordFrom> {
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: TextButton(
                 onPressed: () {
-                  // reset password here;
+                  var result = context
+                      .read<AuthService>()
+                      .resetPassword(email: _emailController.text);
+                  if (result == "Success") {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text(
+                            'Please check your email to reset you password')));
+                  }
                 },
                 child: const Text(
                   'Reset Password',

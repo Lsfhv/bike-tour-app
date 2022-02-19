@@ -13,7 +13,6 @@ class AuthService {
   // signed in or not
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
-  // data about the user
   User? get currentUser => _firebaseAuth.currentUser;
 
   Future<String> signIn(
@@ -38,5 +37,11 @@ class AuthService {
       print(exception.toString());
       return "";
     }
+  }
+
+  String resetPassword({required String email}) {
+    _firebaseAuth.sendPasswordResetEmail(email: email);
+    return "Success";
+    // add then and on error catches
   }
 }
