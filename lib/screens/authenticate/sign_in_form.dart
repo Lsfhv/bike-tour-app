@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:bike_tour_app/screens/authenticate/forgot_password.dart';
 import 'package:bike_tour_app/screens/authenticate/sign_up.dart';
 import 'package:bike_tour_app/services/auth.dart';
 import 'package:flutter/material.dart';
@@ -81,7 +82,8 @@ class _SignInFormState extends State<SignInForm> {
             ),
             TextButton(
               onPressed: () {
-                //TO DO FORGOT PASSWORD SCREEN GOES HERE
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ForgotPassword()));
               },
               child: Text("Forgot Password"),
               style: TextButton.styleFrom(
