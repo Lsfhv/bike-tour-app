@@ -10,7 +10,11 @@ class AuthService {
 
   AuthService(this._firebaseAuth);
 
+  // signed in or not
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
+
+  // data about the user
+  User? get currentUser => _firebaseAuth.currentUser;
 
   Future<String> signIn(
       {required String email, required String password}) async {

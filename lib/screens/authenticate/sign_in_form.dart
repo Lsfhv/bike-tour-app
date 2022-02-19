@@ -3,6 +3,7 @@
 import 'package:bike_tour_app/screens/authenticate/sign_up.dart';
 import 'package:bike_tour_app/screens/navigation/main_map.dart';
 import 'package:bike_tour_app/services/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 
@@ -132,13 +133,6 @@ class _SignInFormState extends State<SignInForm> {
                 primary: Colors.blue,
               ),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => MainMap()));
-              },
-              child: Text("go tot maps"),
-            )
           ],
         ),
       ),
