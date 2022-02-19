@@ -1,3 +1,4 @@
+import 'package:bike_tour_app/screens/authenticate/forgot_password_form.dart';
 import 'package:flutter/material.dart';
 
 class ForgotPassword extends StatefulWidget {
@@ -16,7 +17,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       appBar: AppBar(
         title: const Text("Sign up"),
       ),
-      body: const Text("forgot password"),
+      body: const ForgotPasswordFrom(),
     );
   }
 }
