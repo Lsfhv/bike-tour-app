@@ -1,6 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:bike_tour_app/screens/authenticate/user_data.dart';
 import 'package:bike_tour_app/services/auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 
@@ -14,11 +17,17 @@ class SignUpForm extends StatefulWidget {
 class _SignUpFormState extends State<SignUpForm> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final passwordConfirmationController = TextEditingController();
 
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
+    firstNameController.dispose();
+    lastNameController.dispose();
+    passwordConfirmationController.dispose();
     super.dispose();
   }
 
@@ -33,12 +42,14 @@ class _SignUpFormState extends State<SignUpForm> {
           children: <Widget>[
             Column(
               children: <Widget>[
-                TextField(
+                TextFormField(
+                  controller: firstNameController,
                   decoration: InputDecoration(
                     labelText: "First name",
                   ),
                 ),
-                TextField(
+                TextFormField(
+                  controller: lastNameController,
                   decoration: InputDecoration(
                     labelText: "Last name",
                   ),
@@ -57,6 +68,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   ),
                 ),
                 TextField(
+                  controller: passwordConfirmationController,
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: "Confirm Password",
@@ -70,10 +82,20 @@ class _SignUpFormState extends State<SignUpForm> {
                       borderRadius: BorderRadius.circular(20)),
                   child: TextButton(
                     onPressed: () async {
-                      context.read<AuthService>().signUp(
+                      await context.read<AuthService>().signUp(
                             email: emailController.text.trim(),
                             password: passwordController.text,
                           );
+                      User? user = context.read<AuthService>().currentUser;
+                      var collection =
+                          FirebaseFirestore.instance.collection('users');
+                      UserData userData = UserData(
+                        firstNameController.text.trim(),
+                        lastNameController.text.trim(),
+                        emailController.text.trim(),
+                      );
+                      await collection.doc(user!.uid).set(userData.toJson());
+                      Navigator.pop(context);
                     },
                     child: const Text(
                       'Register',
