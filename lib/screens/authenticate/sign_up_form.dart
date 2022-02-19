@@ -16,11 +16,11 @@ class SignUpForm extends StatefulWidget {
 }
 
 class _SignUpFormState extends State<SignUpForm> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final firstNameController = TextEditingController();
-  final lastNameController = TextEditingController();
-  final passwordConfirmationController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _passwordConfirmationController = TextEditingController();
 
   final RegExp _vaidEmailRegExp = RegExp(
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
@@ -30,11 +30,11 @@ class _SignUpFormState extends State<SignUpForm> {
 
   @override
   void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    firstNameController.dispose();
-    lastNameController.dispose();
-    passwordConfirmationController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _passwordConfirmationController.dispose();
     super.dispose();
   }
 
@@ -50,13 +50,13 @@ class _SignUpFormState extends State<SignUpForm> {
             Column(
               children: <Widget>[
                 TextFormField(
-                  controller: firstNameController,
+                  controller: _firstNameController,
                   decoration: InputDecoration(
                     labelText: "First name",
                   ),
                 ),
                 TextFormField(
-                  controller: lastNameController,
+                  controller: _lastNameController,
                   decoration: InputDecoration(
                     labelText: "Last name",
                   ),
@@ -67,7 +67,7 @@ class _SignUpFormState extends State<SignUpForm> {
                       return 'Not a valid email';
                     }
                   },
-                  controller: emailController,
+                  controller: _emailController,
                   decoration: InputDecoration(
                     labelText: "Email",
                   ),
@@ -78,7 +78,7 @@ class _SignUpFormState extends State<SignUpForm> {
                       return 'Password must contain an upper case character, a number and a special character';
                     }
                   },
-                  controller: passwordController,
+                  controller: _passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: "Password",
@@ -86,11 +86,11 @@ class _SignUpFormState extends State<SignUpForm> {
                 ),
                 TextFormField(
                   validator: (value) {
-                    if (value != passwordController.text) {
+                    if (value != _passwordController.text) {
                       return 'Passwords do not match';
                     }
                   },
-                  controller: passwordConfirmationController,
+                  controller: _passwordConfirmationController,
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: "Confirm Password",
@@ -108,14 +108,14 @@ class _SignUpFormState extends State<SignUpForm> {
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Registering!')));
                         await context.read<AuthService>().signUp(
-                              email: emailController.text.trim(),
-                              password: passwordController.text,
+                              email: _emailController.text.trim(),
+                              password: _passwordController.text,
                             );
                         User? user = context.read<AuthService>().currentUser;
                         UserData userData = UserData(
-                          firstNameController.text.trim(),
-                          lastNameController.text.trim(),
-                          emailController.text.trim(),
+                          _firstNameController.text.trim(),
+                          _lastNameController.text.trim(),
+                          _emailController.text.trim(),
                         );
                         SetData()
                             .saveUserData(userData: userData, uid: user!.uid);
