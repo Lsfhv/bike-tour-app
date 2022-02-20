@@ -18,7 +18,6 @@ class GetApi {
       bikePoints.add(BikePointModel.fromJson(json[i]));
     }
     // print('executed in ${stopwatch.elapsed}');
-
     return bikePoints;
   }
 }
