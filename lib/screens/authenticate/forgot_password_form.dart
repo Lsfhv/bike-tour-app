@@ -67,7 +67,8 @@ class _ForgotPasswordFromState extends State<ForgotPasswordFrom> {
                   if (result == "Success") {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         content: Text(
-                            'Please check your email to reset you password')));
+                      'Please check your email to reset you password',
+                    )));
                   }
                 },
                 child: const Text(
