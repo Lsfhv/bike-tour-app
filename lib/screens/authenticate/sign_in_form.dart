@@ -2,7 +2,7 @@
 
 import 'package:bike_tour_app/screens/authenticate/forgot_password.dart';
 import 'package:bike_tour_app/screens/authenticate/sign_up.dart';
-import 'package:bike_tour_app/services/auth.dart';
+import 'package:bike_tour_app/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 

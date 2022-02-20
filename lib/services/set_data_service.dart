@@ -1,6 +1,6 @@
 /// service to save data into firebase firestore
 
-import 'package:bike_tour_app/models/user_data.dart';
+import 'package:bike_tour_app/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SetData {
