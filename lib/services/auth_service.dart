@@ -1,5 +1,8 @@
 // ignore_for_file: avoid_print
 
+/// The authentication service provider for firebase to authenticate
+/// users to sign in, register and more.
+
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
@@ -7,7 +10,10 @@ class AuthService {
 
   AuthService(this._firebaseAuth);
 
+  // signed in or not
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
+
+  User? get currentUser => _firebaseAuth.currentUser;
 
   Future<String> signIn(
       {required String email, required String password}) async {
@@ -31,5 +37,11 @@ class AuthService {
       print(exception.toString());
       return "";
     }
+  }
+
+  String resetPassword({required String email}) {
+    _firebaseAuth.sendPasswordResetEmail(email: email);
+    return "Success";
+    // add then and on error catches
   }
 }
