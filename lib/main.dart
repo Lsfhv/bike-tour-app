@@ -24,7 +24,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  45;
   runApp(const MyApp());
 }
 
