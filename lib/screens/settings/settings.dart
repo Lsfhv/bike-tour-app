@@ -18,9 +18,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
 
   void generateFields() {
-    var x = context.read<AuthService>().currentUser; 
+    var currentUser = context.read<AuthService>().currentUser; 
 
-    _email = x!.email;
+    _email = currentUser!.email;
   }
 
   @override
