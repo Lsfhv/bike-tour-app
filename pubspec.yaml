@@ -43,6 +43,7 @@ dependencies:
   firebase_core: ^1.12.0
   fluttertoast: ^8.0.8
   provider: ^6.0.2
+  settings_ui: ^2.0.2
   
 
 dev_dependencies:
