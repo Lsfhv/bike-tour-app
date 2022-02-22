@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class BikeDockPoint {
-  final int lat;
-  final int lon;
-  String? referenceId;
+  final double lat;
+  final double lon;
+  String referenceId;
   int bikes_available;
   int parking_available;
 
-  BikeDockPoint(this.lat, this.lon,{required this.bikes_available, required this.parking_available, this.referenceId});
+  BikeDockPoint(this.lat, this.lon,{required this.bikes_available, required this.parking_available, this.referenceId = ""});
 
   factory BikeDockPoint.fromSnapshot(DocumentSnapshot snapshot) {
     final newStation = BikeDockPoint.fromJson(snapshot.data() as Map<String, dynamic>);
@@ -19,17 +19,15 @@ class BikeDockPoint {
   Map<String, dynamic> toJson() => _BDPToJson(this);
   @override
   String toString() => 'BikeDockPoint<$lat,$lon>';
-
-
-
+  
 }
 
 // 1
 BikeDockPoint _BDPFromJson(Map<String, dynamic> json) {
 
   return BikeDockPoint(
-    json['lat'] as int,
-    json['lon'] as int,
+    json['lat'] as double,
+    json['lon'] as double,
     bikes_available: json['bikes_count'] as int,
     parking_available: json['parking_count'] as int,
   );

@@ -1,8 +1,9 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:bike_tour_app/screens/navigation/bike_markers.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:bike_tour_app/screens/navigation/route_planner.dart';
+import 'package:bike_tour_app/screens/navigation/from_page.dart';
 
 class MainMap extends StatefulWidget {
   const MainMap({Key? key}) : super(key: key);
@@ -13,9 +14,10 @@ class MainMap extends StatefulWidget {
 
 class _MainMapState extends State<MainMap> {
   late GoogleMapController mapController;
-
   final LatLng _center = const LatLng(51.507399, -0.127689);
 
+  Icon customIcon = const Icon(Icons.search);
+  Widget customSearchBar = const Text('Where do you want to go?');
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
@@ -67,7 +69,7 @@ class _MainMapState extends State<MainMap> {
                     color: Color.fromARGB(202, 85, 190, 56).withOpacity(1),
                     onPressed: () {
                       Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => RoutePlan()));
+                        MaterialPageRoute(builder: (context) => FromPage()));
                     },
                   ),
                 ),

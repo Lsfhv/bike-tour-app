@@ -1,18 +1,19 @@
 import 'package:bike_tour_app/models/tfl-api/bike_docking_points.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'bike_points.dart'
+import 'package:bike_tour_app/models/tfl-api/bike_docking_points.dart';
 
-class BikeMarker extends StatelessWidget {
+class BikeMarker extends Marker {
   final BikeDockPoint station;
-  final Marker marker;
-  BikeMarker({Key? key, required this.station})
-    : super(key: key){
-      LatLng latlng = LatLng(station.lat, station.lon);
-      marker = Marker(markerId: station.referenceId ,draggable: false, position: latlng);
-  }
+  BikeMarker({required this.station})
+    : super(markerId: MarkerId(""+station.referenceId) ,draggable: false, position: LatLng(station.lat, station.lon));
 
-  
+  //@override
+  //Widget build(BuildContext context){
+
+  //}
+
+
 
 
   

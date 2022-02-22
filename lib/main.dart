@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:bike_tour_app/screens/wrapper.dart';
 import 'package:bike_tour_app/services/auth_service.dart';
-import 'package:bike_tour_app/tfl-api/get_api.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bike_tour_app/firebase_options.dart';
