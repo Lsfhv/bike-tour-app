@@ -36,7 +36,7 @@ class _SettingsPageState extends State<SettingsPage> {
     
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.red,
         title: const Text("Account Settings"),
       ),
       body: const Text("Settings"),
