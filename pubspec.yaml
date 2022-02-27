@@ -46,6 +46,10 @@ dependencies:
   fluttertoast: ^8.0.8
   provider: ^6.0.2
   cloud_functions: ^3.2.7
+  google_place: ^0.4.7
+  googleapis: ^8.0.0
+  location: ^4.3.0
+  google_geocoding_api: ^1.0.1+2
   
 
 dev_dependencies:

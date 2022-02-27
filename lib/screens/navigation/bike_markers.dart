@@ -8,10 +8,6 @@ class BikeMarker extends Marker {
   BikeMarker({required this.station})
     : super(markerId: MarkerId(""+station.referenceId) ,draggable: false, position: LatLng(station.lat, station.lon));
 
-  //@override
-  //Widget build(BuildContext context){
-
-  //}
 
 
 
