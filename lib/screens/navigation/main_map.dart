@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:bike_tour_app/screens/navigation/bike_markers.dart';
+import 'package:bike_tour_app/screens/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -38,7 +39,10 @@ class _MainMapState extends State<MainMap> {
                 alignment: Alignment(1, -0.8),
                 child: FloatingActionButton(
                   heroTag: "Persons",
-                  onPressed: () {},
+                  onPressed: () {
+                    // the settings button
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> SettingsPage()));
+                  },
                   backgroundColor:
                       Color.fromARGB(202, 85, 190, 56).withOpacity(1),
                   child: const Icon(Icons.settings),
@@ -48,7 +52,9 @@ class _MainMapState extends State<MainMap> {
                 alignment: Alignment(-0.8, -0.8),
                 child: FloatingActionButton(
                   heroTag: "Settings",
-                  onPressed: () {},
+                  onPressed: () {
+                    // person
+                  },
                   backgroundColor:
                       Color.fromARGB(202, 85, 190, 56).withOpacity(1),
                   child: const Icon(Icons.person),
