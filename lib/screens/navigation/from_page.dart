@@ -12,12 +12,12 @@ class FromPage extends StatefulWidget {
 
 class _FromPageState extends State<FromPage> {
   late GoogleMapController mapController;
-  UserPosition _currentPosition = UserPosition.place_id("ChIJd8BlQ2BZwokRAFUEcm_qrcA");
-  final LatLng _center = const LatLng(51.507399, -0.127689);
+  UserPosition? _currentPosition;
+  LatLng _center = const LatLng(51.507399, -0.127689);
   Icon customIcon = const Icon(Icons.search);
-
+  Marker? _currLoc = null; 
   late TextEditingController _controller;
-
+  final _searcher = GoogleGeocodingApi("AIzaSyA75AqNa-yxMDYqffGrN0AqyUPumqkmuEs");
   @override
   void initState() {
     super.initState();
@@ -32,34 +32,43 @@ class _FromPageState extends State<FromPage> {
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
-    _getCurrentLocation();
   }
   Future<void> _getCurrentLocation() async{
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
       .then((Position position) {
         setState(() {
-          _currentPosition = UserPosition.position(position.toJson());
+          LatLng pos =  LatLng(position.latitude, position.longitude);
+          _currLoc = Marker(markerId:const MarkerId("current location"), icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed), position : pos);
+          _center = pos;
+          mapController.animateCamera(CameraUpdate.newLatLng(_center));
+          _currentPosition = UserPosition(mapController, pos, position : position.toJson());
         });
+        showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+          title : Text("Your journey starts now!" ),//+tag),
+          actions : <Widget>[
+            TextButton(onPressed: () => Navigator.pushNamed(context, ToPage.routeName, arguments : _currentPosition), child: const Text("Ok!"))
+          ]
+          )
+        ); 
       }).catchError((e) {
         print(e);
       });
   }
-  void _generateLocation(String location) async{
-    GoogleGeocodingApi _searcher = GoogleGeocodingApi("AIzaSyBIF3s1kX5QoK8Oe-wORMoupH1pHcQWJx0");
-    GoogleGeocodingResponse loc =  await _searcher.search(location, region: "London");
-    _currentPosition = UserPosition.place_id(loc.results.first.placeId);
-  }
 
-  _handleSubmit(String location){
-      String tag;
-      if(_currentPosition != null){ 
-        print("got location");
-      }
-      else{
-        _generateLocation(location );
-      }
-      //Pop that you are adding new destination
-      showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+
+  _handleSubmit(String location) async{
+    String edited_loc = location + " London";
+    GoogleGeocodingResponse loc =  await _searcher.search(edited_loc);
+    setState(() {
+      LatLng pos = LatLng(loc.results.first.geometry!.location.lat, loc.results.first.geometry!.location.lng);
+      _currLoc = Marker(markerId:const MarkerId("current location"), icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed), position : pos);
+      _center = pos;
+      mapController.animateCamera(CameraUpdate.newLatLng(_center));
+      _currentPosition = UserPosition(mapController, pos);
+
+    });
+    //Pop that you are adding new destination
+    showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
       title : Text("Your journey starts now!" ),//+tag),
       actions : <Widget>[
         TextButton(onPressed: () => Navigator.pushNamed(context, ToPage.routeName, arguments : _currentPosition), child: const Text("Ok!"))
@@ -75,7 +84,7 @@ class _FromPageState extends State<FromPage> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title : LocationGetter(onSubmitted: _handleSubmit ),
+          title : LocationGetter(onSubmitted: _handleSubmit, onTap : _getCurrentLocation),
           automaticallyImplyLeading: false,
           centerTitle: true,
           ),
@@ -83,6 +92,7 @@ class _FromPageState extends State<FromPage> {
           body: Center(
             child: GoogleMap(
               onMapCreated: _onMapCreated,
+              markers: {if (_currLoc != null) _currLoc as Marker},
               initialCameraPosition: CameraPosition(target: _center, zoom: 15),
             ),
           ),
@@ -102,8 +112,8 @@ class _FromPageState extends State<FromPage> {
 }
 
 class LocationGetter extends StatefulWidget {
-  const LocationGetter({ Key? key, required this.onSubmitted  }) : super(key: key);
-
+  const LocationGetter({ Key? key, required this.onSubmitted, required this.onTap}) : super(key: key);
+  final onTap;
   final ValueChanged<String>? onSubmitted;  
   @override
   _LocationGetterState createState() => _LocationGetterState();
@@ -114,6 +124,10 @@ class _LocationGetterState extends State<LocationGetter> {
 
   void _handleSubmit(String destination){
     widget.onSubmitted!(destination);
+  }
+
+  void _handleTap(){
+    widget.onTap();
   }
   @override
   Widget build(BuildContext context) {
@@ -136,7 +150,8 @@ class _LocationGetterState extends State<LocationGetter> {
               ),
               onSubmitted: (String location) async {_handleSubmit(location);},
             )
-        )
+        ),
+        IconButton(onPressed: _handleTap, icon: Icon(Icons.location_on))
       ]
     );
   }

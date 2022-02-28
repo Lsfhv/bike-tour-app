@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bike_tour_app/models/bike_point_model.dart';
+import 'package:bike_tour_app/models/tfl-api/bike_point_model.dart';
 import 'package:http/http.dart' as http;
 
 class GetApi {

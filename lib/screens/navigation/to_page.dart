@@ -1,24 +1,23 @@
 
+//import 'dart:html';
+
 import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:googleapis/chat/v1.dart' hide TextButton;
-
-
-
+import 'package:google_geocoding_api/google_geocoding_api.dart';
 
 
 class UserPosition {
   final Map<String, dynamic>? position;
-  final String? place_id;
+  //final String? place_id;
+  final map_controller;
+  final LatLng? center;
   //final String user_id;
 
-  UserPosition.position(this.position, {this.place_id });//this.user_id);
-  UserPosition.place_id(this.place_id, { this.position,});//this.user_id);
+  UserPosition(this.map_controller, this.center ,{this.position});//,{this.place_id});
+  //UserPosition.position(this.map_controller,this.position, {this.place_id , this.center});//this.user_id);
+  //UserPosition.place_id(this.map_controller,this.place_id, { this.position, this.center});//this.user_id);
+
 }
 
 class ToPage extends StatefulWidget {
@@ -33,11 +32,24 @@ class ToPage extends StatefulWidget {
 
 class _ToPageState extends State<ToPage> {
   late GoogleMapController mapController;
-
-  final LatLng _center = const LatLng(51.507399, -0.127689);
-
+  bool first = true;
+  LatLng _center = const LatLng(51.507399, -0.127689);
+  final _google_geocode_API = GoogleGeocodingApi("AIzaSyA75AqNa-yxMDYqffGrN0AqyUPumqkmuEs", isLogged: true); 
   Icon customIcon = const Icon(Icons.search);
-  List<String> list_of_destinations = <String>[];
+  List<LatLng> list_of_destinations = <LatLng>[];
+  Set<Marker>? _markers;
+
+//for later
+  //Widget _makeChild(){
+  //  if(showingDestinationList){
+  //    return DestinationShower(locations: locations);
+  //  }
+  //  else{
+  //    return Destination_Retriever(
+  //            onSubmitted: _handleSubmit,
+  //        );
+  //  }
+  //}
 
   _handleTap(UserPosition args) {
     showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
@@ -50,6 +62,7 @@ class _ToPageState extends State<ToPage> {
     );
   }
 
+  
   _navigateToNextPage(UserPosition args){
     Navigator.pushNamed(context, RoutingMap.routeName, arguments : JourneyData(
       args, list_of_destinations
@@ -57,9 +70,18 @@ class _ToPageState extends State<ToPage> {
 
   }
 
-  _handleSubmit(String destination){
-      list_of_destinations.add(destination);
+  _handleSubmit(String destination) async{
+      String edited_destination = destination + " London"; 
+      GoogleGeocodingResponse loc = await _google_geocode_API.search(edited_destination, region: "uk");
       //Pop that you are adding new destination
+      setState(() {
+        LatLng pos = LatLng(loc.results.first.geometry!.location.lat, loc.results.first.geometry!.location.lng);
+        Marker curr_marker = Marker(markerId: MarkerId(destination), icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue), position : pos);
+        _markers?.add(curr_marker);
+        _center = pos;
+        list_of_destinations.add(pos);
+        mapController.animateCamera(CameraUpdate.newLatLng(_center));
+      });
       showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
       title : Text("You have added " + destination + " in your plan!"),
       actions : <Widget>[
@@ -75,9 +97,18 @@ class _ToPageState extends State<ToPage> {
     mapController = controller;
   }
 
+ 
+
+
+
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as UserPosition;
+    _center = args.center as LatLng;
+    if(args.center!=null && first) {
+      first = false;
+      _markers = {Marker(markerId:const MarkerId("current location"), icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed), position : args.center as LatLng)};
+    }
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -92,6 +123,8 @@ class _ToPageState extends State<ToPage> {
             child: GoogleMap(
               onMapCreated: _onMapCreated,
               initialCameraPosition: CameraPosition(target: _center, zoom: 15),
+              markers: _markers as Set<Marker>
+              
             ),
           ),
         floatingActionButton: TextButton(
@@ -111,10 +144,36 @@ class _ToPageState extends State<ToPage> {
 
 
 
+/*
+class DestinationShower extends StatefulWidget {
+  const DestinationShower({ Key? key, required this.locations }) : super(key: key);
+  final List<Location>? locations;
+  @override
+  _DestinationShowerState createState() => _DestinationShowerState();
+}
+class _DestinationShowerState extends State<DestinationShower> {
+  List<Widget> _generateDestinations(){
+    List<Widget> widgets = [];  
+  if(widget.locations != null){
+    for(Location location in widget.locations as List<Location>){
+      //LatLng coords
+      //widgets.add(Text(location));
+    }
+  }
+  return widgets;
+}
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: _generateDestinations(),
+    );
+  }
+}
+
+*/
 
 class Destination_Retriever extends StatefulWidget {
   const Destination_Retriever({ Key? key, required this.onSubmitted }) : super(key: key);
-
 
   final ValueChanged<String>? onSubmitted;
   @override

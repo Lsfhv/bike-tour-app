@@ -1,3 +1,5 @@
+
+import axios from "axios";
 const functions = require("firebase-functions");
 const admin = require('firebase-admin');
 admin.initializeApp();
@@ -9,8 +11,9 @@ admin.initializeApp();
 //   response.send("Hello from Firebase!");
 // });
 
+ // install by running **npm install axios** inside your functions folder
 
-
-
-
-
+export const serverRequest = functions.https.onCall(async (url, context)=> {
+  const response = await axios.get(url as string).then(({data})=> data);
+  return response;
+});
