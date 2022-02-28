@@ -40,10 +40,13 @@ class _RoutingMap extends State<RoutingMap> {
   void _generateRoute(JourneyData args) async{
     LatLng origin = args._currentPosition.center as LatLng;
     LatLng destination = args._destinations_cords.first;
+    print(origin);
+    print(destination);
     final directions = await DirectionsRepository().getDirections(origin: origin, destination: destination);
     setState(() {
       _info = directions;
     });
+    print(_info);
   }
   @override
   void initState() {
