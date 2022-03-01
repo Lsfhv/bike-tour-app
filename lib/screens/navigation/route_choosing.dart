@@ -82,7 +82,7 @@ class _RoutingMap extends State<RoutingMap> {
           */
           body: Stack(
             alignment: Alignment.center,
-                    children: [
+            children: [
           GoogleMap(
             myLocationButtonEnabled: false,
             zoomControlsEnabled: false,

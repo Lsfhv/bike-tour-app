@@ -5,6 +5,7 @@ import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_geocoding_api/google_geocoding_api.dart';
+import 'package:google_place/google_place.dart';
 
 import '.env.dart';
 
@@ -37,10 +38,11 @@ class _ToPageState extends State<ToPage> {
   bool first = true;
   LatLng _center = const LatLng(51.507399, -0.127689);
   final _google_geocode_API = GoogleGeocodingApi(googleAPIKey, isLogged: true); 
+  final googlePlace = GooglePlace(googleAPIKey);
   Icon customIcon = const Icon(Icons.search);
   List<LatLng> list_of_destinations = <LatLng>[];
   Set<Marker>? _markers;
-
+  List<AutocompletePrediction> predictions = [];
 //for later
   //Widget _makeChild(){
   //  if(showingDestinationList){
@@ -70,6 +72,27 @@ class _ToPageState extends State<ToPage> {
       args, list_of_destinations
     ));
 
+  }
+
+  void autoCompleteSearch(String value) async {
+    String edited_value = value + " london";
+    var result = await googlePlace.autocomplete.get(edited_value);
+    if (result != null && result.predictions != null && mounted) {
+      setState(() {
+        predictions = result.predictions as List<AutocompletePrediction>;
+      });
+    }
+  }
+  _handleChange(String destination) async{
+    if (destination.isNotEmpty) {
+      autoCompleteSearch(destination);
+    } else {
+      if (predictions.isNotEmpty && mounted) {
+        setState(() {
+          predictions = [];
+        });
+      }
+    }
   }
 
   _handleSubmit(String destination) async{
@@ -116,22 +139,58 @@ class _ToPageState extends State<ToPage> {
         appBar: AppBar(
           title: Destination_Retriever(
               onSubmitted: _handleSubmit,
+              onChanged: _handleChange,
           ),
           automaticallyImplyLeading: false,
           centerTitle: true,
           ),
 
-          body: Center(
-            child: GoogleMap(
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: CameraPosition(target: _center, zoom: 15),
-              markers: _markers as Set<Marker>
-              
-            ),
-          ),
-        floatingActionButton: TextButton(
-            onPressed:()=> Navigator.pushNamed(context, RoutingMap.routeName, arguments : JourneyData(args, list_of_destinations)), child: const Text("Lets Go!")
+          body: Stack(
+        
+            alignment: Alignment.center,
+            children: [
+              Center(
+                child: GoogleMap(
+                  onMapCreated: _onMapCreated,
+                  initialCameraPosition: CameraPosition(target: _center, zoom: 15),
+                  markers: _markers as Set<Marker>
+                  
                 ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: predictions.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      tileColor: Colors.black,
+                      leading: CircleAvatar(
+                        child: Icon(
+                          Icons.pin_drop,
+                          color: Colors.white,
+                        ),
+                      ),
+                      title: Text(predictions[index].description as String),
+                      onTap: () {
+                        //debugPrint(predictions[index].placeId);
+                        //Navigator.push(
+                        //  context,
+                        //  MaterialPageRoute(
+                        //    builder: (context) => DetailsPage(
+                        //      placeId: predictions[index].placeId,
+                        //      googlePlace: googlePlace,
+                        //    ),
+                        //  ),
+                        //);
+                      },
+                    );
+                  },
+                ),
+              ),
+              TextButton(
+            onPressed:()=> Navigator.pushNamed(context, RoutingMap.routeName, arguments : JourneyData(args, list_of_destinations)), child: const Text("Lets Go!")
+              ),
+            ]
+          ),
       )
     );
   }
@@ -145,9 +204,10 @@ class _ToPageState extends State<ToPage> {
 }
 
 class Destination_Retriever extends StatefulWidget {
-  const Destination_Retriever({ Key? key, required this.onSubmitted }) : super(key: key);
+  const Destination_Retriever({ Key? key,required this.onSubmitted ,required this.onChanged }) : super(key: key);
 
   final ValueChanged<String>? onSubmitted;
+  final ValueChanged<String>? onChanged;
   @override
   _Destination_RetrieverState createState() => _Destination_RetrieverState();
 }
@@ -174,6 +234,12 @@ class _Destination_RetrieverState extends State<Destination_Retriever> {
     widget.onSubmitted!(destination);
   }
 
+  void _handleChange(String destination){
+    if(destination.length > 3){
+      widget.onChanged!(destination);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -195,6 +261,7 @@ class _Destination_RetrieverState extends State<Destination_Retriever> {
               ),
               controller: _controller,
               onSubmitted: (String destination) async {_handleSubmit(destination);},
+              onChanged: (String destination) async {_handleChange(destination);},
             )
         )
       ]
