@@ -22,7 +22,7 @@ class DirectionsRepository {
       queryParameters: {
         'origin': '${origin.latitude},${origin.longitude}',
         'destination': '${destination.latitude},${destination.longitude}',
-        'key': 'AIzaSyA75AqNa-yxMDYqffGrN0AqyUPumqkmuEs',
+        'key': googleAPIKey,
         //"Access-Control-Allow-Origin": "*", // Required for CORS support to work
         //"Access-Control-Allow-Credentials": true, // Required for cookies, authorization headers with HTTPS
         //"Access-Control-Allow-Headers": googleAPIKey,

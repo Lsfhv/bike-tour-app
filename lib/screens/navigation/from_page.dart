@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_geocoding_api/google_geocoding_api.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class FromPage extends StatefulWidget {
   const FromPage({Key? key}) : super(key: key);
@@ -13,6 +14,7 @@ class FromPage extends StatefulWidget {
 class _FromPageState extends State<FromPage> {
   late GoogleMapController mapController;
   UserPosition? _currentPosition;
+  bool locationPermission = false;
   LatLng _center = const LatLng(51.507399, -0.127689);
   Icon customIcon = const Icon(Icons.search);
   Marker? _currLoc = null; 
@@ -34,25 +36,28 @@ class _FromPageState extends State<FromPage> {
     mapController = controller;
   }
   Future<void> _getCurrentLocation() async{
-    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
-      .then((Position position) {
-        setState(() {
-          LatLng pos =  LatLng(position.latitude, position.longitude);
-          _currLoc = Marker(markerId:const MarkerId("current location"), icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed), position : pos);
-          _center = pos;
-          mapController.animateCamera(CameraUpdate.newLatLng(_center));
-          _currentPosition = UserPosition(mapController, pos, position : position.toJson());
+    locationPermission = await Permission.location.request().isGranted;
+    if(locationPermission){
+      await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+        .then((Position position) {
+          setState(() {
+            LatLng pos =  LatLng(position.latitude, position.longitude);
+            _currLoc = Marker(markerId:const MarkerId("current location"), icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed), position : pos);
+            _center = pos;
+            mapController.animateCamera(CameraUpdate.newLatLng(_center));
+            _currentPosition = UserPosition(mapController, pos, position : position.toJson());
+          });
+          showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+            title : Text("Your journey starts now!" ),//+tag),
+            actions : <Widget>[
+              TextButton(onPressed: () => Navigator.pushNamed(context, ToPage.routeName, arguments : _currentPosition), child: const Text("Ok!"))
+            ]
+            )
+          ); 
+        }).catchError((e) {
+          print(e);
         });
-        showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
-          title : Text("Your journey starts now!" ),//+tag),
-          actions : <Widget>[
-            TextButton(onPressed: () => Navigator.pushNamed(context, ToPage.routeName, arguments : _currentPosition), child: const Text("Ok!"))
-          ]
-          )
-        ); 
-      }).catchError((e) {
-        print(e);
-      });
+    }
   }
 
 

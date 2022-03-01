@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_geocoding_api/google_geocoding_api.dart';
 
+import '.env.dart';
+
 
 class UserPosition {
   final Map<String, dynamic>? position;
@@ -34,7 +36,7 @@ class _ToPageState extends State<ToPage> {
   late GoogleMapController mapController;
   bool first = true;
   LatLng _center = const LatLng(51.507399, -0.127689);
-  final _google_geocode_API = GoogleGeocodingApi("AIzaSyA75AqNa-yxMDYqffGrN0AqyUPumqkmuEs", isLogged: true); 
+  final _google_geocode_API = GoogleGeocodingApi(googleAPIKey, isLogged: true); 
   Icon customIcon = const Icon(Icons.search);
   List<LatLng> list_of_destinations = <LatLng>[];
   Set<Marker>? _markers;
@@ -141,36 +143,6 @@ class _ToPageState extends State<ToPage> {
   //}
 
 }
-
-
-
-/*
-class DestinationShower extends StatefulWidget {
-  const DestinationShower({ Key? key, required this.locations }) : super(key: key);
-  final List<Location>? locations;
-  @override
-  _DestinationShowerState createState() => _DestinationShowerState();
-}
-class _DestinationShowerState extends State<DestinationShower> {
-  List<Widget> _generateDestinations(){
-    List<Widget> widgets = [];  
-  if(widget.locations != null){
-    for(Location location in widget.locations as List<Location>){
-      //LatLng coords
-      //widgets.add(Text(location));
-    }
-  }
-  return widgets;
-}
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      children: _generateDestinations(),
-    );
-  }
-}
-
-*/
 
 class Destination_Retriever extends StatefulWidget {
   const Destination_Retriever({ Key? key, required this.onSubmitted }) : super(key: key);

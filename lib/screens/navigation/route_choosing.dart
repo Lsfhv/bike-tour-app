@@ -28,7 +28,7 @@ class RoutingMap extends StatefulWidget {
 
 class _RoutingMap extends State<RoutingMap> {
   late GoogleMapController mapController;
-
+  Set<Marker> _markers = {};
   //Set<BikeMarker> _markers_start = {};
   //Set<BikeMarker> _markers_end = {};
   final LatLng _center = const LatLng(51.507399, -0.127689);
@@ -40,13 +40,11 @@ class _RoutingMap extends State<RoutingMap> {
   void _generateRoute(JourneyData args) async{
     LatLng origin = args._currentPosition.center as LatLng;
     LatLng destination = args._destinations_cords.first;
-    print(origin);
-    print(destination);
     final directions = await DirectionsRepository().getDirections(origin: origin, destination: destination);
     setState(() {
       _info = directions;
+      _markers = {Marker(markerId: MarkerId('curr-loc'), position: origin), Marker(markerId: MarkerId('destionation'), position: destination) };
     });
-    print(_info);
   }
   @override
   void initState() {
@@ -90,6 +88,7 @@ class _RoutingMap extends State<RoutingMap> {
             zoomControlsEnabled: false,
             initialCameraPosition:CameraPosition(target: _center, zoom: 15),
             onMapCreated: _onMapCreated,
+            markers: _markers,
             polylines: {
               if (_info != null)
                 Polyline(
