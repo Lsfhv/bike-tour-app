@@ -1,13 +1,16 @@
 
 //import 'dart:html';
 
+import 'dart:ui';
+
 import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_geocoding_api/google_geocoding_api.dart';
 import 'package:google_place/google_place.dart';
 
-import '.env.dart';
+import '../../.env.dart';
+import 'location_details.dart';
 
 
 class UserPosition {
@@ -43,27 +46,29 @@ class _ToPageState extends State<ToPage> {
   List<LatLng> list_of_destinations = <LatLng>[];
   Set<Marker>? _markers;
   List<AutocompletePrediction> predictions = [];
-//for later
-  //Widget _makeChild(){
-  //  if(showingDestinationList){
-  //    return DestinationShower(locations: locations);
-  //  }
-  //  else{
-  //    return Destination_Retriever(
-  //            onSubmitted: _handleSubmit,
-  //        );
-  //  }
-  //}
+  bool isSelected = false;
+  bool _showDetail = false;
 
-  _handleTap(UserPosition args) {
-    showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
-      title : const Text("Have you added all the places you want to visit?"),
+  _handleNavigateToNextPage(UserPosition args){
+    if(list_of_destinations.isNotEmpty){
+      showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+        title : const Text("Have you added all the places you want to visit?"),
+        actions : <Widget>[
+          TextButton(onPressed: () => Navigator.pop(context, "No")/*_navigateToNextPage(args)*/, child: const Text("Yes")),
+          TextButton(onPressed: () => Navigator.pop(context, "No") , child: const Text("No"))
+        ]
+      )
+      );
+    }
+    else{
+      showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+      title : Text("You have not added any destinations in your plan! Please choose a destination!"),
       actions : <Widget>[
-        TextButton(onPressed: () => Navigator.pop(context, "No")/*_navigateToNextPage(args)*/, child: const Text("Yes")),
-        TextButton(onPressed: () => Navigator.pop(context, "No") , child: const Text("No"))
+        TextButton( onPressed: () => Navigator.pop(context, "No") , child: const Text("Ok!"))
       ]
     )
     );
+    }
   }
 
   
@@ -83,7 +88,7 @@ class _ToPageState extends State<ToPage> {
       });
     }
   }
-  _handleChange(String destination) async{
+  _handleSearchBarChange(String destination) async{
     if (destination.isNotEmpty) {
       autoCompleteSearch(destination);
     } else {
@@ -95,7 +100,7 @@ class _ToPageState extends State<ToPage> {
     }
   }
 
-  _handleSubmit(String destination) async{
+  _handleSearchBarSubmit(String destination) async{
       String edited_destination = destination + " London"; 
       GoogleGeocodingResponse loc = await _google_geocode_API.search(edited_destination, region: "uk");
       //Pop that you are adding new destination
@@ -125,7 +130,6 @@ class _ToPageState extends State<ToPage> {
  
 
 
-
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as UserPosition;
@@ -138,22 +142,21 @@ class _ToPageState extends State<ToPage> {
       home: Scaffold(
         appBar: AppBar(
           title: Destination_Retriever(
-              onSubmitted: _handleSubmit,
-              onChanged: _handleChange,
+              onSubmitted: _handleSearchBarSubmit,
+              onChanged: _handleSearchBarChange,
           ),
           automaticallyImplyLeading: false,
           centerTitle: true,
           ),
 
           body: Stack(
-        
             alignment: Alignment.center,
             children: [
               Center(
                 child: GoogleMap(
                   onMapCreated: _onMapCreated,
                   initialCameraPosition: CameraPosition(target: _center, zoom: 15),
-                  markers: _markers as Set<Marker>
+                  markers: _markers as Set<Marker>,
                   
                 ),
               ),
@@ -161,33 +164,41 @@ class _ToPageState extends State<ToPage> {
                 child: ListView.builder(
                   itemCount: predictions.length,
                   itemBuilder: (context, index) {
-                    return ListTile(
-                      tileColor: Colors.black,
-                      leading: CircleAvatar(
-                        child: Icon(
-                          Icons.pin_drop,
-                          color: Colors.white,
+                    return Container(
+                      color : Colors.white, 
+                      child :ListTile(
+                        tileColor: isSelected ? Colors.white : Colors.blue,
+                        leading: CircleAvatar(
+                          child: Icon(
+                            Icons.pin_drop,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                      title: Text(predictions[index].description as String),
-                      onTap: () {
-                        //debugPrint(predictions[index].placeId);
-                        //Navigator.push(
-                        //  context,
-                        //  MaterialPageRoute(
-                        //    builder: (context) => DetailsPage(
-                        //      placeId: predictions[index].placeId,
-                        //      googlePlace: googlePlace,
-                        //    ),
-                        //  ),
-                        //);
-                      },
+                        title:  Text(predictions[index].description as String),
+                        onTap: () { 
+                          //need to shrink it too
+                          // argument is predictions[index], AutoComplete thing
+                          //first fill
+                          //debugPrint(predictions[index].placeId);
+                          //Navigator.push(
+                          //  context,
+                          //  MaterialPageRoute(
+                          //    builder: (context) => DetailsPage(
+                          //      placeId: predictions[index].placeId,
+                          //      googlePlace: googlePlace,
+                          //    ),
+                          //  ),
+                          //);
+
+                        },
+                      )
                     );
                   },
                 ),
               ),
               TextButton(
-            onPressed:()=> Navigator.pushNamed(context, RoutingMap.routeName, arguments : JourneyData(args, list_of_destinations)), child: const Text("Lets Go!")
+                onPressed:()=> _handleNavigateToNextPage(args), 
+                child: const Text("Lets Go!")
               ),
             ]
           ),
@@ -268,3 +279,4 @@ class _Destination_RetrieverState extends State<Destination_Retriever> {
     );
   }
 }
+
