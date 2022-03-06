@@ -55,6 +55,7 @@ dependencies:
   dio: ^4.0.4
   permission_handler: ^9.2.0
   flutter_dotenv: ^5.0.2
+  expandable: ^5.0.1
   
 
 dev_dependencies:
