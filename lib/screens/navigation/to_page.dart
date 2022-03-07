@@ -437,13 +437,10 @@ class _ToPageState extends State<ToPage> {
     });
   }
 
-  _closePage(){
+  _closePage() async{
     setState(() {
       _showDetail = false;
-      bool? val = _markers?.remove(_suggestedMarker);
-      if(val == true) print("marker removed");
-      else {print("markers not removed");}
-      print(_markers!.length);
+      _markers?.remove(_suggestedMarker);
       _suggestedMarker = null;
     });
     //_showDetail = false;
@@ -453,7 +450,7 @@ class _ToPageState extends State<ToPage> {
 
    Widget _showDetailPage(){
     return DetailsPage(placeId: currPrediction!.placeId, googlePlace: googlePlace, 
-    closePage: () => _closePage
+    closePage: _closePage
     );
   }
 

@@ -40,7 +40,7 @@ class _DetailsPageState extends State<DetailsPage> {
     return Dismissible(
       key:  UniqueKey(),
       direction: DismissDirection.down,
-      onDismissed: _closePage(),
+      onDismissed: (direction) async {_closePage();},
       child: Scaffold(
         appBar: AppBar(
           title: Text("Details"),
