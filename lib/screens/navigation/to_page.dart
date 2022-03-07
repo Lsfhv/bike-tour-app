@@ -342,13 +342,14 @@ class _ToPageState extends State<ToPage> {
   AutocompletePrediction? currPrediction = null;
   bool isSelected = false;
   bool _showDetail = false;
+  Marker? _suggestedMarker = null;
 
   _handleNavigateToNextPage(UserPosition args){
     if(list_of_destinations.isNotEmpty){
       showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
         title : const Text("Have you added all the places you want to visit?"),
         actions : <Widget>[
-          TextButton(onPressed: () => Navigator.pop(context, "No")/*_navigateToNextPage(args)*/, child: const Text("Yes")),
+          TextButton(onPressed: () =>_navigateToNextPage(args), child: const Text("Yes")),
           TextButton(onPressed: () => Navigator.pop(context, "No") , child: const Text("No"))
         ]
       )
@@ -378,6 +379,7 @@ class _ToPageState extends State<ToPage> {
     var result = await googlePlace.autocomplete.get(edited_value);
     if (result != null && result.predictions != null && mounted) {
       setState(() {
+        _showDetail = false;
         predictions = result.predictions as List<AutocompletePrediction>;
       });
     }
@@ -421,12 +423,40 @@ class _ToPageState extends State<ToPage> {
     mapController = controller;
   }
 
-  _handleSuggestionTap(AutocompletePrediction prediction){
-    _showDetail = true;
-    currPrediction = prediction;
-    _handleSearchBarSubmit(prediction.description as String);
+  _handleSuggestionTap(AutocompletePrediction prediction) async{
+    GoogleGeocodingResponse loc = await _google_geocode_API.search(prediction.description as String, region: "uk");
+    setState(() {
+      _showDetail = true;
+      currPrediction = prediction;
+      LatLng pos = LatLng(loc.results.first.geometry!.location.lat, loc.results.first.geometry!.location.lng);
+      _suggestedMarker = Marker(markerId: MarkerId(prediction.description as String), icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue), position : pos);
+      _markers?.add(_suggestedMarker as Marker);
+      print(_markers?.length);
+      _center = pos;
+      mapController.animateCamera(CameraUpdate.newLatLng(_center));
+    });
   }
- 
+
+  _closePage(){
+    setState(() {
+      _showDetail = false;
+      bool? val = _markers?.remove(_suggestedMarker);
+      if(val == true) print("marker removed");
+      else {print("markers not removed");}
+      print(_markers!.length);
+      _suggestedMarker = null;
+    });
+    //_showDetail = false;
+    //_markers?.remove(_suggestedMarker);
+    //_suggestedMarker = null;
+  }
+
+   Widget _showDetailPage(){
+    return DetailsPage(placeId: currPrediction!.placeId, googlePlace: googlePlace, 
+    closePage: () => _closePage
+    );
+  }
+
 
 
   @override
@@ -446,6 +476,12 @@ class _ToPageState extends State<ToPage> {
           ),
           automaticallyImplyLeading: false,
           centerTitle: true,
+          actions: [
+              IconButton(
+                icon : Icon(Icons.arrow_circle_right_outlined),
+                onPressed:()=> _handleNavigateToNextPage(args), 
+              ),
+          ],
           ),
 
           body: Stack(
@@ -459,6 +495,7 @@ class _ToPageState extends State<ToPage> {
                   
                 ),
               ),
+              if(!_showDetail) 
               Expanded(
                 child: ListView.builder(
                   itemCount: predictions.length,
@@ -495,10 +532,8 @@ class _ToPageState extends State<ToPage> {
                   },
                 ),
               ),
-              TextButton(
-                onPressed:()=> _handleNavigateToNextPage(args), 
-                child: const Text("Lets Go!")
-              ),
+
+              if(_showDetail && currPrediction != null ) _showDetailPage(),
             ]
           ),
       )
