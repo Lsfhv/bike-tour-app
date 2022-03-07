@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:bike_tour_app/screens/navigation/main_map.dart';
+import 'package:bike_tour_app/screens/navigation/route_planner_form.dart';
 
 class RoutePlan extends StatefulWidget {
   const RoutePlan({Key? key}) : super(key: key);
@@ -24,29 +25,33 @@ class _RoutePlanState extends State<RoutePlan> {
             // Important: Remove any padding from the ListView.
             padding: EdgeInsets.zero,
             children: [
-              const DrawerHeader(
+              DrawerHeader(
                 decoration: BoxDecoration(
                   color: Color.fromARGB(202, 85, 190, 56),
                 ),
-                child: Text('Drawer Header'),
+                child: Center(
+                  child: Text(
+                    'Current Journey',
+                    style: GoogleFonts.lato(
+                      color: Colors.white,
+                      fontSize: 25,
+                    ),
+                  ),
+                ),
               ),
-              ListTile(
-                title: const Text('Item 1'),
-                onTap: () {
-                  // Update the state of the app
-                  // ...
-                  // Then close the drawer
-                  Navigator.pop(context);
-                },
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListTile(
+                  title: Center(child: const Text('Start: X')),
+                  onTap: () {},
+                ),
               ),
-              ListTile(
-                title: const Text('Item 2'),
-                onTap: () {
-                  // Update the state of the app
-                  // ...
-                  // Then close the drawer
-                  Navigator.pop(context);
-                },
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListTile(
+                  title: Center(child: const Text('End: Y')),
+                  onTap: () {},
+                ),
               ),
             ],
           ),
@@ -54,8 +59,11 @@ class _RoutePlanState extends State<RoutePlan> {
         body: Center(
             child: Stack(
           children: <Widget>[
+            const Align(
+                alignment: Alignment(0, -0.55),
+                child: SizedBox(child: DestinationSelector())),
             Align(
-              alignment: Alignment(0, 0),
+              alignment: Alignment(0, -0.15),
               child: Builder(builder: (context) {
                 return FloatingActionButton(
                   onPressed: () => Scaffold.of(context).openDrawer(),
@@ -63,10 +71,144 @@ class _RoutePlanState extends State<RoutePlan> {
                   backgroundColor:
                       Color.fromARGB(202, 85, 190, 56).withOpacity(1),
                   elevation: 1,
-                  child: const Icon(Icons.arrow_back),
-                ); // <-- Opens drawer.
+                  child: const Icon(Icons.map_rounded),
+                );
               }),
             ),
+            Align(
+              alignment: Alignment(0, 0.05),
+              child: Text(
+                'Popular Destinations:',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.lato(
+                  color: Colors.grey,
+                  fontSize: 20.5,
+                ),
+              ),
+            ),
+            Stack(
+              children: <Widget>[
+                Align(
+                  alignment: Alignment(0, 0.175),
+                  child: ListTile(
+                    title: Text(
+                      'Big Ben',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.lato(
+                        color: Color.fromARGB(202, 85, 190, 56),
+                        fontSize: 16.5,
+                      ),
+                    ),
+                    onTap: () {},
+                  ),
+                ),
+                Align(
+                  alignment: Alignment(0, 0.25),
+                  child: ListTile(
+                    title: Text(
+                      'Tower Bridge',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.lato(
+                        color: Color.fromARGB(202, 85, 190, 56),
+                        fontSize: 16.5,
+                      ),
+                    ),
+                    onTap: () {},
+                  ),
+                ),
+                Align(
+                  alignment: Alignment(0, 0.325),
+                  child: ListTile(
+                    title: Text(
+                      'The Shard',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.lato(
+                        color: Color.fromARGB(202, 85, 190, 56),
+                        fontSize: 16.5,
+                      ),
+                    ),
+                    onTap: () {},
+                  ),
+                ),
+                Align(
+                  alignment: Alignment(0, 0.4),
+                  child: ListTile(
+                    title: Text(
+                      'London Eye',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.lato(
+                        color: Color.fromARGB(202, 85, 190, 56),
+                        fontSize: 16.5,
+                      ),
+                    ),
+                    onTap: () {},
+                  ),
+                ),
+                Align(
+                  alignment: Alignment(0, 0.475),
+                  child: ListTile(
+                    title: Text(
+                      'Science Museum',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.lato(
+                        color: Color.fromARGB(202, 85, 190, 56),
+                        fontSize: 16.5,
+                      ),
+                    ),
+                    onTap: () {},
+                  ),
+                ),
+                Align(
+                  alignment: Alignment(0, 0.55),
+                  child: ListTile(
+                    title: Text(
+                      'Tower Of London',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.lato(
+                        color: Color.fromARGB(202, 85, 190, 56),
+                        fontSize: 16.5,
+                      ),
+                    ),
+                    onTap: () {},
+                  ),
+                ),
+                Align(
+                  alignment: Alignment(0, 0.625),
+                  child: ListTile(
+                    title: Text(
+                      'Emirates Air Line',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.lato(
+                        color: Color.fromARGB(202, 85, 190, 56),
+                        fontSize: 16.5,
+                      ),
+                    ),
+                    onTap: () {},
+                  ),
+                ),
+                Align(
+                  alignment: Alignment(0, 0.11),
+                  child: Text(
+                    'Add them to your journey!',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.lato(
+                      color: Colors.red,
+                      fontSize: 12.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Align(
+                alignment: Alignment(0, -0.05),
+                child: Text(
+                  'See Route',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.lato(
+                    color: Colors.grey,
+                    fontSize: 16.5,
+                  ),
+                )),
             Align(
               alignment: Alignment(-0.9, -0.85),
               child: FloatingActionButton(
