@@ -30,6 +30,7 @@ class BikeDataPull:
                 self.points[common_names] = (lat, lon)
                 self.bikeAvailable[common_names] = (bike_available)
                 self.bikeSpace[common_names] = (bike_space)
+                print(self.points)
         except requests.ConnectionError:
             print("error")
 

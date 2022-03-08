@@ -15,7 +15,7 @@ class Wrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User?>();
     if (firebaseUser != null) {
-      return const MainMap();
+      return MainMap();
     } else {
       return const SignIn();
     }

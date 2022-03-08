@@ -13,6 +13,4 @@ class Edge:
         self.node2 = node_j
     
 class MapGraph:
-    
-    def 
-        
+    pass        
