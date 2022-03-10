@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 //import 'dart:html';
 
+import 'package:bike_tour_app/models/tfl-api/bike_docking_points.dart';
+import 'package:bike_tour_app/models/tfl-api/bike_point_model.dart';
 import 'package:bike_tour_app/repository/direction.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -13,10 +15,7 @@ import '../../.env.dart';
 class JourneyData {
   final UserPosition _currentPosition;
   List<LatLng> _destinations_cords;
-
   JourneyData(this._currentPosition, this._destinations_cords);
-
-  
 }
 
 class RoutingMap extends StatefulWidget {
@@ -39,8 +38,8 @@ class _RoutingMap extends State<RoutingMap> {
   }
   void _generateRoute(JourneyData args) async{
     LatLng origin = args._currentPosition.center as LatLng;
-    LatLng destination = args._destinations_cords.first;
-    final directions = await DirectionsRepository().getDirections(origin: origin, destination: destination);
+    LatLng destination = args._destinations_cords.last;
+    final directions = await DirectionsRepository().getDirections(origin: origin, ending_bike_dock: destination, destinations: args._destinations_cords);
     setState(() {
       _info = directions;
       _markers = {Marker(markerId: MarkerId('curr-loc'), position: origin), Marker(markerId: MarkerId('destionation'), position: destination) };

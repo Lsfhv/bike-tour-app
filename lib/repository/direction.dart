@@ -13,20 +13,29 @@ class DirectionsRepository {
 
   DirectionsRepository({Dio? dio}) : _dio = dio ?? Dio();
 
+  String destinations_string(List<LatLng> destinations){
+    String destinations_out = '';
+    for(LatLng destination in destinations){
+      destinations_out += 'via:${destination.latitude},${destination.longitude}|';     
+    }
+    return destinations_out.substring(0, destinations_out.length - 1);
+  }
+
   Future<Directions?> getDirections({
     required LatLng origin,
-    required LatLng destination,
+    required List<LatLng> destinations,
+    required LatLng ending_bike_dock,
   }) async {
     final response = await _dio.get(
       _baseUrl,
       queryParameters: {
         'origin': '${origin.latitude},${origin.longitude}',
-        'destination': '${destination.latitude},${destination.longitude}',
+        'destination': '${ending_bike_dock.latitude},${ending_bike_dock.longitude}',
+        'waypoints' : destinations_string(destinations),
         'key': googleAPIKey,
-        //"Access-Control-Allow-Origin": "*", // Required for CORS support to work
-        //"Access-Control-Allow-Credentials": true, // Required for cookies, authorization headers with HTTPS
-        //"Access-Control-Allow-Headers": googleAPIKey,
-        //"Access-Control-Allow-Methods": "GET, OPTIONS"
+        'mode' : 'bicycling',
+        'region' : 'uk',
+        'units' : 'metric',
       },
     );
     print(response);
