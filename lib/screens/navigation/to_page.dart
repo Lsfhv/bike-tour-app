@@ -296,6 +296,7 @@ class _Destination_RetrieverState extends State<Destination_Retriever> {
 */
 import 'dart:ui';
 
+import 'package:bike_tour_app/screens/markers/destination_marker.dart';
 import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -319,6 +320,14 @@ class UserPosition {
 
 }
 
+class Destination{
+  LatLng position;
+  String name;
+  Destination({required this.position, required this.name});
+
+}
+
+
 class ToPage extends StatefulWidget {
   const ToPage({Key? key}) : super(key: key);
   static const routeName = '/toPage';
@@ -336,7 +345,7 @@ class _ToPageState extends State<ToPage> {
   final _google_geocode_API = GoogleGeocodingApi(googleAPIKey, isLogged: true); 
   final googlePlace = GooglePlace(googleAPIKey);
   Icon customIcon = const Icon(Icons.search);
-  List<LatLng> list_of_destinations = <LatLng>[];
+  List<Destination> list_of_destinations = <Destination>[];
   Set<Marker>? _markers;
   List<AutocompletePrediction> predictions = [];
   AutocompletePrediction? currPrediction = null;
@@ -398,18 +407,21 @@ class _ToPageState extends State<ToPage> {
 
   _handleSearchBarSubmit(String destination) async{
       String edited_destination = destination + " London"; 
+      String description =' ';
       GoogleGeocodingResponse loc = await _google_geocode_API.search(edited_destination, region: "uk");
       //Pop that you are adding new destination
       setState(() {
         LatLng pos = LatLng(loc.results.first.geometry!.location.lat, loc.results.first.geometry!.location.lng);
-        Marker curr_marker = Marker(markerId: MarkerId(destination), icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue), position : pos);
+        description = loc.results.first.formattedAddress;
+        Destination dest = Destination(position: pos, name: description);
+        Marker curr_marker = DestinationMarker(destination: dest); 
         _markers?.add(curr_marker);
         _center = pos;
-        list_of_destinations.add(pos);
+        list_of_destinations.add(dest);
         mapController.animateCamera(CameraUpdate.newLatLng(_center));
       });
       showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
-      title : Text("You have added " + destination + " in your plan!"),
+      title : Text("You have added " + description + " in your plan!"),
       actions : <Widget>[
         TextButton( onPressed: () => Navigator.pop(context, "No") , child: const Text("Ok!"))
       ]

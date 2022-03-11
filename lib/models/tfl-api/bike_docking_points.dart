@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+@deprecated
 class BikeDockPoint {
   final double lat;
   final double lon;

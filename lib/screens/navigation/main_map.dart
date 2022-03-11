@@ -1,11 +1,11 @@
 // ignore_for_file: prefer_const_constructors
-import 'package:bike_tour_app/screens/navigation/bike_markers.dart';
+import 'package:bike_tour_app/screens/markers/bike_markers.dart';
 import 'package:bike_tour_app/screens/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:bike_tour_app/screens/navigation/from_page.dart';
-import 'package:bike_tour_app/screens/navigation/route_planner.dart';
+//import 'package:bike_tour_app/screens/navigation/route_planner.dart';
 import 'package:location/location.dart';
 
 class MainMap extends StatefulWidget {
