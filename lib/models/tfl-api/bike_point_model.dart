@@ -11,8 +11,9 @@ class BikePointModel {
   final NbBikes;
   final NbEmptyDocks;
   final NbDocks;
+  late double distance;
 
-  const BikePointModel({
+  BikePointModel({
     required this.id,
     required this.commonName,
     required this.NbBikes,
@@ -20,6 +21,7 @@ class BikePointModel {
     required this.NbDocks,
     required this.lat,
     required this.lon,
+    distance,
   });
 
   factory BikePointModel.fromJson(Map<String, dynamic> json) {
@@ -32,5 +34,9 @@ class BikePointModel {
       lat : json['lat'],
       lon : json['lon']
     );
+  }
+
+  void setDistance(double distance){
+    this.distance = distance;
   }
 }

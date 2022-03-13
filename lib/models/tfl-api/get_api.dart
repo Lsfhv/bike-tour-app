@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 class GetApi {
   Set<BikePointModel> bikePoints ={};
-  static const double RADIUS = 1; // in km
+  static const double RADIUS = 2000; // in metres
   GetApi(){
   }
 
@@ -30,6 +30,7 @@ class GetApi {
       LatLng dock_latlng = LatLng(dock.lat,dock.lon);
       double distance = _calculate_distance(from : point, to : dock_latlng);
       if(distance <= RADIUS){
+        dock.setDistance(distance);
         nearby_docks.add(dock);
       }
     }
@@ -42,17 +43,19 @@ class GetApi {
   double _calculate_distance({required LatLng from,required LatLng to}){
       double distance = 0;
       const double RADIUS_OF_EARTH = 6371000;
-      distance =acos( 
-        //SIN(from_lat*PI()/180)*SIN(to_lat*PI()/180)
-        sin(from.latitude * pi/180) * sin(to.latitude *pi/180) ) 
-        + 
-        //COS(from_lat*PI()/180)*COS(to_lat*PI()/180)*COS(to_lon*PI()/180-from_lon*PI()/180)
-        cos(from.latitude * pi/180) * cos(to.latitude*pi/180) * cos(to.longitude*pi/180 - from.longitude*pi/180
-        ) ;
+      double a1 = from.latitude * pi/180;
+      double a2 = to.latitude * pi/180;
+      double b1 = (to.latitude - from.latitude) * pi/180;
+      double b2 = (to.longitude - from.longitude) * pi/180;
 
+      double k = sin(b1/2) * sin(b1/2) +
+                cos(a1) * cos(a2) *
+                sin(b2/2) * sin(b2/2);
+      double c = 2 * atan2(sqrt(k), sqrt(1-k));
+
+      distance = c * RADIUS_OF_EARTH;
+      
 
       return distance;
    }
-
-
 }

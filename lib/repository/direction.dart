@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:bike_tour_app/.env.dart';
+import 'package:bike_tour_app/models/instruction_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -38,7 +42,7 @@ class DirectionsRepository {
         'units' : 'metric',
       },
     );
-    print(response);
+
     // Check if response is successful
     if (response.statusCode == 200) {
       if ((response.data['routes'] as List).isEmpty) return null;
