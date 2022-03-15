@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class DestinationSelector extends StatefulWidget {
   const DestinationSelector({Key? key}) : super(key: key);
-
+  static const String routeName = '/destination';
   @override
   _DestinationSelectorState createState() => _DestinationSelectorState();
 }
