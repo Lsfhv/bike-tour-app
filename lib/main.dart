@@ -1,7 +1,10 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:bike_tour_app/screens/navigation/dynamic_navigation.dart';
+import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
+import 'package:bike_tour_app/screens/navigation/route_planner_form.dart';
+import 'package:bike_tour_app/screens/navigation/to_page.dart';
 import 'package:bike_tour_app/screens/wrapper.dart';
 import 'package:bike_tour_app/services/auth_service.dart';
-import 'package:bike_tour_app/tfl-api/get_api.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
@@ -9,6 +12,8 @@ import 'package:bike_tour_app/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,7 +53,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
+    return MultiProvider(      
         providers: [
           Provider<AuthService>(
             create: (_) => AuthService(FirebaseAuth.instance),
@@ -59,6 +64,12 @@ class _MyAppState extends State<MyApp> {
           ),
         ],
         child: MaterialApp(
+        routes : {
+          ToPage.routeName : (context) => const ToPage(),
+          RoutingMap.routeName : (context) => const RoutingMap(),
+          DynamicNavigation.routeName : (context) => const DynamicNavigation(),
+          DestinationSelector.routeName : (context) => const DestinationSelector(),
+        },
           title: 'London Cycle',
           theme: ThemeData(
             primarySwatch: Colors.red,

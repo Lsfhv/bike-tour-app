@@ -32,7 +32,9 @@ dependencies:
   http: ^0.13.3
   google_maps_flutter: ^2.1.1
   google_maps_flutter_web: ^0.3.2+1
-  google_fonts: 2.2.0
+  google_fonts: ^2.3.1
+  geolocator: ^8.2.0
+  location_permissions: ^4.0.1  
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -42,10 +44,19 @@ dependencies:
   firebase_auth: ^3.3.7
   firebase_core: ^1.12.0
   fluttertoast: ^8.0.8
-  geolocator: ^8.2.0
   provider: ^6.0.2
-  settings_ui: ^2.0.2
+  cloud_functions: ^3.2.7
+  google_place: ^0.4.7
+  googleapis: ^8.0.0
   location: ^4.3.0
+  google_geocoding_api: ^1.0.1+2
+  settings_ui: ^2.0.2
+  flutter_polyline_points: ^1.0.0
+  dio: ^4.0.4
+  permission_handler: ^9.2.0
+  flutter_dotenv: ^5.0.2
+  expandable: ^5.0.1
+  flutter_compass: ^0.7.0
   
 
 dev_dependencies:
@@ -72,7 +83,6 @@ flutter:
 
   assets:
     - assets/images/
-
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
