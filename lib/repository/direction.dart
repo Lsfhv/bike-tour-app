@@ -46,6 +46,9 @@ class DirectionsRepository {
         'units' : 'metric',
       },
     );
+    if(optimize){
+      print(Map<String, dynamic>.from(response.data['routes'][0])['waypoint_order']);
+    }
 
     // Check if response is successful
     if (response.statusCode == 200) {

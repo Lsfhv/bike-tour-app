@@ -21,6 +21,7 @@ import '../../.env.dart';
 class JourneyData {
   final UserPosition _currentPosition;
   List<Destination> _destinations;
+  late List<Destination> _formated_list;
   GetApi bike_api = GetApi();
   List<LatLng> waypoints = [];
   Set<Marker> markers = {};
@@ -29,18 +30,17 @@ class JourneyData {
 
 
   _rerouteWaypoints(Directions? args){
-    List<Destination> buffer = _destinations;
-    int index =0;
+    List<Destination> buffer=List.of(_destinations);
+    //_destinations.clear();
     for(var i in args!.waypointsOrder){
-      _destinations[index] = buffer[i];
-      index+=1;
+      _destinations.add(buffer[i]);
     }
   }
 
   _routeOptimize() async {
     //choose the last destination
-    List<LatLng> list = List<LatLng>.generate(_destinations.length - 1, (i)=> _destinations[i].position);
-    await DirectionsRepository().getDirections(origin: _currentPosition.center as LatLng, ending_bike_dock: _destinations.last.position , destinations: list, optimize: true).
+    List<LatLng> list = List<LatLng>.generate(_destinations.length, (i)=> _destinations[i].position);
+    await DirectionsRepository().getDirections(origin: _currentPosition.center as LatLng, ending_bike_dock: _currentPosition.center as LatLng , destinations: list, optimize: true).
     then((value) => {
       _rerouteWaypoints(value)
     });

@@ -349,6 +349,7 @@ class _ToPageState extends State<ToPage> {
   AutocompletePrediction? currPrediction = null;
   bool isSelected = false;
   bool _showDetail = false;
+  bool _suggestionSelected = false;
   DestinationMarker? _suggestedMarker = null;
 
   _handleNavigateToNextPage(UserPosition args){
@@ -436,6 +437,7 @@ class _ToPageState extends State<ToPage> {
   _handleSuggestionTap(AutocompletePrediction prediction) async{
     GoogleGeocodingResponse loc = await _google_geocode_API.search(prediction.description as String, region: "uk");
     setState(() {
+      _suggestionSelected = true;
       _showDetail = true;
       currPrediction = prediction;
       LatLng pos = LatLng(loc.results.first.geometry!.location.lat, loc.results.first.geometry!.location.lng);
@@ -449,6 +451,7 @@ class _ToPageState extends State<ToPage> {
 
   _closePage() async{
     setState(() {
+      _suggestionSelected = false;
       _showDetail = false;
       _markers?.remove(_suggestedMarker);
       _suggestedMarker = null;
@@ -488,6 +491,7 @@ class _ToPageState extends State<ToPage> {
                 icon : Icon(Icons.arrow_circle_right_outlined),
                 onPressed:()=> _handleNavigateToNextPage(args), 
               ),
+              
           ],
           ),
 
@@ -541,6 +545,7 @@ class _ToPageState extends State<ToPage> {
               ),
 
               if(_showDetail && currPrediction != null ) _showDetailPage(),
+              
             ]
           ),
       )
