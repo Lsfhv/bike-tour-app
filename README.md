@@ -11,7 +11,7 @@ Our project is the Bike tour App and we have given it the name **London Cycle**.
 
 ## Authors
 <ul>
-  <li>Mohammed Uddin</li>
+  <li>Mohammed Moin Uddin</li>
   <li>Jakub Mrozcek</li>
   <li>Malaz Osman</li>
   <li>Berke Muftuoglu</li>
