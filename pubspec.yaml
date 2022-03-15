@@ -57,6 +57,7 @@ dependencies:
   flutter_dotenv: ^5.0.2
   expandable: ^5.0.1
   flutter_compass: ^0.7.0
+  app_settings: ^4.1.1
   
 
 dev_dependencies:

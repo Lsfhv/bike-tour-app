@@ -5,14 +5,14 @@ import 'package:bike_tour_app/models/instruction_model.dart';
 import 'package:bike_tour_app/screens/markers/user_location_marker.dart';
 import 'package:bike_tour_app/screens/navigation/to_page.dart';
 import 'package:bike_tour_app/screens/widgets/instruction_widget.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:googleapis/pubsublite/v1.dart';
+
 
 import 'package:location/location.dart' as loc;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:app_settings/app_settings.dart';
 
 import '../../models/directions_model.dart';
 import 'mymap.dart';
@@ -21,8 +21,9 @@ class RouteData{
   final Directions directions;
   final UserPosition user_loc;
   final Set<Marker> markers;
-  
-  RouteData({required this.directions,required this.user_loc, required this.markers});
+  final List<LatLng> waypoints;
+
+  RouteData({required this.directions,required this.user_loc, required this.markers, required this.waypoints});
 }
 
 // class DynamicNavigation extends StatefulWidget {
@@ -356,7 +357,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
     } else if (status.isDenied) {
       _requestPermission();
     } else if (status.isPermanentlyDenied) {
-      openAppSettings();
+      AppSettings.openLocationSettings;  
     }
   }
 }

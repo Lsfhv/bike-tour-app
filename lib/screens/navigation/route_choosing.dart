@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../models/directions_model.dart';
+import '../markers/user_location_marker.dart';
 import 'to_page.dart';
 import '../../.env.dart';
 
@@ -27,13 +28,35 @@ class JourneyData {
   JourneyData(this._currentPosition, this._destinations);
 
 
+  _rerouteWaypoints(Directions? args){
+    List<Destination> buffer = _destinations;
+    int index =0;
+    for(var i in args!.waypointsOrder){
+      _destinations[index] = buffer[i];
+      index+=1;
+    }
+  }
+
+  _routeOptimize() async {
+    //choose the last destination
+    List<LatLng> list = List<LatLng>.generate(_destinations.length - 1, (i)=> _destinations[i].position);
+    await DirectionsRepository().getDirections(origin: _currentPosition.center as LatLng, ending_bike_dock: _destinations.last.position , destinations: list, optimize: true).
+    then((value) => {
+      _rerouteWaypoints(value)
+    });
+    //get directions
+    //
+  }
   _init_() async{
     await bike_api.fetchBikePoints();
+    if(_destinations.length > 1){
+      await _routeOptimize();
+    }
     waypoints = [];
     markers = {};
 
     //init starting loc in red 
-    markers.add(Marker(markerId: MarkerId("curr loc"), position : _currentPosition.center as LatLng, icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed)));
+    markers.add(UserMarker(user : UserPosition(_currentPosition.center as LatLng)));
     waypoints.add(_currentPosition.center as LatLng);
     
     for(int i = -1; i < _destinations.length -1; i++){
@@ -115,6 +138,7 @@ class JourneyData {
 
 class RoutingMap extends StatefulWidget {
   const RoutingMap({Key? key}) : super(key: key);
+  
   static const routeName = '/routingMap';
   @override
   _RoutingMap createState() => _RoutingMap();
@@ -123,6 +147,7 @@ class RoutingMap extends StatefulWidget {
 class _RoutingMap extends State<RoutingMap> {
   late GoogleMapController mapController;
   Set<Marker> _markers = {};
+  bool _routeGenerated = false;
   //Set<BikeMarker> _markers_start = {};
   //Set<BikeMarker> _markers_end = {};
   late LatLng _center = const LatLng(51.507399, -0.127689);
@@ -139,6 +164,7 @@ class _RoutingMap extends State<RoutingMap> {
     setState(() {
       _info = directions;
       _markers = args.markers;
+      _routeGenerated = true;
     });
     if(args == null){
       showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
@@ -151,7 +177,7 @@ class _RoutingMap extends State<RoutingMap> {
     }
   }
 
-  _start_navigation(Directions? args){
+  _start_navigation(Directions? args, JourneyData? jd){
     if(args == null){
       showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
       title : Text("There is no found Route!"),
@@ -161,7 +187,7 @@ class _RoutingMap extends State<RoutingMap> {
     ));
     }
     else{
-      Navigator.pushNamed(context, DynamicNavigation.routeName, arguments : RouteData(markers: _markers, directions: args, user_loc: UserPosition(_center)));
+      Navigator.pushNamed(context, DynamicNavigation.routeName, arguments : RouteData(markers: _markers, directions: args, user_loc: UserPosition(_center), waypoints : jd!.waypoints));
     }
   }
 
@@ -183,10 +209,11 @@ class _RoutingMap extends State<RoutingMap> {
     _generateRoute(args);
     return MaterialApp(
       home: Scaffold(
-          bottomNavigationBar: TextButton(onPressed:() => _start_navigation(_info), child : Text("Lets Go")),          
+          bottomNavigationBar: TextButton(onPressed:() => _start_navigation(_info,args), child : Text("Lets Go")),          
           body: Stack(
             alignment: Alignment.center,
             children: [
+            if(!_routeGenerated) CircularProgressIndicator(),
           GoogleMap(
             myLocationButtonEnabled: false,
             zoomControlsEnabled: false,

@@ -17,8 +17,11 @@ class DirectionsRepository {
 
   DirectionsRepository({Dio? dio}) : _dio = dio ?? Dio();
 
-  String destinations_string(List<LatLng> destinations){
+  String destinations_string(List<LatLng> destinations,bool optimize){
     String destinations_out = '';
+    if(optimize){
+      destinations_out +='optimize:true|';
+    }
     for(LatLng destination in destinations){
       destinations_out += 'via:${destination.latitude},${destination.longitude}|';     
     }
@@ -29,13 +32,14 @@ class DirectionsRepository {
     required LatLng origin,
     required List<LatLng> destinations,
     required LatLng ending_bike_dock,
+    bool optimize = false,
   }) async {
     final response = await _dio.get(
       _baseUrl,
       queryParameters: {
         'origin': '${origin.latitude},${origin.longitude}',
         'destination': '${ending_bike_dock.latitude},${ending_bike_dock.longitude}',
-        'waypoints' : destinations_string(destinations),
+        'waypoints' : destinations_string(destinations, optimize),
         'key': googleAPIKey,
         'mode' : 'bicycling',
         'region' : 'uk',

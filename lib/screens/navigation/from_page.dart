@@ -17,6 +17,7 @@ class _FromPageState extends State<FromPage> {
   bool locationPermission = false;
   LatLng _center = const LatLng(51.507399, -0.127689);
   Icon customIcon = const Icon(Icons.search);
+  bool _fetchingLocation = false;
   Marker? _currLoc = null; 
   late TextEditingController _controller;
   final _searcher = GoogleGeocodingApi("AIzaSyA75AqNa-yxMDYqffGrN0AqyUPumqkmuEs");
@@ -38,6 +39,9 @@ class _FromPageState extends State<FromPage> {
   Future<void> _getCurrentLocation() async{
     locationPermission = await Permission.location.request().isGranted;
     if(locationPermission){
+      setState(() {
+        _fetchingLocation = true;
+      });
       await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
         .then((Position position) {
           setState(() {
@@ -46,6 +50,7 @@ class _FromPageState extends State<FromPage> {
             _center = pos;
             mapController.animateCamera(CameraUpdate.newLatLng(_center));
             _currentPosition = UserPosition(pos);
+            _fetchingLocation = false;
           });
           showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
             title : Text("Your journey starts now!" ),//+tag),
@@ -94,13 +99,20 @@ class _FromPageState extends State<FromPage> {
           centerTitle: true,
           ),
 
-          body: Center(
-            child: GoogleMap(
-              onMapCreated: _onMapCreated,
-              markers: {if (_currLoc != null) _currLoc as Marker},
-              initialCameraPosition: CameraPosition(target: _center, zoom: 15),
+          body: Stack(alignment: Alignment.center,
+          children: [
+            Center(
+              child: GoogleMap(
+                onMapCreated: _onMapCreated,
+                markers: {if (_currLoc != null) _currLoc as Marker},
+                initialCameraPosition: CameraPosition(target: _center, zoom: 15),
+              ),
             ),
-          ),
+            if(_fetchingLocation && locationPermission) Center(child: CircularProgressIndicator()),
+            
+          ]
+          ,) 
+
       )
     );
   }
@@ -142,7 +154,7 @@ class _LocationGetterState extends State<LocationGetter> {
           child:
             TextField(
               decoration: InputDecoration(
-              hintText: 'Where do you want to go?',
+              hintText: 'Where are you?',
               hintStyle: TextStyle(
               color: Colors.white,
               fontSize: 18,

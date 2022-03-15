@@ -304,6 +304,7 @@ import 'package:google_geocoding_api/google_geocoding_api.dart';
 import 'package:google_place/google_place.dart';
 
 import '../../.env.dart';
+import '../markers/user_location_marker.dart';
 import 'location_details.dart';
 
 
@@ -348,7 +349,7 @@ class _ToPageState extends State<ToPage> {
   AutocompletePrediction? currPrediction = null;
   bool isSelected = false;
   bool _showDetail = false;
-  Marker? _suggestedMarker = null;
+  DestinationMarker? _suggestedMarker = null;
 
   _handleNavigateToNextPage(UserPosition args){
     if(list_of_destinations.isNotEmpty){
@@ -438,9 +439,9 @@ class _ToPageState extends State<ToPage> {
       _showDetail = true;
       currPrediction = prediction;
       LatLng pos = LatLng(loc.results.first.geometry!.location.lat, loc.results.first.geometry!.location.lng);
-      _suggestedMarker = Marker(markerId: MarkerId(prediction.description as String), icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue), position : pos);
-      _markers?.add(_suggestedMarker as Marker);
-      print(_markers?.length);
+      Destination destination = Destination(position : pos, name : prediction.description as String);
+      _suggestedMarker = DestinationMarker(destination : destination);
+      _markers?.add(_suggestedMarker as DestinationMarker);
       _center = pos;
       mapController.animateCamera(CameraUpdate.newLatLng(_center));
     });
@@ -471,7 +472,7 @@ class _ToPageState extends State<ToPage> {
     _center = args.center as LatLng;
     if(args.center!=null && first) {
       first = false;
-      _markers = {Marker(markerId:const MarkerId("current location"), icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed), position : args.center as LatLng)};
+      _markers = {UserMarker(user :UserPosition(args.center as LatLng))};
     }
     return MaterialApp(
       home: Scaffold(
