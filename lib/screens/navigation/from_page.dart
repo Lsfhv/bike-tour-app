@@ -45,7 +45,7 @@ class _FromPageState extends State<FromPage> {
             _currLoc = Marker(markerId:const MarkerId("current location"), icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed), position : pos);
             _center = pos;
             mapController.animateCamera(CameraUpdate.newLatLng(_center));
-            _currentPosition = UserPosition(mapController, pos, position : position.toJson());
+            _currentPosition = UserPosition(pos);
           });
           showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
             title : Text("Your journey starts now!" ),//+tag),
@@ -69,7 +69,7 @@ class _FromPageState extends State<FromPage> {
       _currLoc = Marker(markerId:const MarkerId("current location"), icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed), position : pos);
       _center = pos;
       mapController.animateCamera(CameraUpdate.newLatLng(_center));
-      _currentPosition = UserPosition(mapController, pos);
+      _currentPosition = UserPosition( pos);
 
     });
     //Pop that you are adding new destination

@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:bike_tour_app/screens/navigation/dynamic_navigation.dart';
 import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
 import 'package:bike_tour_app/screens/navigation/to_page.dart';
 import 'package:bike_tour_app/screens/wrapper.dart';
@@ -64,6 +65,7 @@ class _MyAppState extends State<MyApp> {
         routes : {
           ToPage.routeName : (context) => const ToPage(),
           RoutingMap.routeName : (context) => const RoutingMap(),
+          DynamicNavigation.routeName : (context) => const DynamicNavigation(),
         },
           title: 'London Cycle',
           theme: ThemeData(

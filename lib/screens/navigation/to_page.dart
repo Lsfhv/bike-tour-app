@@ -308,13 +308,10 @@ import 'location_details.dart';
 
 
 class UserPosition {
-  final Map<String, dynamic>? position;
-  //final String? place_id;
-  final map_controller;
   final LatLng? center;
   //final String user_id;
 
-  UserPosition(this.map_controller, this.center ,{this.position});//,{this.place_id});
+  UserPosition(this.center);//,{this.place_id});
   //UserPosition.position(this.map_controller,this.position, {this.place_id , this.center});//this.user_id);
   //UserPosition.place_id(this.map_controller,this.place_id, { this.position, this.center});//this.user_id);
 

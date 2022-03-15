@@ -47,7 +47,7 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
 
         applicationId "com.example.bike_tour_app"
-        minSdkVersion 21
+        minSdkVersion 23 //changed from 21 -> 23
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

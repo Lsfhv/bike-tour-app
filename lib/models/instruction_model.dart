@@ -7,6 +7,14 @@ class Instructions {
   final List<Instruction> instructions;
   const Instructions({required this.instructions});
 
+  Instruction get(int i){
+    if(i < instructions.length){
+      return instructions[i];
+    }
+    else{
+      throw IndexError(i, instructions);
+    }
+  }
   
 
   factory Instructions.fromMap(Map<String, dynamic> map){

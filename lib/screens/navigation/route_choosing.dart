@@ -7,6 +7,8 @@ import 'package:bike_tour_app/models/tfl-api/get_api.dart';
 import 'package:bike_tour_app/repository/direction.dart';
 import 'package:bike_tour_app/screens/markers/bike_markers.dart';
 import 'package:bike_tour_app/screens/markers/destination_marker.dart';
+import 'package:bike_tour_app/screens/navigation/dynamic_navigation.dart';
+import 'package:bike_tour_app/screens/widgets/compass.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -21,7 +23,7 @@ class JourneyData {
   GetApi bike_api = GetApi();
   List<LatLng> waypoints = [];
   Set<Marker> markers = {};
-
+  Compass compass = Compass();
   JourneyData(this._currentPosition, this._destinations);
 
 
@@ -123,7 +125,7 @@ class _RoutingMap extends State<RoutingMap> {
   Set<Marker> _markers = {};
   //Set<BikeMarker> _markers_start = {};
   //Set<BikeMarker> _markers_end = {};
-  final LatLng _center = const LatLng(51.507399, -0.127689);
+  late LatLng _center = const LatLng(51.507399, -0.127689);
   Directions? _info;
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -138,7 +140,31 @@ class _RoutingMap extends State<RoutingMap> {
       _info = directions;
       _markers = args.markers;
     });
+    if(args == null){
+      showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+      title : Text("There is no found Route!"),
+      actions : <Widget>[
+        TextButton( onPressed: () => Navigator.pop(context, "No") , child: const Text("Ok!"))
+      ]
+    ));
+    Navigator.pop(context); //go back to original page?
+    }
   }
+
+  _start_navigation(Directions? args){
+    if(args == null){
+      showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+      title : Text("There is no found Route!"),
+      actions : <Widget>[
+        TextButton( onPressed: () => Navigator.pop(context, "No") , child: const Text("Ok!"))
+      ]
+    ));
+    }
+    else{
+      Navigator.pushNamed(context, DynamicNavigation.routeName, arguments : RouteData(markers: _markers, directions: args, user_loc: UserPosition(_center)));
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -153,10 +179,11 @@ class _RoutingMap extends State<RoutingMap> {
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as JourneyData;
+    _center = args._currentPosition.center as LatLng;
     _generateRoute(args);
     return MaterialApp(
       home: Scaffold(
-          bottomNavigationBar: TextButton(onPressed:() => _generateRoute(args), child : Text("Lets Go")),          
+          bottomNavigationBar: TextButton(onPressed:() => _start_navigation(_info), child : Text("Lets Go")),          
           body: Stack(
             alignment: Alignment.center,
             children: [
