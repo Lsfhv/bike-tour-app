@@ -487,6 +487,7 @@ class _ToPageState extends State<ToPage> {
                 icon : Icon(Icons.arrow_circle_right_outlined),
                 onPressed:()=> _handleNavigateToNextPage(args), 
               ),
+              IconButton(icon: Icon(Icons.route_outlined),onPressed: () => _showDestinations() ),
           ],
           ),
 
