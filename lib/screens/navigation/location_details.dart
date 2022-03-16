@@ -227,21 +227,21 @@ class _DetailsPageState extends State<DetailsPage> {
         images = [];
       });
 
-    //  if (result.result!.photos != null) {
-    //    for (var photo in result.result?.photos) {
-    //      getPhoto(photo.photoReference);
-    //    }
-    //  }
-    //
+     if (result.result!.photos != null) {
+       for (var photo in result.result?.photos as List) {
+         getPhoto(photo.photoReference);
+       }
+     }
+    
     }
   }
 
-  //void getPhoto(String? photoReference) async {
-  //  var result = await this.googlePlace!.photos.get(photoReference!, null, 400);
-  //  if (result != null && mounted) {
-  //    setState(() {
-  //      images.add(result);
-  //    });
-  //  }
-  //}
+  void getPhoto(String? photoReference) async {
+   var result = await this.googlePlace!.photos.get(photoReference!, 0, 400);
+   if (result != null && mounted) {
+     setState(() {
+       images.add(result);
+     });
+   }
+  }
 }

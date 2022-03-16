@@ -467,7 +467,25 @@ class _ToPageState extends State<ToPage> {
     );
   }
 
-
+  Widget appBar(){
+    if(_suggestionSelected){
+      return TextField(
+          decoration: InputDecoration(
+          hintText: currPrediction!.description ,
+          hintStyle: TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontStyle: FontStyle.italic,
+          ),
+          border: InputBorder.none,
+        ),
+        onTap: _closePage,
+      );
+    }
+    else{
+      return Destination_Retriever(onSubmitted: _handleSearchBarSubmit, onChanged: _handleSearchBarChange);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -480,10 +498,7 @@ class _ToPageState extends State<ToPage> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Destination_Retriever(
-              onSubmitted: _handleSearchBarSubmit,
-              onChanged: _handleSearchBarChange,
-          ),
+          title: appBar(),
           automaticallyImplyLeading: false,
           centerTitle: true,
           actions: [
