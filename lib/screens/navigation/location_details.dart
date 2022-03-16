@@ -209,7 +209,7 @@ class _DetailsPageState extends State<DetailsPage> {
                     ),
                     Container(
                       margin: EdgeInsets.only(top: 20, bottom: 10),
-                      child: Image.asset("assets/powered_by_google.png"),
+                      child: Image.asset("assets/images/powered_by_google.png"),
                     ),
                   ],
                 ),

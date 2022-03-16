@@ -296,8 +296,10 @@ class _Destination_RetrieverState extends State<Destination_Retriever> {
 */
 import 'dart:ui';
 
+import 'package:bike_tour_app/models/directions_model.dart';
 import 'package:bike_tour_app/screens/markers/destination_marker.dart';
 import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
+import 'package:bike_tour_app/screens/widgets/destination_list_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_geocoding_api/google_geocoding_api.dart';
@@ -350,6 +352,7 @@ class _ToPageState extends State<ToPage> {
   bool isSelected = false;
   bool _showDetail = false;
   bool _suggestionSelected = false;
+  bool _viewingDestinationList = false;
   DestinationMarker? _suggestedMarker = null;
 
   _handleNavigateToNextPage(UserPosition args){
@@ -453,6 +456,7 @@ class _ToPageState extends State<ToPage> {
     setState(() {
       _suggestionSelected = false;
       _showDetail = false;
+      _center = _suggestedMarker!.position;
       _markers?.remove(_suggestedMarker);
       _suggestedMarker = null;
     });
@@ -465,6 +469,50 @@ class _ToPageState extends State<ToPage> {
     return DetailsPage(placeId: currPrediction!.placeId, googlePlace: googlePlace, 
     closePage: _closePage
     );
+  }
+
+  _delete_destination_at(int index){
+    setState(() {
+      print(list_of_destinations.length);
+      list_of_destinations.removeAt(index);
+      print(list_of_destinations.length);
+     print('removed');
+    });
+  }
+
+  _closeDestinationView() async{
+    setState(() {
+      _viewingDestinationList = false;
+    });
+  }
+
+  Widget _showDestinationList(){
+    return Dismissible(
+      direction: DismissDirection.down,
+      key : UniqueKey(),
+      child: DestinationListViewer(destinations: list_of_destinations, onDismiss: _delete_destination_at),
+      // child : ListView.builder(
+      //   itemCount: list_of_destinations.length,
+      //   itemBuilder: (context, index) {
+      //     return Dismissible(
+      //         key : UniqueKey(),
+      //         child: ListTile(
+      //           leading: CircleAvatar(
+      //             child: Icon(
+      //               Icons.pin_drop,
+      //               color: Colors.white,
+      //             ),
+      //           ),
+      //           title:  Text(list_of_destinations[index].name as String),
+      //         ),
+      //         direction: DismissDirection.horizontal,
+      //         onDismissed: (direction) async {_delete_destination_at(index);},
+      //       );
+      //     },
+      //   ),
+      //child : Icon(Icons.youtube_searched_for),
+      onDismissed: (direction) async {_closeDestinationView();},
+      );
   }
 
   Widget appBar(){
@@ -487,6 +535,24 @@ class _ToPageState extends State<ToPage> {
     }
   }
 
+  _showDestinations() async{
+    if(list_of_destinations.isNotEmpty){
+      setState(() {
+        _viewingDestinationList = true;
+      });
+    }
+    else{
+       //show destinations
+      showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+        title : Text("You have not added any destinations in your plan! Please choose a destination!"),
+        actions : <Widget>[
+          TextButton( onPressed: () => Navigator.pop(context, "No") , child: const Text("Ok!"))
+        ]
+      )
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as UserPosition;
@@ -506,6 +572,7 @@ class _ToPageState extends State<ToPage> {
                 icon : Icon(Icons.arrow_circle_right_outlined),
                 onPressed:()=> _handleNavigateToNextPage(args), 
               ),
+              IconButton(onPressed:()=> _showDestinations(), icon: Icon(Icons.route_outlined)),
               
           ],
           ),
@@ -521,8 +588,8 @@ class _ToPageState extends State<ToPage> {
                   
                 ),
               ),
-              if(!_showDetail) 
-              Expanded(
+              
+              if(!_showDetail && !_viewingDestinationList) Expanded(
                 child: ListView.builder(
                   itemCount: predictions.length,
                   itemBuilder: (context, index) {
@@ -538,20 +605,6 @@ class _ToPageState extends State<ToPage> {
                         ),
                         title:  Text(predictions[index].description as String),
                         onTap: () { _handleSuggestionTap(predictions[index]);
-                          //need to shrink it too
-                          // argument is predictions[index], AutoComplete thing
-                          //first fill
-                          //debugPrint(predictions[index].placeId);
-                          //Navigator.push(
-                          //  context,
-                          //  MaterialPageRoute(
-                          //    builder: (context) => DetailsPage(
-                          //      placeId: predictions[index].placeId,
-                          //      googlePlace: googlePlace,
-                          //    ),
-                          //  ),
-                          //);
-
                         },
                       )
                     );
@@ -560,7 +613,8 @@ class _ToPageState extends State<ToPage> {
               ),
 
               if(_showDetail && currPrediction != null ) _showDetailPage(),
-              
+
+              if(!_showDetail && _viewingDestinationList) _showDestinationList(),
             ]
           ),
       )
