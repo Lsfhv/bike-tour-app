@@ -80,7 +80,11 @@
 				B3EA898F27BE594B00CA2668 /* FirebaseRemoteConfig in Frameworks */,
 				B3EA898327BE594B00CA2668 /* FirebaseAuth in Frameworks */,
 				B3EA897727BE594B00CA2668 /* FirebaseInstallations in Frameworks */,
+<<<<<<< HEAD
+				F1F8689C80931DE62B964D47 /* Pods_Runner.framework in Frameworks */,
+=======
 				AA326E61DCD2AF16F9EABF4F /* Pods_Runner.framework in Frameworks */,
+>>>>>>> main
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -164,8 +168,13 @@
 				97C146EC1CF9000F007C117D /* Resources */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
+<<<<<<< HEAD
+				F8F142DB44598D240BE319D8 /* [CP] Embed Pods Frameworks */,
+				14A57C172E862D36C82E3270 /* [CP] Copy Pods Resources */,
+=======
 				98DC6E7A672D3DBBF9B2E822 /* [CP] Embed Pods Frameworks */,
 				67379D7FE3B52D4FC8971ED7 /* [CP] Copy Pods Resources */,
+>>>>>>> main
 			);
 			buildRules = (
 			);
@@ -242,7 +251,11 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+<<<<<<< HEAD
+		14A57C172E862D36C82E3270 /* [CP] Copy Pods Resources */ = {
+=======
 		3B06AD1E1E4923F5004D2608 /* Thin Binary */ = {
+>>>>>>> main
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -420,7 +433,7 @@
 				DEVELOPMENT_TEAM = YGT7X5J82K;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -551,7 +564,7 @@
 				DEVELOPMENT_TEAM = YGT7X5J82K;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -575,7 +588,7 @@
 				DEVELOPMENT_TEAM = YGT7X5J82K;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
