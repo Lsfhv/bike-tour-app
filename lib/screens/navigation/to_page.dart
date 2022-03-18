@@ -305,7 +305,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_geocoding_api/google_geocoding_api.dart';
 import 'package:google_place/google_place.dart';
 
-import '../../.env.dart';
+// import '../../.env.dart';
 import '../markers/user_location_marker.dart';
 import 'location_details.dart';
 
@@ -342,8 +342,8 @@ class _ToPageState extends State<ToPage> {
   late GoogleMapController mapController;
   bool first = true;
   LatLng _center = const LatLng(51.507399, -0.127689);
-  final _google_geocode_API = GoogleGeocodingApi(googleAPIKey, isLogged: true); 
-  final googlePlace = GooglePlace(googleAPIKey);
+  final _google_geocode_API = GoogleGeocodingApi("AIzaSyCZTV0UOqPHZ4Skv6_OcrPmrORhzP316n4", isLogged: true); 
+  final googlePlace = GooglePlace("AIzaSyCZTV0UOqPHZ4Skv6_OcrPmrORhzP316n4");
   Icon customIcon = const Icon(Icons.search);
   List<Destination> list_of_destinations = <Destination>[];
   Set<Marker>? _markers;

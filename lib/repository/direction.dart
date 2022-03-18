@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bike_tour_app/.env.dart';
+// import 'package:bike_tour_app/.env.dart';
 import 'package:bike_tour_app/models/instruction_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -40,7 +40,7 @@ class DirectionsRepository {
         'origin': '${origin.latitude},${origin.longitude}',
         'destination': '${ending_bike_dock.latitude},${ending_bike_dock.longitude}',
         'waypoints' : destinations_string(destinations, optimize),
-        'key': googleAPIKey,
+        'key': "AIzaSyCZTV0UOqPHZ4Skv6_OcrPmrORhzP316n4",
         'mode' : 'bicycling',
         'region' : 'uk',
         'units' : 'metric',
