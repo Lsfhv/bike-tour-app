@@ -365,7 +365,7 @@ PODS:
   - Firebase/Functions (8.11.0):
     - Firebase/CoreOnly
     - FirebaseFunctions (~> 8.11.0)
-  - firebase_auth (3.3.9):
+  - firebase_auth (3.3.10):
     - Firebase/Auth (= 8.11.0)
     - firebase_core
     - Flutter
@@ -553,7 +553,7 @@ SPEC CHECKSUMS:
   cloud_firestore: c6c42fe62809b7417aa3c45a6ef0c2812f7fb0d6
   cloud_functions: 6b4859547ebc399e8ffa161486b097a8d575b24f
   Firebase: 44dd9724c84df18b486639e874f31436eaa9a20c
-  firebase_auth: 99c9cdc8cc2e59f6fd4960b6e183f5430d237838
+  firebase_auth: fa562bf84ce3e872cc4225374cb687edb32e8d26
   firebase_core: 08f6a85f62060111de5e98d6a214810d11365de9
   FirebaseAuth: d96d73aba85d192d7a7aa0b86dd6d7f8ec170b4b
   FirebaseCore: 2f4f85b453cc8fea4bb2b37e370007d2bcafe3f0
@@ -561,10 +561,9 @@ SPEC CHECKSUMS:
   FirebaseFirestore: 3b2e4b532c68809b3df5f8d39d28b3398ffc196b
   FirebaseFunctions: 2bad3e4365dee72a85a6baa6ccd684f024d14696
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  flutter_compass: cbbd285cea1584c7ac9c4e0c3e1f17cbea55e855
   fluttertoast: 16fbe6039d06a763f3533670197d01fc73459037
   geolocator_apple: cc556e6844d508c95df1e87e3ea6fa4e58c50401
-  google_maps_flutter: abdb8dee6c52d4be36ad131ee6ebfacd14417c5a
+  google_maps_flutter: fe98b02bbb6717c7297c7747b84c4ead2bc5fc3b
   GoogleDataTransport: 629c20a4d363167143f30ea78320d5a7eb8bd940
   GoogleMaps: c213fc2334b7374144cede914da779b99be0ab74
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
@@ -576,7 +575,6 @@ SPEC CHECKSUMS:
   location_permissions: 7e0f9aa0f60deb8ff93ddf0e2a164c7e8197bc94
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   path_provider_ios: 14f3d2fd28c4fdb42f44e0f751d12861c43cee02
-  permission_handler_apple: d21b38e1a4b2e041c63af9568f9165e114e507a6
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
 
