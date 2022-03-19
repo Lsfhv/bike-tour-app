@@ -296,14 +296,17 @@ class _Destination_RetrieverState extends State<Destination_Retriever> {
 */
 import 'dart:ui';
 
+import 'package:bike_tour_app/models/directions_model.dart';
 import 'package:bike_tour_app/screens/markers/destination_marker.dart';
 import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
+import 'package:bike_tour_app/screens/widgets/destination_list_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_geocoding_api/google_geocoding_api.dart';
 import 'package:google_place/google_place.dart';
 
-import '../../.env.dart';
+// import '../../.env.dart';
+import '../markers/user_location_marker.dart';
 import 'location_details.dart';
 
 
@@ -339,8 +342,8 @@ class _ToPageState extends State<ToPage> {
   late GoogleMapController mapController;
   bool first = true;
   LatLng _center = const LatLng(51.507399, -0.127689);
-  final _google_geocode_API = GoogleGeocodingApi(googleAPIKey, isLogged: true); 
-  final googlePlace = GooglePlace(googleAPIKey);
+  final _google_geocode_API = GoogleGeocodingApi("AIzaSyCZTV0UOqPHZ4Skv6_OcrPmrORhzP316n4", isLogged: true); 
+  final googlePlace = GooglePlace("AIzaSyCZTV0UOqPHZ4Skv6_OcrPmrORhzP316n4");
   Icon customIcon = const Icon(Icons.search);
   List<Destination> list_of_destinations = <Destination>[];
   Set<Marker>? _markers;
@@ -348,7 +351,9 @@ class _ToPageState extends State<ToPage> {
   AutocompletePrediction? currPrediction = null;
   bool isSelected = false;
   bool _showDetail = false;
-  Marker? _suggestedMarker = null;
+  bool _suggestionSelected = false;
+  bool _viewingDestinationList = false;
+  DestinationMarker? _suggestedMarker = null;
 
   _handleNavigateToNextPage(UserPosition args){
     if(list_of_destinations.isNotEmpty){
@@ -435,12 +440,13 @@ class _ToPageState extends State<ToPage> {
   _handleSuggestionTap(AutocompletePrediction prediction) async{
     GoogleGeocodingResponse loc = await _google_geocode_API.search(prediction.description as String, region: "uk");
     setState(() {
+      _suggestionSelected = true;
       _showDetail = true;
       currPrediction = prediction;
       LatLng pos = LatLng(loc.results.first.geometry!.location.lat, loc.results.first.geometry!.location.lng);
-      _suggestedMarker = Marker(markerId: MarkerId(prediction.description as String), icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue), position : pos);
-      _markers?.add(_suggestedMarker as Marker);
-      print(_markers?.length);
+      Destination destination = Destination(position : pos, name : prediction.description as String);
+      _suggestedMarker = DestinationMarker(destination : destination);
+      _markers?.add(_suggestedMarker as DestinationMarker);
       _center = pos;
       mapController.animateCamera(CameraUpdate.newLatLng(_center));
     });
@@ -448,7 +454,9 @@ class _ToPageState extends State<ToPage> {
 
   _closePage() async{
     setState(() {
+      _suggestionSelected = false;
       _showDetail = false;
+      _center = _suggestedMarker!.position;
       _markers?.remove(_suggestedMarker);
       _suggestedMarker = null;
     });
@@ -463,7 +471,87 @@ class _ToPageState extends State<ToPage> {
     );
   }
 
+  _delete_destination_at(int index){
+    setState(() {
+      print(list_of_destinations.length);
+      list_of_destinations.removeAt(index);
+      print(list_of_destinations.length);
+     print('removed');
+    });
+  }
 
+  _closeDestinationView() async{
+    setState(() {
+      _viewingDestinationList = false;
+    });
+  }
+
+  Widget _showDestinationList(){
+    return Dismissible(
+      direction: DismissDirection.down,
+      key : UniqueKey(),
+      child: DestinationListViewer(destinations: list_of_destinations, onDismiss: _delete_destination_at),
+      // child : ListView.builder(
+      //   itemCount: list_of_destinations.length,
+      //   itemBuilder: (context, index) {
+      //     return Dismissible(
+      //         key : UniqueKey(),
+      //         child: ListTile(
+      //           leading: CircleAvatar(
+      //             child: Icon(
+      //               Icons.pin_drop,
+      //               color: Colors.white,
+      //             ),
+      //           ),
+      //           title:  Text(list_of_destinations[index].name as String),
+      //         ),
+      //         direction: DismissDirection.horizontal,
+      //         onDismissed: (direction) async {_delete_destination_at(index);},
+      //       );
+      //     },
+      //   ),
+      //child : Icon(Icons.youtube_searched_for),
+      onDismissed: (direction) async {_closeDestinationView();},
+      );
+  }
+
+  Widget appBar(){
+    if(_suggestionSelected){
+      return TextField(
+          decoration: InputDecoration(
+          hintText: currPrediction!.description ,
+          hintStyle: TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontStyle: FontStyle.italic,
+          ),
+          border: InputBorder.none,
+        ),
+        onTap: _closePage,
+      );
+    }
+    else{
+      return Destination_Retriever(onSubmitted: _handleSearchBarSubmit, onChanged: _handleSearchBarChange);
+    }
+  }
+
+  _showDestinations() async{
+    if(list_of_destinations.isNotEmpty){
+      setState(() {
+        _viewingDestinationList = true;
+      });
+    }
+    else{
+       //show destinations
+      showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+        title : Text("You have not added any destinations in your plan! Please choose a destination!"),
+        actions : <Widget>[
+          TextButton( onPressed: () => Navigator.pop(context, "No") , child: const Text("Ok!"))
+        ]
+      )
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -471,15 +559,12 @@ class _ToPageState extends State<ToPage> {
     _center = args.center as LatLng;
     if(args.center!=null && first) {
       first = false;
-      _markers = {Marker(markerId:const MarkerId("current location"), icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed), position : args.center as LatLng)};
+      _markers = {UserMarker(user :UserPosition(args.center as LatLng))};
     }
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Destination_Retriever(
-              onSubmitted: _handleSearchBarSubmit,
-              onChanged: _handleSearchBarChange,
-          ),
+          title: appBar(),
           automaticallyImplyLeading: false,
           centerTitle: true,
           actions: [
@@ -487,6 +572,8 @@ class _ToPageState extends State<ToPage> {
                 icon : Icon(Icons.arrow_circle_right_outlined),
                 onPressed:()=> _handleNavigateToNextPage(args), 
               ),
+              IconButton(onPressed:()=> _showDestinations(), icon: Icon(Icons.route_outlined)),
+              
           ],
           ),
 
@@ -501,8 +588,8 @@ class _ToPageState extends State<ToPage> {
                   
                 ),
               ),
-              if(!_showDetail) 
-              Expanded(
+              
+              if(!_showDetail && !_viewingDestinationList) Expanded(
                 child: ListView.builder(
                   itemCount: predictions.length,
                   itemBuilder: (context, index) {
@@ -518,20 +605,6 @@ class _ToPageState extends State<ToPage> {
                         ),
                         title:  Text(predictions[index].description as String),
                         onTap: () { _handleSuggestionTap(predictions[index]);
-                          //need to shrink it too
-                          // argument is predictions[index], AutoComplete thing
-                          //first fill
-                          //debugPrint(predictions[index].placeId);
-                          //Navigator.push(
-                          //  context,
-                          //  MaterialPageRoute(
-                          //    builder: (context) => DetailsPage(
-                          //      placeId: predictions[index].placeId,
-                          //      googlePlace: googlePlace,
-                          //    ),
-                          //  ),
-                          //);
-
                         },
                       )
                     );
@@ -540,6 +613,8 @@ class _ToPageState extends State<ToPage> {
               ),
 
               if(_showDetail && currPrediction != null ) _showDetailPage(),
+
+              if(!_showDetail && _viewingDestinationList) _showDestinationList(),
             ]
           ),
       )

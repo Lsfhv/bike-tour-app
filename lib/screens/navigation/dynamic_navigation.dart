@@ -5,14 +5,14 @@ import 'package:bike_tour_app/models/instruction_model.dart';
 import 'package:bike_tour_app/screens/markers/user_location_marker.dart';
 import 'package:bike_tour_app/screens/navigation/to_page.dart';
 import 'package:bike_tour_app/screens/widgets/instruction_widget.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:googleapis/pubsublite/v1.dart';
+
 
 import 'package:location/location.dart' as loc;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:app_settings/app_settings.dart';
 
 import '../../models/directions_model.dart';
 import 'mymap.dart';
@@ -21,8 +21,9 @@ class RouteData{
   final Directions directions;
   final UserPosition user_loc;
   final Set<Marker> markers;
-  
-  RouteData({required this.directions,required this.user_loc, required this.markers});
+  final List<LatLng> waypoints;
+
+  RouteData({required this.directions,required this.user_loc, required this.markers, required this.waypoints});
 }
 
 // class DynamicNavigation extends StatefulWidget {
@@ -222,30 +223,33 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
     nextCheckPoint = current_instruction.end_loc;
     _center = args.user_loc.center as LatLng;
     _markers = args.markers;
-    return Stack(
-      alignment: Alignment.center,
-      children: [      
-      InstructionWidget(instruction: current_instruction),
-      GoogleMap(
-            myLocationButtonEnabled: false,
-            compassEnabled: true,
-            zoomControlsEnabled: false,
-            initialCameraPosition:CameraPosition(target: _center, zoom: 15),
-            onMapCreated: _onMapCreated,
-            markers: _markers,
-            polylines: {
-              if (_info != null)
-                Polyline(
-                  polylineId: const PolylineId('overview_polyline'),
-                  color: Colors.red,
-                  width: 5,
-                  points: _info!.polylinePoints
-                      .map((e) => LatLng(e.latitude, e.longitude))
-                      .toList(),
-                ),
-            },
-          ),
-      ],
+    return Scaffold(
+      //bottomNavigationBar: InstructionWidget(instruction: current_instruction),
+      body : Stack(
+        alignment: Alignment.center,
+        children: [      
+        InstructionWidget(instruction: current_instruction),
+        GoogleMap(
+              myLocationButtonEnabled: false,
+              compassEnabled: true,
+              zoomControlsEnabled: false,
+              initialCameraPosition:CameraPosition(target: _center, zoom: 15),
+              onMapCreated: _onMapCreated,
+              markers: _markers,
+              polylines: {
+                if (_info != null)
+                  Polyline(
+                    polylineId: const PolylineId('overview_polyline'),
+                    color: Colors.red,
+                    width: 5,
+                    points: _info!.polylinePoints
+                        .map((e) => LatLng(e.latitude, e.longitude))
+                        .toList(),
+                  ),
+              },
+            ),
+        ],
+      )
     );
   }
   void updatePinOnMap() async {
@@ -253,14 +257,14 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
    // create a new CameraPosition instance
    // every time the location changes, so the camera
    // follows the pin as it moves with an animation
-   CameraPosition cPosition = CameraPosition(
-   zoom: CAMERA_ZOOM,
-   tilt: CAMERA_TILT,
-   bearing: CAMERA_BEARING,
-   target: _center,
-   );
+  //  CameraPosition cPosition = CameraPosition(
+  //  zoom: CAMERA_ZOOM,
+  //  tilt: CAMERA_TILT,
+  //  bearing: CAMERA_BEARING,
+  //  target: _center,
+  //  );
  
-  mapController.animateCamera(CameraUpdate.newCameraPosition(cPosition));
+  // mapController.animateCamera(CameraUpdate.newCameraPosition(cPosition));
    // do this inside the setState() so Flutter gets notified
    // that a widget update is due
     setState(() {
@@ -356,7 +360,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
     } else if (status.isDenied) {
       _requestPermission();
     } else if (status.isPermanentlyDenied) {
-      openAppSettings();
+      AppSettings.openLocationSettings;  
     }
   }
 }
