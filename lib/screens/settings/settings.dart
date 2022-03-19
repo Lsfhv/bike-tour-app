@@ -16,37 +16,13 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  String? _email;
   String? _uid;
-  String? _firstName;
-  String? _lastName;
-
-  void generateFields() async {
-    var currentUser = context.read<AuthService>().currentUser;
-
-    _email = currentUser!.email;
-    _uid = currentUser.uid;
-    print("hey there");
-    print(_email);
-    print(_uid);
-    var userdata = await FirebaseFirestore.instance.collection('users')
-      .doc(_uid).get();
-    print("did this work");
-
-    _firstName = userdata.data()!['firstName'];
-    print("1");
-    print(_firstName);
-    _lastName = userdata.data()!['lastName'];
-    print("2");
-    print(_lastName);
-  }
 
   @override
   Widget build(BuildContext context) {   
     var currentUser = context.read<AuthService>().currentUser; 
 
-    _email = currentUser!.email;
-    _uid = currentUser.uid;
+    _uid = currentUser!.uid;
 
 
     return Scaffold(
@@ -60,7 +36,7 @@ class _SettingsPageState extends State<SettingsPage> {
           if (!snapshot.hasData) {
             return const Text("loading, your internet is probably not working if you ever see this");
           } else {
-            var x = snapshot.data;
+            var data = snapshot.data;
             return SettingsList(
         sections: [
         SettingsSection(
@@ -68,11 +44,11 @@ class _SettingsPageState extends State<SettingsPage> {
           tiles: <SettingsTile>[
             SettingsTile.navigation(
               // leading: const Icon(Icons.language),
-              title: Text(x['firstName'] + " " + x['lastName']),
+              title: Text(data['firstName'] + " " + data['lastName']),
               value: const Text('Name'),
             ),
             SettingsTile.navigation(
-              title: Text(x['email']),
+              title: Text(data['email']),
               value: const Text('Email'),
             ),
                         SettingsTile.navigation(
