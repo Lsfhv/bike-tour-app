@@ -9,21 +9,20 @@ import 'package:settings_ui/settings_ui.dart';
 
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({ Key? key }) : super(key: key);
+  const SettingsPage({Key? key}) : super(key: key);
 
   @override
   _SettingsPageState createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-
   String? _email;
-  String? _uid; 
+  String? _uid;
   String? _firstName;
   String? _lastName;
 
   void generateFields() async {
-    var currentUser = context.read<AuthService>().currentUser; 
+    var currentUser = context.read<AuthService>().currentUser;
 
     _email = currentUser!.email;
     _uid = currentUser.uid;
@@ -33,6 +32,7 @@ class _SettingsPageState extends State<SettingsPage> {
     var userdata = await FirebaseFirestore.instance.collection('users')
       .doc(_uid).get();
     print("did this work");
+
     _firstName = userdata.data()!['firstName'];
     print("1");
     print(_firstName);
@@ -47,6 +47,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
     _email = currentUser!.email;
     _uid = currentUser.uid;
+
 
     return Scaffold(
       appBar: AppBar(
@@ -87,4 +88,3 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 }
-

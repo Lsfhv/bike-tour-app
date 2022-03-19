@@ -1,9 +1,12 @@
+import 'package:bike_tour_app/screens/navigation/route_planner_form.dart';
 import 'package:bike_tour_app/screens/navigation/to_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_geocoding_api/google_geocoding_api.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import '../markers/user_location_marker.dart';
 
 class FromPage extends StatefulWidget {
   const FromPage({Key? key}) : super(key: key);
@@ -46,16 +49,16 @@ class _FromPageState extends State<FromPage> {
         .then((Position position) {
           setState(() {
             LatLng pos =  LatLng(position.latitude, position.longitude);
-            _currLoc = Marker(markerId:const MarkerId("current location"), icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed), position : pos);
             _center = pos;
             mapController.animateCamera(CameraUpdate.newLatLng(_center));
             _currentPosition = UserPosition(pos);
             _fetchingLocation = false;
+
           });
           showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
             title : Text("Your journey starts now!" ),//+tag),
             actions : <Widget>[
-              TextButton(onPressed: () => Navigator.pushNamed(context, ToPage.routeName, arguments : _currentPosition), child: const Text("Ok!"))
+              TextButton(onPressed: () => Navigator.pushNamed(context, ToPage.routeName, arguments : _currentPosition), child: const Text("Ok!")),
             ]
             )
           ); 
@@ -71,10 +74,10 @@ class _FromPageState extends State<FromPage> {
     GoogleGeocodingResponse loc =  await _searcher.search(edited_loc);
     setState(() {
       LatLng pos = LatLng(loc.results.first.geometry!.location.lat, loc.results.first.geometry!.location.lng);
-      _currLoc = Marker(markerId:const MarkerId("current location"), icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed), position : pos);
       _center = pos;
       mapController.animateCamera(CameraUpdate.newLatLng(_center));
       _currentPosition = UserPosition( pos);
+      _currLoc = UserMarker(user: _currentPosition as UserPosition);
 
     });
     //Pop that you are adding new destination
@@ -88,7 +91,7 @@ class _FromPageState extends State<FromPage> {
     //Navigate to next page
     //Navigator.pushNamed(context, ToPage.routeName, arguments : _currentPosition);
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
