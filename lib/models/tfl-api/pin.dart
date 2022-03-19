@@ -8,5 +8,10 @@ class PinInformation {
   String locationName;
   Color labelColor;
 
-  PinInformation({this.pinPath, this.avatarPath, this.location, this.locationName, this.labelColor});
+  PinInformation(
+      {required this.pinPath,
+      required this.avatarPath,
+      required this.location,
+      required this.locationName,
+      required this.labelColor});
 }
