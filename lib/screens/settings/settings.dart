@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:googleapis/binaryauthorization/v1.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:bike_tour_app/services/auth_service.dart';
+
 
 
 class SettingsPage extends StatefulWidget {
@@ -55,6 +57,13 @@ class _SettingsPageState extends State<SettingsPage> {
               title: const Text("routing history"),
               value: const Text('and store ur routes history here'),
             ),
+            SettingsTile.navigation(
+              title: TextButton(onPressed: () {  
+                var result = context.read<AuthService>().signOut();
+                Navigator.pop(context);
+              },
+              child: const Text("Logout")),
+            )
           ],
         ),
       ],
