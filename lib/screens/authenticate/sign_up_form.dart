@@ -49,19 +49,23 @@ class _SignUpFormState extends State<SignUpForm> {
             Column(
               children: <Widget>[
                 TextFormField(
-                  
+
+                  key: Key("FirstNameField"),
+
                   controller: _firstNameController,
                   decoration: InputDecoration(
                     labelText: "First name",
                   ),
                 ),
                 TextFormField(
+                  key: Key("LastNameField"),
                   controller: _lastNameController,
                   decoration: InputDecoration(
                     labelText: "Last name",
                   ),
                 ),
                 TextFormField(
+                  key: Key("EmailField"),
                   validator: (value) {
                     if (!_vaidEmailRegExp.hasMatch(value!)) {
                       return 'Not a valid email';
@@ -73,6 +77,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   ),
                 ),
                 TextFormField(
+                  key: Key("PasswordField"),
                   validator: (value) {
                     if (!_validPasswordRegExp.hasMatch(value!)) {
                       return 'Password must contain an upper case character, a number and a special character';
@@ -85,6 +90,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   ),
                 ),
                 TextFormField(
+                  key: Key("PasswordConfirmField"),
                   validator: (value) {
                     if (value != _passwordController.text) {
                       return 'Passwords do not match';
