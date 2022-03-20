@@ -49,7 +49,9 @@ class _SignUpFormState extends State<SignUpForm> {
             Column(
               children: <Widget>[
                 TextFormField(
+
                   key: Key("FirstNameField"),
+
                   controller: _firstNameController,
                   decoration: InputDecoration(
                     labelText: "First name",
