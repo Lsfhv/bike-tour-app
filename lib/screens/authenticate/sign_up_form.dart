@@ -42,16 +42,14 @@ class _SignUpFormState extends State<SignUpForm> {
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _formKey,
+      key: Key("1"),
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
             Column(
               children: <Widget>[
                 TextFormField(
-
                   key: Key("FirstNameField"),
-
                   controller: _firstNameController,
                   decoration: InputDecoration(
                     labelText: "First name",
