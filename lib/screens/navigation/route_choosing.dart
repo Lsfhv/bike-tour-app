@@ -48,7 +48,8 @@ class JourneyData {
     //
   }
   _init_() async{
-    await bike_api.fetchBikePoints();
+    await bike_api.refreshDataBase();
+   Set<BikePointModel> bikePoints = await bike_api.fetchBikePoints();
     if(_destinations.length > 1){
       await _routeOptimize();
     }
@@ -67,34 +68,16 @@ class JourneyData {
       if(i== -1){
         start = _currentPosition;
         end = _destinations[0];
-        starting_dock = _choosingDock(bike_api.getNearbyDocks((start as UserPosition).center as LatLng));
+        starting_dock = _choosingDock(await bike_api.getNearbyBikingDocks((start as UserPosition).center as LatLng));
       }
       else{
         start =  _destinations[i];
         end = _destinations[i+1];
-        starting_dock = _choosingDock(bike_api.getNearbyDocks((start as Destination).position));
+        starting_dock = _choosingDock(await bike_api.getNearbyBikingDocks((start as Destination).position));
       }
-      /*
-            if(starting_dock != null){
-        ending_dock = _choosingDock(bike_api.getNearbyDocks(end.position));
-        if(ending_dock != null){
-          //add starting_dock,destination,ending_dock
-          waypoints.add(Pair(first:LatLng(starting_dock.lat, starting_dock.lon),second : true));
-          waypoints.add(Pair(first: LatLng(ending_dock.lat, ending_dock.lon), second : true));
-          waypoints.add(Pair(first: end.position, second : false));
 
-          markers.add(BikeMarker(station: starting_dock));
-          markers.add(DestinationMarker(destination: end));
-          markers.add(BikeMarker(station: ending_dock));
-        }
-      }
-      else{
-        waypoints.add(Pair(first: end.position, second : false));
-        markers.add(DestinationMarker(destination: end));
-      }
-      */
       if(starting_dock != null){
-        ending_dock = _choosingDock(bike_api.getNearbyDocks(end.position));
+        ending_dock = _choosingDock(await bike_api.getNearbyParkingDocks(end.position));
         if(ending_dock != null){
           //add starting_dock,destination,ending_dock
           waypoints.add(LatLng(starting_dock.lat, starting_dock.lon));
@@ -115,7 +98,7 @@ class JourneyData {
 
 
   
-  BikePointModel? _choosingDock(Set<BikePointModel> docks){
+  BikePointModel? _choosingDock(Set<BikePointModel> docks){ //update to accommodate number restriction
     if(docks.isEmpty){
       return null;
     }
@@ -152,21 +135,31 @@ class _RoutingMap extends State<RoutingMap> {
   //Set<BikeMarker> _markers_end = {};
   late LatLng _center = const LatLng(51.507399, -0.127689);
   Directions? _info;
+
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
 
   }
-  void _generateRoute(JourneyData args) async{
+  Future<void> _generateRoute(JourneyData args) async{
     await args._init_();
     LatLng origin = args._currentPosition.center as LatLng;
     LatLng destination = args._getLastDockingStation();
     final directions = await DirectionsRepository().getDirections(origin: origin, ending_bike_dock: destination, destinations: args.waypoints);
-    setState(() {
+    //error here    
+    if(mounted){
+      setState(() {
+        _info = directions;
+        _markers = args.markers;
+        _routeGenerated = true;
+      });
+    }
+    else{
       _info = directions;
       _markers = args.markers;
       _routeGenerated = true;
-    });
+    }
     if(args == null){
+      //if no found route, do something here! maybe go back to rechoose destination?
       showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
       title : Text("There is no found Route!"),
       actions : <Widget>[
@@ -175,9 +168,13 @@ class _RoutingMap extends State<RoutingMap> {
     ));
     Navigator.pop(context); //go back to original page?
     }
+    else{
+      
+    }
   }
 
   _start_navigation(Directions? args, JourneyData? jd){
+    //write data to 
     if(args == null){
       showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
       title : Text("There is no found Route!"),
@@ -206,7 +203,9 @@ class _RoutingMap extends State<RoutingMap> {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as JourneyData;
     _center = args._currentPosition.center as LatLng;
-    _generateRoute(args);
+    if(!_routeGenerated){
+      _generateRoute(args);
+    }
     return MaterialApp(
       home: Scaffold(
           bottomNavigationBar: TextButton(onPressed:() => _start_navigation(_info,args), child : Text("Lets Go")),          

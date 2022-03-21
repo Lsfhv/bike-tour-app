@@ -307,6 +307,7 @@ import 'package:google_place/google_place.dart';
 
 // import '../../.env.dart';
 import '../markers/user_location_marker.dart';
+import 'constants.dart';
 import 'location_details.dart';
 
 
@@ -391,6 +392,7 @@ class _ToPageState extends State<ToPage> {
     if (result != null && result.predictions != null && mounted) {
       setState(() {
         _showDetail = false;
+        _viewingDestinationList = false;
         predictions = result.predictions as List<AutocompletePrediction>;
       });
     }
@@ -457,8 +459,10 @@ class _ToPageState extends State<ToPage> {
       _suggestionSelected = false;
       _showDetail = false;
       _center = _suggestedMarker!.position;
-      _markers?.remove(_suggestedMarker);
-      _suggestedMarker = null;
+      if(_suggestedMarker != null){
+        _markers?.remove(_suggestedMarker);
+        _suggestedMarker = null;
+      }
     });
     //_showDetail = false;
     //_markers?.remove(_suggestedMarker);
@@ -471,17 +475,27 @@ class _ToPageState extends State<ToPage> {
     );
   }
 
-  _delete_destination_at(int index){
+  _delete_destination_at(int index) async{
+    late Destination removed;
     setState(() {
       print(list_of_destinations.length);
-      list_of_destinations.removeAt(index);
+      removed = list_of_destinations.removeAt(index);
       print(list_of_destinations.length);
      print('removed');
     });
+
+    showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+        title : Text("You have removed " + removed.name + "from your plan"),
+        actions : <Widget>[
+          TextButton( onPressed: () => Navigator.pop(context, "No") , child: const Text("Ok!"))
+        ]
+      )
+      );
   }
 
   _closeDestinationView() async{
     setState(() {
+
       _viewingDestinationList = false;
     });
   }
@@ -491,26 +505,6 @@ class _ToPageState extends State<ToPage> {
       direction: DismissDirection.down,
       key : UniqueKey(),
       child: DestinationListViewer(destinations: list_of_destinations, onDismiss: _delete_destination_at),
-      // child : ListView.builder(
-      //   itemCount: list_of_destinations.length,
-      //   itemBuilder: (context, index) {
-      //     return Dismissible(
-      //         key : UniqueKey(),
-      //         child: ListTile(
-      //           leading: CircleAvatar(
-      //             child: Icon(
-      //               Icons.pin_drop,
-      //               color: Colors.white,
-      //             ),
-      //           ),
-      //           title:  Text(list_of_destinations[index].name as String),
-      //         ),
-      //         direction: DismissDirection.horizontal,
-      //         onDismissed: (direction) async {_delete_destination_at(index);},
-      //       );
-      //     },
-      //   ),
-      //child : Icon(Icons.youtube_searched_for),
       onDismissed: (direction) async {_closeDestinationView();},
       );
   }
@@ -530,6 +524,20 @@ class _ToPageState extends State<ToPage> {
         onTap: _closePage,
       );
     }
+    else if(_viewingDestinationList){
+      return TextField(
+          decoration: InputDecoration(
+          hintText: "Destination List" ,
+          hintStyle: TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontStyle: FontStyle.italic,
+          ),
+          border: InputBorder.none,
+        ),
+        onTap: _closeDestinationView,
+        );
+    }
     else{
       return Destination_Retriever(onSubmitted: _handleSearchBarSubmit, onChanged: _handleSearchBarChange);
     }
@@ -538,7 +546,8 @@ class _ToPageState extends State<ToPage> {
   _showDestinations() async{
     if(list_of_destinations.isNotEmpty){
       setState(() {
-        _viewingDestinationList = true;
+        _showDetail = false;
+        _viewingDestinationList = !_viewingDestinationList;
       });
     }
     else{
@@ -551,6 +560,30 @@ class _ToPageState extends State<ToPage> {
       )
       );
     }
+  }
+
+  _addDestination() async{
+
+    setState(() {
+        Marker curr_marker = _suggestedMarker as Marker;
+        Destination dest = Destination(position: curr_marker.position, name: currPrediction!.description as String);
+        _markers?.add(curr_marker);
+        _center = curr_marker.position;
+        list_of_destinations.add(dest);
+        mapController.animateCamera(CameraUpdate.newLatLng(_center));
+        _suggestedMarker = null;
+        _suggestionSelected = false;
+      });
+
+      showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+      title : Text("You have added " + (currPrediction!.description as String) + " in your plan!"),
+      actions : <Widget>[
+        TextButton( onPressed: () => Navigator.pop(context, "No") , child: const Text("Ok!"))
+      ]
+    )
+    );
+    
+
   }
 
   @override
@@ -567,12 +600,15 @@ class _ToPageState extends State<ToPage> {
           title: appBar(),
           automaticallyImplyLeading: false,
           centerTitle: true,
+          backgroundColor: STANDARD_COLOR,
           actions: [
               IconButton(
                 icon : Icon(Icons.arrow_circle_right_outlined),
                 onPressed:()=> _handleNavigateToNextPage(args), 
               ),
               IconButton(onPressed:()=> _showDestinations(), icon: Icon(Icons.route_outlined)),
+              if(_suggestionSelected && _suggestedMarker !=null)
+              IconButton(onPressed: () => _addDestination(), icon: Icon(Icons.add)),
               
           ],
           ),
@@ -602,6 +638,7 @@ class _ToPageState extends State<ToPage> {
                             Icons.pin_drop,
                             color: Colors.white,
                           ),
+                          backgroundColor: STANDARD_COLOR,
                         ),
                         title:  Text(predictions[index].description as String),
                         onTap: () { _handleSuggestionTap(predictions[index]);
@@ -612,11 +649,12 @@ class _ToPageState extends State<ToPage> {
                 ),
               ),
 
-              if(_showDetail && currPrediction != null ) _showDetailPage(),
+              //if(_showDetail && currPrediction != null ) _showDetailPage(),
 
               if(!_showDetail && _viewingDestinationList) _showDestinationList(),
             ]
           ),
+          
       )
     );
   }
@@ -661,9 +699,7 @@ class _Destination_RetrieverState extends State<Destination_Retriever> {
   }
 
   void _handleChange(String destination){
-    if(destination.length > 3){
       widget.onChanged!(destination);
-    }
   }
 
   @override
