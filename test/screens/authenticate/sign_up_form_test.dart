@@ -55,6 +55,20 @@ void main() {
 
     assert(0==0);
   });
+  
+  testWidgets("Test email is valid", (WidgetTester tester) async {
+    final emailField = find.byKey(const Key("EmailField"));
+    final signUpContainer = find.text('Register');
+
+    await tester.pumpWidget(const SignUpForm());
+
+    await tester.enterText(emailField, "T");
+    await tester.tap(signUpContainer);
+    await tester.pump();
+
+    expect(find.text("T"), 'Not a valid email');
+  });
 
 
 }
+
