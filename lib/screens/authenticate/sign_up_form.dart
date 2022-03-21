@@ -42,7 +42,7 @@ class _SignUpFormState extends State<SignUpForm> {
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _formKey,
+      key: Key("1"),
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
