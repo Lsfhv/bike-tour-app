@@ -48,8 +48,7 @@ class JourneyData {
     //
   }
   _init_() async{
-    await bike_api.refreshDataBase();
-   Set<BikePointModel> bikePoints = await bike_api.fetchBikePoints();
+    Set<BikePointModel> bikePoints = await bike_api.fetchBikePoints();
     if(_destinations.length > 1){
       await _routeOptimize();
     }

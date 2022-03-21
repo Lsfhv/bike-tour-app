@@ -13,7 +13,9 @@ class BikePointModel {
   int NbBikes;
   int NbEmptyDocks;
   int NbDocks;
-  late double distance;
+  double distance;
+  int usedBikes;
+  int usedParkings;
 
   BikePointModel({
     required this.id,
@@ -23,34 +25,51 @@ class BikePointModel {
     required this.NbDocks,
     required this.lat,
     required this.lon,
-    distance,
+    this.distance = 0,
+    this.usedBikes = 0,
+    this.usedParkings = 0,
   });
 
   factory BikePointModel.fromJson(Map<String, dynamic> json) {
     return BikePointModel(
       id: json['id'],
       commonName: json['commonName'],
-      NbBikes: json['additionalProperties'][6]['value'],
-      NbEmptyDocks: json['additionalProperties'][7]['value'],
-      NbDocks: json['additionalProperties'][8]['value'],
+      NbBikes: int.parse(json['additionalProperties'][6]['value']),
+      NbEmptyDocks: int.parse(json['additionalProperties'][7]['value']),
+      NbDocks: int.parse(json['additionalProperties'][8]['value']),
       lat : json['lat'],
       lon : json['lon']
     );
   }
 
-  factory BikePointModel.fromDS(QueryDocumentSnapshot ss) {
-    return BikePointModel(
-      id: ss.get('id'),
-      commonName: ss.get(BikeCollectionConstants.Name),
-      NbBikes: ss.get(BikeCollectionConstants.NbBikes) - ss.get(BikeCollectionConstants.NbUsedBikes),
-      NbEmptyDocks: ss.get(BikeCollectionConstants.NbEmptyDocks) - ss.get(BikeCollectionConstants.NbUsedParkings),
-      NbDocks: ss.get(BikeCollectionConstants.NbDocks),
-      lat : ss.get(BikeCollectionConstants.Lat),
-      lon : ss.get(BikeCollectionConstants.Lon),
-    );
+  init_withDS(DocumentReference ss) async{
+      DocumentSnapshot snapshot = await ss.get();
+      this.usedBikes = snapshot.get(BikeCollectionConstants.NbUsedBikes); //ss.get(BikeCollectionConstants.NbUsedBikes);
+      this.usedParkings = await ss.get().then((value) => value.get(BikeCollectionConstants.NbUsedParkings));
   }
 
 
+  Map<String, Object?> toJson() {
+    return {
+      'id' : id,
+      BikeCollectionConstants.Name: commonName,
+      BikeCollectionConstants.NbBikes :  NbBikes,
+      BikeCollectionConstants.NbEmptyDocks : NbEmptyDocks,
+      BikeCollectionConstants.NbDocks : NbDocks,
+      BikeCollectionConstants.Lat : lat,
+      BikeCollectionConstants.Lon : lon,
+      BikeCollectionConstants.NbUsedBikes : usedBikes,
+      BikeCollectionConstants.NbUsedParkings : usedParkings,
+    };
+  }
+
+  Map<String, Object?> toDSJson() {
+    return {
+      'id' : id,
+      BikeCollectionConstants.NbUsedBikes : usedBikes,
+      BikeCollectionConstants.NbUsedParkings : usedParkings,
+    };
+  }
 
 
   void setDistance(double distance){

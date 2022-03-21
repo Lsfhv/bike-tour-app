@@ -380,6 +380,7 @@ class _ToPageState extends State<ToPage> {
 
   
   _navigateToNextPage(UserPosition args){
+    Navigator.pop(context);
     Navigator.pushNamed(context, RoutingMap.routeName, arguments : JourneyData(
       args, list_of_destinations
     ));
@@ -625,28 +626,30 @@ class _ToPageState extends State<ToPage> {
                 ),
               ),
               
-              if(!_showDetail && !_viewingDestinationList) Expanded(
-                child: ListView.builder(
-                  itemCount: predictions.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      color : Colors.white, 
-                      child :ListTile(
-                        tileColor: isSelected ? Colors.white : Colors.blue,
-                        leading: CircleAvatar(
-                          child: Icon(
-                            Icons.pin_drop,
-                            color: Colors.white,
+              if(!_showDetail && !_viewingDestinationList) Row(
+                children : [Expanded(
+                  child: ListView.builder(
+                    itemCount: predictions.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        color : Colors.white, 
+                        child :ListTile(
+                          tileColor: isSelected ? Colors.white : Colors.blue,
+                          leading: CircleAvatar(
+                            child: Icon(
+                              Icons.pin_drop,
+                              color: Colors.white,
+                            ),
+                            backgroundColor: STANDARD_COLOR,
                           ),
-                          backgroundColor: STANDARD_COLOR,
-                        ),
-                        title:  Text(predictions[index].description as String),
-                        onTap: () { _handleSuggestionTap(predictions[index]);
-                        },
-                      )
-                    );
-                  },
-                ),
+                          title:  Text(predictions[index].description as String),
+                          onTap: () { _handleSuggestionTap(predictions[index]);
+                          },
+                        )
+                      );
+                    },
+                  ),
+                )]
               ),
 
               //if(_showDetail && currPrediction != null ) _showDetailPage(),
