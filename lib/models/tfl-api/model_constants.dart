@@ -9,4 +9,5 @@ class BikeCollectionConstants{
   static String NbDocks = 'number_of_docks';
   static String NbUsedBikes = 'number_of_used_bike'; 
   static String NbUsedParkings = 'number_of_used_parking';
+  static String NULL_BIKE_DOCK_ID = 'null bike point';
 }

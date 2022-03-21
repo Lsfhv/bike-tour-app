@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:bike_tour_app/screens/groupRouting/group_routing.dart';
+import 'package:bike_tour_app/models/tfl-api/get_api.dart';
 import 'package:bike_tour_app/screens/markers/bike_markers.dart';
 import 'package:bike_tour_app/screens/settings/settings.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ import 'package:location/location.dart';
 
 class MainMap extends StatefulWidget {
   const MainMap({Key? key}) : super(key: key);
-
+  static final GetApi getApi = GetApi();
   @override
   _MainMapState createState() => _MainMapState();
 }
@@ -51,7 +52,7 @@ class _MainMapState extends State<MainMap> {
               Align(
                 alignment: Alignment(0.8, -0.8),
                 child: FloatingActionButton(
-                  heroTag: "Persons",
+                  heroTag: "Settings",
                   onPressed: () {
                     // the settings button
                     Navigator.push(
@@ -67,7 +68,7 @@ class _MainMapState extends State<MainMap> {
               Align(
                 alignment: Alignment(-0.8, -0.8),
                 child: FloatingActionButton(
-                  heroTag: "Settings",
+                  heroTag: "Persons",
                   onPressed: () {
                     // person
                     Navigator.push(context, MaterialPageRoute(builder: ((context) => GroupRoutingPage())));
