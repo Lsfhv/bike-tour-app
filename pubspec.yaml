@@ -58,6 +58,8 @@ dependencies:
   expandable: ^5.0.1
   flutter_compass: ^0.7.0
   app_settings: ^4.1.1
+  sliding_up_panel: ^2.0.0+1
+  flutter_html: ^2.2.1
   
 
 dev_dependencies:

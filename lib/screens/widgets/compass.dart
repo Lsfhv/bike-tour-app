@@ -33,7 +33,7 @@ class _CompassState extends State<Compass> {
         if (_hasPermissions) {
           return Column(
             children: <Widget>[
-              _buildManualReader(),
+              //_buildManualReader(),
               Expanded(child: _buildCompass()),
             ],
           );

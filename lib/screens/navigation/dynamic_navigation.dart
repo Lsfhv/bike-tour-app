@@ -3,11 +3,13 @@ import 'dart:math';
 
 import 'package:bike_tour_app/models/instruction_model.dart';
 import 'package:bike_tour_app/screens/markers/user_location_marker.dart';
+import 'package:bike_tour_app/screens/navigation/constants.dart';
 import 'package:bike_tour_app/screens/navigation/to_page.dart';
 import 'package:bike_tour_app/screens/widgets/instruction_widget.dart';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:googleapis/admob/v1.dart';
 
 
 import 'package:location/location.dart' as loc;
@@ -188,7 +190,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
   final loc.Location location = loc.Location();
   late loc.LocationData current_position;
   late LatLng nextCheckPoint;
-  late Instruction current_instruction;
+  late Instruction? current_instruction =null;
   late Instructions instructions;
   late GoogleMapController mapController;
   StreamSubscription<loc.LocationData>? _locationSubscription;
@@ -209,8 +211,8 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
   void initState() {
     super.initState();
     _requestPermission();
-    location.changeSettings( accuracy: loc.LocationAccuracy.high);
-    location.enableBackgroundMode(enable: true);
+    location.changeSettings(accuracy: loc.LocationAccuracy.high);
+    location.enableBackgroundMode(enable: true); // CALLED BY THIS
     _listenLocation();
   }
   
@@ -219,19 +221,20 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
     final args = ModalRoute.of(context)!.settings.arguments as RouteData;
     _info = args.directions;
     instructions = _info!.instruction as Instructions;
-    current_instruction = instructions.get(0);
-    nextCheckPoint = current_instruction.end_loc;
+    if(current_instruction == null){
+      current_instruction = instructions.get(0);
+      nextCheckPoint = current_instruction!.end_loc;
+    }
     _center = args.user_loc.center as LatLng;
     _markers = args.markers;
     return Scaffold(
-      //bottomNavigationBar: InstructionWidget(instruction: current_instruction),
       body : Stack(
         alignment: Alignment.center,
-        children: [      
-        InstructionWidget(instruction: current_instruction),
+        children: [ 
         GoogleMap(
               myLocationButtonEnabled: false,
               compassEnabled: true,
+              rotateGesturesEnabled: true,
               zoomControlsEnabled: false,
               initialCameraPosition:CameraPosition(target: _center, zoom: 15),
               onMapCreated: _onMapCreated,
@@ -248,6 +251,13 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
                   ),
               },
             ),
+        if(_locationSubscription != null)
+        Positioned(
+          child:  InstructionWidget(instruction: current_instruction as Instruction),
+          top :0,
+          left :0,
+          right : 0,
+        ),
         ],
       )
     );
@@ -267,6 +277,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
   // mapController.animateCamera(CameraUpdate.newCameraPosition(cPosition));
    // do this inside the setState() so Flutter gets notified
    // that a widget update is due
+    if(mounted){
     setState(() {
       _center = LatLng(current_position.latitude as double, current_position.longitude as double);
       _markers.removeWhere((m) => m.markerId.value == 'current_location');
@@ -279,13 +290,41 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
           }     
       }
     });
+    }
+    else{
+        _center = LatLng(current_position.latitude as double, current_position.longitude as double);
+        _markers.removeWhere((m) => m.markerId.value == 'current_location');
+        Marker _new_marker = UserMarker(user: UserPosition(_center) );
+        _markers.add(_new_marker);
+        if(instructions != null && nextCheckPoint !=null ){
+          print(nextCheckPoint);
+          if(_reached_next_check_point()){
+            _update_instruction();
+            }     
+        }
+      }
+      // if(reached){
+      //   setState(() {
+      //      current_instruction = Instruction.set(
+      //        "You have reached your destination",
+      //        start_loc : cur
+      //        );
+      //   });
+      // }
 }
 
   void _update_instruction(){
     if(instruction_index < instructions.instructions.length){
       current_instruction = instructions.get(instruction_index);
-      nextCheckPoint = current_instruction.end_loc;
+      nextCheckPoint = current_instruction!.end_loc;
       instruction_index++;
+    }
+    else if(_locationSubscription == null){
+      //set ERROR
+    }
+    else if(reached){
+      current_instruction = REACHED_INSTRUCTION;
+      nextCheckPoint = REACHED_LOC;
     }
     else{
       //indicate reached location
@@ -319,21 +358,22 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
         from: LatLng(current_position.latitude as double, current_position.longitude as double,),
         to: nextCheckPoint
       );
-      return distance <= tolerance || distance >= -(tolerance);
+      return distance <= tolerance;
     }
     else{
       return true;
     }
   }
 
+  void _handleError() async{
+    _locationSubscription?.cancel();
+    await _requestPermission();
+  }
+
   Future<void> _listenLocation() async {
     _locationSubscription = location.onLocationChanged.handleError((onError) {
       print(onError);
-      _locationSubscription?.cancel();
-      setState(() {
-        _locationSubscription = null;
-      });
-
+      _handleError();
     }).listen((loc.LocationData cLoc) {
       // cLoc contains the lat and long of the
       // current user's position in real time,
@@ -356,11 +396,13 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
   _requestPermission() async {
     var status = await Permission.location.request();
     if (status.isGranted) {
-      print('done');
     } else if (status.isDenied) {
       _requestPermission();
     } else if (status.isPermanentlyDenied) {
       AppSettings.openLocationSettings;  
     }
   }
+}
+
+class STANDARD_COLOR {
 }
