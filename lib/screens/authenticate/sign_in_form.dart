@@ -69,7 +69,7 @@ class _SignInFormState extends State<SignInForm> {
               child: TextFormField(
                 validator: (value) {
                   if (!_validPasswordRegExp.hasMatch(value!)) {
-                    return 'Password must contain an upper case character, a number and a special character';
+                    return 'Password must be 8 characters long, contain an Upper Case character, a Number and a Special character';
                   }
                 },
                 controller: _passwordController,
