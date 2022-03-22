@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 //import 'dart:html';
 
-import 'package:bike_tour_app/models/tfl-api/bike_docking_points.dart';
+
 import 'package:bike_tour_app/models/tfl-api/bike_point_model.dart';
 import 'package:bike_tour_app/models/tfl-api/get_api.dart';
 import 'package:bike_tour_app/repository/direction.dart';
@@ -19,64 +19,65 @@ import 'to_page.dart';
 
 
 class JourneyData {
-  final UserPosition _currentPosition;
-  List<Destination> _destinations;
-  late List<Destination> _formated_list;
+  final UserPosition currentPosition;
+  List<Destination> destinations;
+  late List<Destination> formated_list;
   GetApi bike_api = GetApi();
   List<LatLng> waypoints = [];
   Set<Marker> markers = {};
   Compass compass = Compass();
-  JourneyData(this._currentPosition, this._destinations);
+  int number_of_bikers = 1;
+  JourneyData(this.currentPosition, this.destinations);
 
 
-  _rerouteWaypoints(Directions? args){
-    List<Destination> buffer=List.of(_destinations);
+  rerouteWaypoints(Directions? args){
+    List<Destination> buffer=List.of(destinations);
     //_destinations.clear();
     for(var i in args!.waypointsOrder){
-      _destinations.add(buffer[i]);
+      destinations.add(buffer[i]);
     }
   }
 
-  _routeOptimize() async {
+  routeOptimize() async {
     //choose the last destination
-    List<LatLng> list = List<LatLng>.generate(_destinations.length, (i)=> _destinations[i].position);
-    await DirectionsRepository().getDirections(origin: _currentPosition.center as LatLng, ending_bike_dock: _currentPosition.center as LatLng , destinations: list, optimize: true).
+    List<LatLng> list = List<LatLng>.generate(destinations.length, (i)=> destinations[i].position);
+    await DirectionsRepository().getDirections(origin: currentPosition.center as LatLng, ending_bike_dock: currentPosition.center as LatLng , destinations: list, optimize: true).
     then((value) => {
-      _rerouteWaypoints(value)
+      rerouteWaypoints(value)
     });
     //get directions
     //
   }
-  _init_() async{
+  init() async{
     Set<BikePointModel> bikePoints = await bike_api.fetchBikePoints();
-    if(_destinations.length > 1){
-      await _routeOptimize();
+    if(destinations.length > 1){
+      await routeOptimize();
     }
     waypoints = [];
     markers = {};
 
     //init starting loc in red 
-    markers.add(UserMarker(user : UserPosition(_currentPosition.center as LatLng)));
-    waypoints.add(_currentPosition.center as LatLng);
+    markers.add(UserMarker(user : UserPosition(currentPosition.center as LatLng)));
+    //waypoints.add(currentPosition.center as LatLng); //think about this again yo
     
-    for(int i = -1; i < _destinations.length -1; i++){
+    for(int i = -1; i < destinations.length -1; i++){
       var start; 
       Destination end;
       BikePointModel? starting_dock;
       BikePointModel? ending_dock;
       if(i== -1){
-        start = _currentPosition;
-        end = _destinations[0];
-        starting_dock = _choosingDock(await bike_api.getNearbyBikingDocks((start as UserPosition).center as LatLng));
+        start = currentPosition;
+        end = destinations[0];
+        starting_dock = choosingDock(await bike_api.getNearbyBikingDocks((start as UserPosition).center as LatLng, bikePoints, uses: number_of_bikers));
       }
       else{
-        start =  _destinations[i];
-        end = _destinations[i+1];
-        starting_dock = _choosingDock(await bike_api.getNearbyBikingDocks((start as Destination).position));
+        start =  destinations[i];
+        end = destinations[i+1];
+        starting_dock = choosingDock(await bike_api.getNearbyBikingDocks((start as Destination).position, bikePoints,uses: number_of_bikers));
       }
 
       if(starting_dock != null){
-        ending_dock = _choosingDock(await bike_api.getNearbyParkingDocks(end.position));
+        ending_dock = choosingDock(await bike_api.getNearbyParkingDocks(end.position, bikePoints, uses: number_of_bikers));
         if(ending_dock != null){
           //add starting_dock,destination,ending_dock
           waypoints.add(LatLng(starting_dock.lat, starting_dock.lon));
@@ -86,6 +87,9 @@ class JourneyData {
           markers.add(BikeMarker(station: starting_dock));
           markers.add(DestinationMarker(destination: end));
           markers.add(BikeMarker(station: ending_dock));
+
+          bike_api.increaseBikeUsed(starting_dock, number: number_of_bikers);
+          bike_api.increaseParkingUsed(ending_dock, number: number_of_bikers);
         }
       }
       else{
@@ -97,7 +101,7 @@ class JourneyData {
 
 
   
-  BikePointModel? _choosingDock(Set<BikePointModel> docks){ //update to accommodate number restriction
+  BikePointModel? choosingDock(Set<BikePointModel> docks){ //update to accommodate number restriction
     if(docks.isEmpty){
       return null;
     }
@@ -112,10 +116,31 @@ class JourneyData {
     }
   }
 
-  LatLng _getLastDockingStation(){
+  LatLng getLastDockingStation(){
     return waypoints.last;
   }
 
+ endTrip() async{
+   for(int i =0; i < markers.length; i++){
+     if(markers.elementAt(i).runtimeType == BikeMarker){
+      BikePointModel starting_dock = (markers.elementAt(i) as BikeMarker).station;
+      BikePointModel end_dock = (markers.elementAt(i+2) as BikeMarker).station;
+
+      i = i+2;
+
+      bike_api.decreaseBikeUsed(starting_dock, number: number_of_bikers);
+      bike_api.decreaseParkingUsed(end_dock, number: number_of_bikers);
+     }
+   }
+ }
+}
+
+
+class JourneyDataWithRoute {
+  final JourneyData journeyData;
+  final Directions? route;
+
+  JourneyDataWithRoute({required this.journeyData, required this.route});
 }
 
 class RoutingMap extends StatefulWidget {
@@ -129,50 +154,16 @@ class RoutingMap extends StatefulWidget {
 class _RoutingMap extends State<RoutingMap> {
   late GoogleMapController mapController;
   Set<Marker> _markers = {};
-  bool _routeGenerated = false;
-  //Set<BikeMarker> _markers_start = {};
-  //Set<BikeMarker> _markers_end = {};
   late LatLng _center = const LatLng(51.507399, -0.127689);
   Directions? _info;
+  bool navigating = true;
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
 
   }
-  Future<void> _generateRoute(JourneyData args) async{
-    await args._init_();
-    LatLng origin = args._currentPosition.center as LatLng;
-    LatLng destination = args._getLastDockingStation();
-    final directions = await DirectionsRepository().getDirections(origin: origin, ending_bike_dock: destination, destinations: args.waypoints);
-    //error here    
-    if(mounted){
-      setState(() {
-        _info = directions;
-        _markers = args.markers;
-        _routeGenerated = true;
-      });
-    }
-    else{
-      _info = directions;
-      _markers = args.markers;
-      _routeGenerated = true;
-    }
-    if(args == null){
-      //if no found route, do something here! maybe go back to rechoose destination?
-      showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
-      title : Text("There is no found Route!"),
-      actions : <Widget>[
-        TextButton( onPressed: () => Navigator.pop(context, "No") , child: const Text("Ok!"))
-      ]
-    ));
-    Navigator.pop(context); //go back to original page?
-    }
-    else{
-      
-    }
-  }
 
-  _start_navigation(Directions? args, JourneyData? jd){
+  _start_navigation(Directions? args, JourneyDataWithRoute? jdwr){
     //write data to 
     if(args == null){
       showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
@@ -183,8 +174,15 @@ class _RoutingMap extends State<RoutingMap> {
     ));
     }
     else{
-      Navigator.pushNamed(context, DynamicNavigation.routeName, arguments : RouteData(markers: _markers, directions: args, user_loc: UserPosition(_center), waypoints : jd!.waypoints));
+      Navigator.pushNamed(context, DynamicNavigation.routeName, arguments : RouteData( user_loc: UserPosition(_center), jdwr : jdwr as JourneyDataWithRoute));
     }
+  }
+
+  _endtrip(JourneyDataWithRoute? jdwr) async{
+    setState(() {
+      navigating = false;
+    });
+    await jdwr!.journeyData.endTrip();
   }
 
   @override
@@ -200,18 +198,16 @@ class _RoutingMap extends State<RoutingMap> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as JourneyData;
-    _center = args._currentPosition.center as LatLng;
-    if(!_routeGenerated){
-      _generateRoute(args);
-    }
+    final args = ModalRoute.of(context)!.settings.arguments as JourneyDataWithRoute;
+    _center = args.journeyData.currentPosition.center as LatLng;
+    _info = args.route;
+    _markers = args.journeyData.markers;
     return MaterialApp(
       home: Scaffold(
           bottomNavigationBar: TextButton(onPressed:() => _start_navigation(_info,args), child : Text("Lets Go")),          
           body: Stack(
             alignment: Alignment.center,
             children: [
-            if(!_routeGenerated) CircularProgressIndicator(),
           GoogleMap(
             myLocationButtonEnabled: false,
             zoomControlsEnabled: false,
