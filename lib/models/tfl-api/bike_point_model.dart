@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class BikePointModel {
   final id;
   final commonName;
-  
+  static const String DEFAULT_NUMBER_FOR_NO_DATA= '100';
   final lat;
   final lon;
   int NbBikes;
@@ -34,9 +34,9 @@ class BikePointModel {
     return BikePointModel(
       id: json['id'],
       commonName: json['commonName'],
-      NbBikes: int.parse(json['additionalProperties'][6]['value']),
-      NbEmptyDocks: int.parse(json['additionalProperties'][7]['value']),
-      NbDocks: int.parse(json['additionalProperties'][8]['value']),
+      NbBikes: int.parse( (json['additionalProperties'][6]['value'] as String).length == 0 ? (json['additionalProperties'][6]['value'] as String) : DEFAULT_NUMBER_FOR_NO_DATA ),
+      NbEmptyDocks: int.parse((json['additionalProperties'][7]['value'] as String).length == 0 ? (json['additionalProperties'][7]['value'] as String) : DEFAULT_NUMBER_FOR_NO_DATA ),
+      NbDocks: int.parse((json['additionalProperties'][8]['value'] as String).length == 0 ? (json['additionalProperties'][8]['value'] as String) : DEFAULT_NUMBER_FOR_NO_DATA ),
       lat : json['lat'],
       lon : json['lon']
     );
@@ -45,7 +45,7 @@ class BikePointModel {
   init_withDS(DocumentReference ss) async{
       DocumentSnapshot snapshot = await ss.get();
       this.usedBikes = snapshot.get(BikeCollectionConstants.NbUsedBikes); //ss.get(BikeCollectionConstants.NbUsedBikes);
-      this.usedParkings = await ss.get().then((value) => value.get(BikeCollectionConstants.NbUsedParkings));
+      this.usedParkings = snapshot.get(BikeCollectionConstants.NbUsedParkings);
   }
 
 
@@ -74,6 +74,14 @@ class BikePointModel {
 
   void setDistance(double distance){
     this.distance = distance;
+  }
+
+  int getNumberOfParking(){
+    return this.NbEmptyDocks - this.usedParkings;
+  }
+
+  int getNumberOfBikes(){
+    return this.NbBikes - this.usedBikes;
   }
 
   void updateStatus(Map<String, dynamic> json){

@@ -305,10 +305,14 @@ import 'package:google_geocoding_api/google_geocoding_api.dart';
 import 'package:google_place/google_place.dart';
 
 // import '../../.env.dart';
+import '../../.env.dart';
+import '../../repository/direction.dart';
+
 import '../markers/user_location_marker.dart';
-import '.env.dart';
 import 'constants.dart';
 import 'location_details.dart';
+
+
 
 class UserPosition {
   final LatLng? center;
@@ -348,41 +352,68 @@ class _ToPageState extends State<ToPage> {
   bool _showDetail = false;
   bool _suggestionSelected = false;
   bool _viewingDestinationList = false;
+  JourneyData? jd;
   DestinationMarker? _suggestedMarker = null;
+  bool loading_state = false;
 
-  _handleNavigateToNextPage(UserPosition args) {
-    if (list_of_destinations.isNotEmpty) {
-      showDialog(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-                  title: const Text(
-                      "Have you added all the places you want to visit?"),
-                  actions: <Widget>[
-                    TextButton(
-                        onPressed: () => _navigateToNextPage(args),
-                        child: const Text("Yes")),
-                    TextButton(
-                        onPressed: () => Navigator.pop(context, "No"),
-                        child: const Text("No"))
-                  ]));
-    } else {
-      showDialog(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-                  title: Text(
-                      "You have not added any destinations in your plan! Please choose a destination!"),
-                  actions: <Widget>[
-                    TextButton(
-                        onPressed: () => Navigator.pop(context, "No"),
-                        child: const Text("Ok!"))
-                  ]));
+  
+  _handleNavigateToNextPage(UserPosition args){
+    if(list_of_destinations.isNotEmpty){
+      showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+        title : const Text("Have you added all the places you want to visit?"),
+        actions : <Widget>[
+          TextButton(onPressed: () =>_navigateToNextPage(args), child: const Text("Yes")),
+          TextButton(onPressed: () => Navigator.pop(context, "No") , child: const Text("No"))
+        ]
+      )
+      );
+    }
+    else{
+      showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+      title : Text("You have not added any destinations in your plan! Please choose a destination!"),
+      actions : <Widget>[
+        TextButton( onPressed: () => Navigator.pop(context, "No") , child: const Text("Ok!"))
+      ]
+    )
+    );
     }
   }
 
-  _navigateToNextPage(UserPosition args) {
+  
+  Future<Directions?> _generateRoute(JourneyData args) async{
+    await args.init();
+    LatLng origin = args.currentPosition.center as LatLng;
+    LatLng destination = args.getLastDockingStation();
+    final directions = await DirectionsRepository().getDirections(origin: origin, ending_bike_dock: destination, destinations: args.waypoints);
+    //error here    
+    return directions;
+  }
+
+  _navigateToNextPage(UserPosition args)async{
     Navigator.pop(context);
-    Navigator.pushNamed(context, RoutingMap.routeName,
-        arguments: JourneyData(args, list_of_destinations));
+    setState(() {
+      loading_state = true;
+    });
+    jd = JourneyData(args, list_of_destinations);
+    Directions? route = await _generateRoute(jd as JourneyData);
+    setState(() {
+      loading_state = false;
+    });
+    if( route == null){
+      showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+      title : Text("You have not added any destinations in your plan! Please choose a destination!"),
+      actions : <Widget>[
+        TextButton( onPressed: () => Navigator.pop(context, "No") , child: const Text("Ok!"))
+      ]
+    )
+    );
+    }
+    else{
+      Navigator.pushNamed(context, RoutingMap.routeName, arguments : JourneyDataWithRoute(
+        journeyData: jd as JourneyData,
+        route : route, 
+      ));
+    }
   }
 
   void autoCompleteSearch(String value) async {
@@ -671,9 +702,13 @@ class _ToPageState extends State<ToPage> {
 
         //if(_showDetail && currPrediction != null ) _showDetailPage(),
 
-        if (!_showDetail && _viewingDestinationList) _showDestinationList(),
-      ]),
-    ));
+              if(!_showDetail && _viewingDestinationList) _showDestinationList(),
+              if(loading_state) CircularProgressIndicator(),
+            ]
+          ),
+          
+      )
+    );
   }
 
   //void _generateBikeMarkers(){

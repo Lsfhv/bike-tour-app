@@ -22,8 +22,7 @@ class GetApi {
   Future<Set<BikePointModel>> fetchBikePoints() async {
     // Stopwatch stopwatch = Stopwatch()..start();
     Set<BikePointModel> bikePoints ={};
-    var response =
-        await http.get(Uri.parse('https://api.tfl.gov.uk/BikePoint/'));
+    var response = await http.get(Uri.parse('https://api.tfl.gov.uk/BikePoint/')).whenComplete(() => print("Bike Fetch Complete")).catchError((error) => print(error));
     if(response.statusCode == 429){
       await Future.delayed(Duration(seconds: 60));
       response = await http.get(Uri.parse('https://api.tfl.gov.uk/BikePoint/'));
@@ -41,9 +40,8 @@ class GetApi {
     return bikePoints;
   }
 
-  Future<Set<BikePointModel>> getNearbyParkingDocks(LatLng point,{int uses = 1}) async{
+  Future<Set<BikePointModel>> getNearbyParkingDocks(LatLng point, Set<BikePointModel> bikePoints, {int uses = 1}) async{
     Set<BikePointModel> nearby_docks = {};
-    Set<BikePointModel> bikePoints = await fetchBikePoints();
     for(BikePointModel dock in bikePoints){
       LatLng dock_latlng = LatLng(dock.lat,dock.lon);
       double distance = _calculate_distance(from : point, to : dock_latlng);
@@ -55,9 +53,8 @@ class GetApi {
     return nearby_docks;
   }
 
-  Future<Set<BikePointModel>> getNearbyBikingDocks(LatLng point, {int uses = 1}) async{
+  Future<Set<BikePointModel>> getNearbyBikingDocks(LatLng point, Set<BikePointModel> bikePoints, {int uses = 1}) async{
     Set<BikePointModel> nearby_docks = {};
-    Set<BikePointModel> bikePoints = await fetchBikePoints();
     for(BikePointModel dock in bikePoints){
       LatLng dock_latlng = LatLng(dock.lat,dock.lon);
       double distance = _calculate_distance(from : point, to : dock_latlng);
@@ -149,3 +146,4 @@ class GetApi {
 
   }
 }
+
