@@ -25,7 +25,10 @@ class _SignUpFormState extends State<SignUpForm> {
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 
   final RegExp _validPasswordRegExp =
-      RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+      RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,32}$');
+
+//This stronger regexp doesnt work
+// r"""^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|\]).{8,32}$"""
 
   @override
   void dispose() {
@@ -42,7 +45,7 @@ class _SignUpFormState extends State<SignUpForm> {
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: Key("1"),
+      key: _formKey,
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
@@ -67,6 +70,8 @@ class _SignUpFormState extends State<SignUpForm> {
                   validator: (value) {
                     if (!_validEmailRegExp.hasMatch(value!)) {
                       return 'Not a valid email';
+                    } else {
+                      return 'Email is valid';
                     }
                   },
                   controller: _emailController,
@@ -78,7 +83,9 @@ class _SignUpFormState extends State<SignUpForm> {
                   key: Key("PasswordField"),
                   validator: (value) {
                     if (!_validPasswordRegExp.hasMatch(value!)) {
-                      return 'Password must be 8 characters long, contain an Upper Case character, a Number and a Special character';
+                      return r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length, but no more than 32.""";
+                    } else {
+                      return "Password is valid";
                     }
                   },
                   controller: _passwordController,
