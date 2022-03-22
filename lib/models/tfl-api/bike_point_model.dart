@@ -30,16 +30,30 @@ class BikePointModel {
     this.usedParkings = 0,
   });
 
+  factory BikePointModel.nul(){
+
+   return BikePointModel(id: 'null', commonName: 'null', NbBikes: 0, NbEmptyDocks: 0, NbDocks: 0, lat: 0, lon: 0, distance: 0, usedBikes: 0, usedParkings: 0);
+  }
+
   factory BikePointModel.fromJson(Map<String, dynamic> json) {
-    return BikePointModel(
-      id: json['id'],
-      commonName: json['commonName'],
-      NbBikes: int.parse( (json['additionalProperties'][6]['value'] as String).length == 0 ? (json['additionalProperties'][6]['value'] as String) : DEFAULT_NUMBER_FOR_NO_DATA ),
-      NbEmptyDocks: int.parse((json['additionalProperties'][7]['value'] as String).length == 0 ? (json['additionalProperties'][7]['value'] as String) : DEFAULT_NUMBER_FOR_NO_DATA ),
-      NbDocks: int.parse((json['additionalProperties'][8]['value'] as String).length == 0 ? (json['additionalProperties'][8]['value'] as String) : DEFAULT_NUMBER_FOR_NO_DATA ),
-      lat : json['lat'],
-      lon : json['lon']
-    );
+    try{
+      return BikePointModel(
+        id: json['id'],
+        commonName: json['commonName'],
+        NbBikes: int.parse( (json['additionalProperties'][6]['value'] as String).isNotEmpty ? (json['additionalProperties'][6]['value'] as String) : DEFAULT_NUMBER_FOR_NO_DATA ),
+        NbEmptyDocks: int.parse((json['additionalProperties'][7]['value'] as String).isNotEmpty ? (json['additionalProperties'][7]['value'] as String) : DEFAULT_NUMBER_FOR_NO_DATA ),
+        NbDocks: int.parse((json['additionalProperties'][8]['value'] as String).isNotEmpty ? (json['additionalProperties'][8]['value'] as String) : DEFAULT_NUMBER_FOR_NO_DATA ),
+        lat : json['lat'],
+        lon : json['lon']
+      );
+    }
+    catch(error){
+      print(error);
+      print((json['additionalProperties'][6]['value']));
+      print((json['additionalProperties'][7]['value']));
+      print((json['additionalProperties'][8]['value']));
+    }
+    return BikePointModel.nul();
   }
 
   init_withDS(DocumentReference ss) async{
