@@ -92,8 +92,8 @@ class GetApi {
   increaseParkingUsed(BikePointModel dock, {int number = 1}) async{
     
     DocumentReference<Map<String, dynamic>> ss = bikesRef.doc(dock.id);
-    int new_parking_uses = (ss.get().then((value) => value.get(BikeCollectionConstants.NbUsedParkings)) as int) + number;
-
+    DocumentSnapshot<Map<String, dynamic>> data = await ss.get();
+    int new_parking_uses = ((await data.get(BikeCollectionConstants.NbUsedParkings)) as int) + number;
     await FirebaseFirestore.instance.collection(BikeCollectionConstants.collectionName).doc(dock.id).update({
       BikeCollectionConstants.NbUsedParkings :new_parking_uses,
     });      
@@ -102,7 +102,8 @@ class GetApi {
 
   increaseBikeUsed(BikePointModel dock,{int number = 1}) async{
     DocumentReference<Map<String, dynamic>> ss = bikesRef.doc(dock.id);
-    int new_bike_uses = (ss.get().then((value) => value.get(BikeCollectionConstants.NbUsedBikes)) as int) + number;
+    DocumentSnapshot<Map<String, dynamic>> data = await ss.get();
+    int new_bike_uses = ((await data.get(BikeCollectionConstants.NbUsedBikes)) as int) + number;
     await FirebaseFirestore.instance.collection(BikeCollectionConstants.collectionName).doc(dock.id).update({
       BikeCollectionConstants.NbUsedBikes : new_bike_uses,
     });
@@ -111,7 +112,8 @@ class GetApi {
 
   decreaseParkingUsed(BikePointModel dock, {int number = 1}) async{
     DocumentReference<Map<String, dynamic>> ss = bikesRef.doc(dock.id);
-    int new_parking_uses = (ss.get().then((value) => value.get(BikeCollectionConstants.NbUsedParkings)) as int) - number;
+    DocumentSnapshot<Map<String, dynamic>> data = await ss.get();
+    int new_parking_uses = ((await data.get(BikeCollectionConstants.NbUsedParkings)) as int) - number;
 
     await FirebaseFirestore.instance.collection(BikeCollectionConstants.collectionName).doc(dock.id).update({
       BikeCollectionConstants.NbUsedParkings :new_parking_uses,
@@ -119,8 +121,9 @@ class GetApi {
   }
 
   decreaseBikeUsed(BikePointModel dock,{int number = 1}) async{
-    DocumentReference<Map<String, dynamic>> ss = bikesRef.doc(dock.id);
-    int new_bike_uses = (ss.get().then((value) => value.get(BikeCollectionConstants.NbUsedBikes)) as int) + number;
+      DocumentReference<Map<String, dynamic>> ss = bikesRef.doc(dock.id);
+    DocumentSnapshot<Map<String, dynamic>> data = await ss.get();
+    int new_bike_uses = ((await data.get(BikeCollectionConstants.NbUsedBikes)) as int) - number;
     await FirebaseFirestore.instance.collection(BikeCollectionConstants.collectionName).doc(dock.id).update({
       BikeCollectionConstants.NbUsedBikes : new_bike_uses,
     });
