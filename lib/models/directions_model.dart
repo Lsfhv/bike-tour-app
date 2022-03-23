@@ -73,4 +73,15 @@ class Directions {
     );
   }
   }
+
+  List<List<double>> getPolypoints(){
+    List<List<double>> coords = [];
+    for(PointLatLng point in polylinePoints){
+      List<double> coord = [];
+      coord.add(point.latitude); 
+      coord.add(point.longitude);
+      coords.add(coord);
+    }
+    return coords;
+  }
 }

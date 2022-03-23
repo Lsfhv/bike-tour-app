@@ -1,5 +1,6 @@
 import 'package:bike_tour_app/screens/navigation/constants.dart';
 import 'package:bike_tour_app/screens/navigation/to_page.dart';
+import 'package:bike_tour_app/screens/widgets/loading_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -121,7 +122,7 @@ class _FromPageState extends State<FromPage> {
                 initialCameraPosition: CameraPosition(target: _center, zoom: 15),
               ),
             ),
-            if(_fetchingLocation && locationPermission) Center(child: CircularProgressIndicator()),
+            if(_fetchingLocation && locationPermission) Center(child: LoadingWidget(loading_text: "Finding Your Location",)),
             
           ]
           ,) 

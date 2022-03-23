@@ -3,7 +3,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
+import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 
 class Instructions {
   final List<Instruction> instructions;
@@ -54,6 +54,11 @@ class Instructions {
   return Instructions(instructions: instructions);
   }
 
+
+  Instructions operator +(Instructions others){
+    return Instructions(instructions: this.instructions + others.instructions);
+  }
+
 }
 
 class Instruction {
@@ -77,4 +82,14 @@ class Instruction {
     required this.distance_text,
     required this.time_text,
   });
+
+  bool stillInInstruction(LatLng point){
+    String polylineResult = encodePoint(point.latitude) + encodePoint(point.longitude); 
+    if(polyline.contains(polylineResult)){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
 }
