@@ -79,7 +79,8 @@ if __name__ == "__main__":
     b = BikeDataPull()
     b.pull_data()
 
-    # curr_coord = (51.5044584,-0.105681) #test
+
+    # curr_coord = (51.5044584,-0.105681)
     # BikeDataProcessor.postcode(curr_coord)
     # destination = b.points['Tanner Street, Bermondsey']
     # destination = (51.5007,0.0858)
