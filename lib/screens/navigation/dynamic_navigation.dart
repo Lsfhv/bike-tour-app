@@ -22,7 +22,6 @@ import 'package:app_settings/app_settings.dart';
 
 import '../../models/directions_model.dart';
 import '../../models/tfl-api/get_api.dart';
-import 'mymap.dart';
 
 class RouteData{
   // final Directions directions;
@@ -71,12 +70,32 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
 
   }
 
+  Future<bool> enableBackgroundMode() async {
+    bool _bgModeEnabled = await location.isBackgroundModeEnabled();
+    if (_bgModeEnabled) {
+      return true;
+    } else {
+      try {
+        await location.enableBackgroundMode();
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+      try {
+        _bgModeEnabled = await location.enableBackgroundMode();
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+      print(_bgModeEnabled); //True!
+      return _bgModeEnabled;
+ }
+}
+
   @override
   void initState() {
     super.initState();
     _requestPermission();
     location.changeSettings(accuracy: loc.LocationAccuracy.high);
-    location.enableBackgroundMode(enable: true); // CALLED BY THIS
+    enableBackgroundMode(); // CALLED BY THIS
     _listenLocation();
   }
   
@@ -298,7 +317,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
     }
   }
 
-  void _handleError() async{
+  Future<void> _handleError() async{
     _locationSubscription?.cancel();
     await _requestPermission();
   }
@@ -307,7 +326,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
     LatLng cur_point = LatLng(current_position.latitude as double, current_position.longitude as double);
     const int TOLEARANCE = 1;
     LatLng reached_point = LatLng(_info!.polylinePoints.first.latitude, _info!.polylinePoints.first.longitude);
-    if(_calculate_distance(from: cur_point, to: reached_point) >= 1 ){
+    if(_calculate_distance(from: cur_point, to: reached_point) <= 1 ){
       setState(() {
         PointLatLng past_point = _info!.polylinePoints.removeAt(0);
         past_journeys.add(LatLng(past_point.latitude, past_point.longitude));
@@ -316,9 +335,9 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
   }
 
   Future<void> _listenLocation() async {
-    _locationSubscription = location.onLocationChanged.handleError((onError) {
+    _locationSubscription = location.onLocationChanged.handleError((onError) async {
       print(onError);
-      _handleError();
+      await _handleError();
     }).listen((loc.LocationData cLoc) async {
       // cLoc contains the lat and long of the
       // current user's position in real time,
