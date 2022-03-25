@@ -5,13 +5,13 @@ import os
 
 
 class PostCodePull:
-    def __init__(self, url="https://api.tfl.gov.uk/BikePoint/"):
-        self.url = url
+    # def __init__(self, url="https://api.tfl.gov.uk/BikePoint/"):
+    #     self.url = url
 
-    def pullLatlon(self):
+    def pullLatlon():
         with open(r"bike-tour-app/lib/models/postcode-api/latlon.txt", "w") as outfile:
             try:
-                response = requests.get(self.url)
+                response = requests.get("https://api.tfl.gov.uk/BikePoint/")
                 datas = json.loads(response.text)
                 for data in datas:
                     lat, lon = data['lat'], data['lon']
@@ -22,7 +22,7 @@ class PostCodePull:
             remove_chars = len(os.linesep)
             outfile.truncate(outfile.tell() - remove_chars)
 
-    def coordstxtToPost(self):
+    def coordstxtToPost():
         with open(r"bike-tour-app/lib/models/postcode-api/latlon.txt", "r+") as file:
             for line in file:
                 PostCodePull.pullPostCode(line)
@@ -43,10 +43,42 @@ class PostCodePull:
     #         mappings[PostCodePull.pullPostCode(d)] = d
 
     def sortPostCode():
-        pass
+        with open(r"bike-tour-app/lib/models/postcode-api/postcode.txt", "r") as file:
+            for line in file:
+                if line[0] == "N" and line[1].isnumeric():
+                    with open(r"bike-tour-app/lib/models/postcode-api/n_postcode.txt", "w") as txt:
+                        txt.write(line)
+
+                if line[0] == "NW":
+                    with open(r"bike-tour-app/lib/models/postcode-api/nw_postcode.txt", "w") as txt:
+                        txt.write(line)
+
+                if line[0] == "W" and line[1].isnumeric():
+                    with open(r"bike-tour-app/lib/models/postcode-api/w_postcode.txt", "w") as txt:
+                        txt.write(line)
+
+                if line[0] == "WC":
+                    with open(r"bike-tour-app/lib/models/postcode-api/wc_postcode.txt", "w") as txt:
+                        txt.write(line)
+
+                if line[0] == "SW":
+                    with open(r"bike-tour-app/lib/models/postcode-api/sw_postcode.txt", "w") as txt:
+                        txt.write(line)
+
+                if line[0] == "SE":
+                    with open(r"bike-tour-app/lib/models/postcode-api/se_postcode.txt", "w") as txt:
+                        txt.write(line)
+
+                if line[0] == "E" and line[1].isnumeric():
+                    with open(r"bike-tour-app/lib/models/postcode-api/e_postcode.txt", "w") as txt:
+                        txt.write(line)
+
+                if line[0] == "EC":
+                    with open(r"bike-tour-app/lib/models/postcode-api/ec_postcode.txt", "w") as txt:
+                        txt.write(line)
 
 
 if __name__ == "__main__":
-    obj = PostCodePull()
-    obj.pullLatlon()
-    obj.coordstxtToPost()
+    PostCodePull.pullLatlon()
+    PostCodePull.coordstxtToPost()
+    PostCodePull.sortPostCode()
