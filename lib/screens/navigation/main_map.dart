@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:bike_tour_app/screens/groupRouting/group_routing.dart';
 import 'package:bike_tour_app/screens/markers/bike_markers.dart';
 import 'package:bike_tour_app/screens/settings/settings.dart';
 import 'package:flutter/material.dart';
@@ -69,6 +70,7 @@ class _MainMapState extends State<MainMap> {
                   heroTag: "Settings",
                   onPressed: () {
                     // person
+                    Navigator.push(context, MaterialPageRoute(builder: ((context) => GroupRoutingPage())));
                   },
                   backgroundColor:
                       Color.fromARGB(202, 85, 190, 56).withOpacity(1),
