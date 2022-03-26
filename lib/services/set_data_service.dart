@@ -17,29 +17,29 @@ class SetData {
     return "Success";
   }
 
-  void generateGroup ({required String uid}) async{
-    print(uid);
+  void generateGroup ({required String uid}) async {
+
+    // var x = _firestore.collection('users').doc(uid);
 
 
-    _firestore.collection('users').doc(uid).collection("1").add({
-      "key":0
-    }).then((_){
-      print("collection created");
-    }).catchError((_){
-      print("an error occured");
-    });
+    // print(x);
+    // var y = await x.get();
+    // print(y['firstName']);
 
 
 
 
-    // _firestore.collection("you_Collection_Path").add({
-    //   "key":0
+    
+    // _firestore.collection('users').doc(uid).collection("group1").add({
+    //   "Leader":[1,2],
     // }).then((_){
     //   print("collection created");
     // }).catchError((_){
     //   print("an error occured");
     // });
 
+
+    // _firestore.collection('users').doc(uid).add({"hey1":[uid]});
 
   }
 }

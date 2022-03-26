@@ -25,7 +25,11 @@ class _SignUpFormState extends State<SignUpForm> {
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 
   final RegExp _validPasswordRegExp =
-      RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,32}$');
+      RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+
+
+  // final RegExp _validPasswordRegExp =
+  //     RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,32}$');
 
 //This stronger regexp doesnt work
 // r"""^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|\]).{8,32}$"""
@@ -41,6 +45,9 @@ class _SignUpFormState extends State<SignUpForm> {
   }
 
   final _formKey = GlobalKey<FormState>();
+  final _emailKey = Key("EmailField");
+  final _passwordKey = Key("PasswordField");
+  final _passwordConfirmKey = Key("PasswordConfirmField");
 
   @override
   Widget build(BuildContext context) {
@@ -66,12 +73,12 @@ class _SignUpFormState extends State<SignUpForm> {
                   ),
                 ),
                 TextFormField(
-                  key: Key("EmailField"),
+                  key: _emailKey,
                   validator: (value) {
                     if (!_validEmailRegExp.hasMatch(value!)) {
                       return 'Not a valid email';
                     } else {
-                      return 'Email is valid';
+                      return null;
                     }
                   },
                   controller: _emailController,
@@ -80,12 +87,12 @@ class _SignUpFormState extends State<SignUpForm> {
                   ),
                 ),
                 TextFormField(
-                  key: Key("PasswordField"),
+                  key: _passwordKey,
                   validator: (value) {
                     if (!_validPasswordRegExp.hasMatch(value!)) {
                       return r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length, but no more than 32.""";
                     } else {
-                      return "Password is valid";
+                      return null;
                     }
                   },
                   controller: _passwordController,
@@ -95,10 +102,12 @@ class _SignUpFormState extends State<SignUpForm> {
                   ),
                 ),
                 TextFormField(
-                  key: Key("PasswordConfirmField"),
+                  key: _passwordConfirmKey,
                   validator: (value) {
                     if (value != _passwordController.text) {
                       return 'Passwords do not match';
+                    } else {
+                      return null;
                     }
                   },
                   controller: _passwordConfirmationController,
