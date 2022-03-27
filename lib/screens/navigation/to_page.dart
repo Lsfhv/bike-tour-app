@@ -592,6 +592,7 @@ class _ToPageState extends State<ToPage> {
               onPressed: () => _showDestinations(),
               icon: Icon(Icons.route_outlined)),
         ],
+        backgroundColor: Color.fromARGB(202, 85, 190, 56),
       ),
       body: Stack(alignment: Alignment.center, children: [
         Center(
