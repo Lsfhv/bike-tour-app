@@ -21,9 +21,10 @@ class _FromPageState extends State<FromPage> {
   LatLng _center = const LatLng(51.507399, -0.127689);
   Icon customIcon = const Icon(Icons.search);
   bool _fetchingLocation = false;
-  Marker? _currLoc = null; 
+  Marker? _currLoc = null;
   late TextEditingController _controller;
-  final _searcher = GoogleGeocodingApi("AIzaSyA75AqNa-yxMDYqffGrN0AqyUPumqkmuEs");
+  final _searcher =
+      GoogleGeocodingApi("AIzaSyA75AqNa-yxMDYqffGrN0AqyUPumqkmuEs");
   @override
   void initState() {
     super.initState();
@@ -39,145 +40,143 @@ class _FromPageState extends State<FromPage> {
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
-  Future<void> _getCurrentLocation() async{
+
+  Future<void> _getCurrentLocation() async {
     locationPermission = await Permission.location.request().isGranted;
-    if(locationPermission){
+    if (locationPermission) {
       setState(() {
         _fetchingLocation = true;
       });
-      await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
-        .then((Position position) {
-          setState(() {
-            LatLng pos =  LatLng(position.latitude, position.longitude);
-            _center = pos;
-            mapController.animateCamera(CameraUpdate.newLatLng(_center));
-            _currentPosition = UserPosition(pos);
-            _fetchingLocation = false;
-
-          });
-          showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
-            title : Text("Your journey starts now!" ),//+tag),
-            actions : <Widget>[
-              TextButton(onPressed: () => Navigator.pushNamed(context, ToPage.routeName, arguments : _currentPosition), child: const Text("Ok!")),
-            ]
-            )
-          ); 
-        }).catchError((e) {
-          print(e);
+      await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.best)
+          .then((Position position) {
+        setState(() {
+          LatLng pos = LatLng(position.latitude, position.longitude);
+          _center = pos;
+          mapController.animateCamera(CameraUpdate.newLatLng(_center));
+          _currentPosition = UserPosition(pos);
+          _fetchingLocation = false;
         });
+        showDialog(
+            context: context,
+            builder: (BuildContext context) =>
+                AlertDialog(title: Text("Your journey starts now!"), //+tag),
+                    actions: <Widget>[
+                      TextButton(
+                          onPressed: () => Navigator.pushNamed(
+                              context, ToPage.routeName,
+                              arguments: _currentPosition),
+                          child: const Text("Ok!")),
+                    ]));
+      }).catchError((e) {
+        print(e);
+      });
     }
   }
 
-
-  _handleSubmit(String location) async{
+  _handleSubmit(String location) async {
     String edited_loc = location + " London";
-    GoogleGeocodingResponse loc =  await _searcher.search(edited_loc);
+    GoogleGeocodingResponse loc = await _searcher.search(edited_loc);
     setState(() {
-      LatLng pos = LatLng(loc.results.first.geometry!.location.lat, loc.results.first.geometry!.location.lng);
+      LatLng pos = LatLng(loc.results.first.geometry!.location.lat,
+          loc.results.first.geometry!.location.lng);
       _center = pos;
       mapController.animateCamera(CameraUpdate.newLatLng(_center));
-      _currentPosition = UserPosition( pos);
+      _currentPosition = UserPosition(pos);
       _currLoc = UserMarker(user: _currentPosition as UserPosition);
-
     });
     //Pop that you are adding new destination
-    showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
-      title : Text("Your journey starts now!" ),//+tag),
-      actions : <Widget>[
-        TextButton(onPressed: () => Navigator.pushNamed(context, ToPage.routeName, arguments : _currentPosition), child: const Text("Ok!"))
-      ]
-    )
-    );
+    showDialog(
+        context: context,
+        builder: (BuildContext context) =>
+            AlertDialog(title: Text("Your journey starts now!"), //+tag),
+                actions: <Widget>[
+                  TextButton(
+                      onPressed: () => Navigator.pushNamed(
+                          context, ToPage.routeName,
+                          arguments: _currentPosition),
+                      child: const Text("Ok!"))
+                ]));
     //Navigate to next page
     //Navigator.pushNamed(context, ToPage.routeName, arguments : _currentPosition);
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title : LocationGetter(onSubmitted: _handleSubmit, onTap : _getCurrentLocation),
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-          ),
-
-          body: Stack(alignment: Alignment.center,
-          children: [
-            Center(
-              child: GoogleMap(
-                onMapCreated: _onMapCreated,
-                markers: {if (_currLoc != null) _currLoc as Marker},
-                initialCameraPosition: CameraPosition(target: _center, zoom: 15),
-              ),
+        home: Scaffold(
+            appBar: AppBar(
+              title: LocationGetter(
+                  onSubmitted: _handleSubmit, onTap: _getCurrentLocation),
+              automaticallyImplyLeading: false,
+              centerTitle: true,
+              backgroundColor: Color.fromARGB(202, 85, 190, 56),
             ),
-            if(_fetchingLocation && locationPermission) Center(child: CircularProgressIndicator()),
-            
-          ]
-          ,) 
-
-      )
-    );
+            body: Stack(
+              alignment: Alignment.center,
+              children: [
+                Center(
+                  child: GoogleMap(
+                    onMapCreated: _onMapCreated,
+                    markers: {if (_currLoc != null) _currLoc as Marker},
+                    initialCameraPosition:
+                        CameraPosition(target: _center, zoom: 15),
+                  ),
+                ),
+                if (_fetchingLocation && locationPermission)
+                  Center(child: CircularProgressIndicator()),
+              ],
+            )));
   }
 
-
   //void _generateBikeMarkers(){
-    //List<BikeDockPoint> stations = FirebaseFunctions.instance('getBikeStations');
+  //List<BikeDockPoint> stations = FirebaseFunctions.instance('getBikeStations');
 
   //}
-
-
-
 
 }
 
 class LocationGetter extends StatefulWidget {
-  const LocationGetter({ Key? key, required this.onSubmitted, required this.onTap}) : super(key: key);
+  const LocationGetter(
+      {Key? key, required this.onSubmitted, required this.onTap})
+      : super(key: key);
   final onTap;
-  final ValueChanged<String>? onSubmitted;  
+  final ValueChanged<String>? onSubmitted;
   @override
   _LocationGetterState createState() => _LocationGetterState();
 }
 
 class _LocationGetterState extends State<LocationGetter> {
-
-
-  void _handleSubmit(String destination){
+  void _handleSubmit(String destination) {
     widget.onSubmitted!(destination);
   }
 
-  void _handleTap(){
+  void _handleTap() {
     widget.onTap();
   }
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children : <Widget> [
-        Expanded(
-          child:
-            TextField(
-              decoration: InputDecoration(
-              hintText: 'Where are you?',
-              hintStyle: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontStyle: FontStyle.italic,
-              ),
-              border: InputBorder.none,
-              ),
-              style: TextStyle(
-              color: Colors.white,
-              ),
-              onSubmitted: (String location) async {_handleSubmit(location);},
-            )
+    return Row(children: <Widget>[
+      Expanded(
+          child: TextField(
+        decoration: InputDecoration(
+          hintText: 'Where are you?',
+          hintStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontStyle: FontStyle.italic,
+          ),
+          border: InputBorder.none,
         ),
-        IconButton(onPressed: _handleTap, icon: Icon(Icons.location_on))
-      ]
-    );
+        style: TextStyle(
+          color: Colors.white,
+        ),
+        onSubmitted: (String location) async {
+          _handleSubmit(location);
+        },
+      )),
+      IconButton(onPressed: _handleTap, icon: Icon(Icons.location_on))
+    ]);
   }
 }
-
-
-
-
-

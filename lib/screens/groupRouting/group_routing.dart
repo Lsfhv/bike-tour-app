@@ -20,7 +20,7 @@ class _GroupRoutingPageState extends State<GroupRoutingPage> {
         child: Stack(
           children: <Widget>[
             Align(
-              alignment: Alignment(0, -0.1),
+              alignment: Alignment(0, -0.2),
               child: SizedBox(
                 width: 250.0,
                 height: 75.0,
@@ -37,7 +37,7 @@ class _GroupRoutingPageState extends State<GroupRoutingPage> {
               ),
             ),
             Align(
-              alignment: Alignment(0, 0.1),
+              alignment: Alignment(0, 0.2),
               child: SizedBox(
                 width: 250.0,
                 height: 75.0,
@@ -59,47 +59,6 @@ class _GroupRoutingPageState extends State<GroupRoutingPage> {
     );
   }
 
-  // body: Container(
-  //   height: MediaQuery.of(context).size.height,
-  //   width: MediaQuery.of(context).size.width,
-  //   child: Stack(
-  //       Align(
-  //         alignment: Alignment(0, -0.1),
-  //         child: SizedBox(
-  //           width: 250.0,
-  //           height: 75.0,
-  //           // ignore: deprecated_member_use
-  //           child: RaisedButton(
-  //             child: Text(
-  //               'CREATE GROUP',
-  //               style:
-  //                   GoogleFonts.lato(color: Colors.white, fontSize: 16.5),
-  //             ),
-  //             color: Color.fromARGB(202, 85, 190, 56).withOpacity(1),
-  //             onPressed: _createGroup,
-  //           ),
-  //         ),
-  //        Align(
-  //         alignment: Alignment(0, 0.1),
-  //         child: SizedBox(
-  //           width: 250.0,
-  //           height: 75.0,
-  //           // ignore: deprecated_member_use
-  //           child: RaisedButton(
-  //             child: Text(
-  //               'JOIN GROUP',
-  //               style:
-  //                   GoogleFonts.lato(color: Colors.white, fontSize: 16.5),
-  //             ),
-  //             color: Color.fromARGB(202, 85, 190, 56).withOpacity(1),
-  //             onPressed: _joinGroup,
-  //           ),
-  //         ),
-  //       ),
-  //       ),
-  //     ],
-  //   ),
-  // ),
   void _joinGroup() {}
 
   void _createGroup() {
