@@ -74,10 +74,10 @@ void dispose() {
               'Give this code to your friends: $_code',
               style: TextStyle(fontSize: 20),
             ),
-            LinearProgressIndicator(
-              value: controller.value,
-              semanticsLabel: 'Linear progress indicator',
-            ),
+            // LinearProgressIndicator(
+            //   value: controller.value,
+            //   semanticsLabel: 'Linear progress indicator',
+            // ),
           ],
         ),
     );
