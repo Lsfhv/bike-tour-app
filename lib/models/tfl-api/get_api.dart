@@ -48,6 +48,7 @@ class GetApi {
       if(distance <= RADIUS && dock.NbEmptyDocks >= uses){
         dock.setDistance(distance);
         nearby_docks.add(dock);
+        break;
       }
     }
     return nearby_docks;
@@ -61,6 +62,7 @@ class GetApi {
       if(distance <= RADIUS && dock.NbBikes >= uses){
         dock.setDistance(distance);
         nearby_docks.add(dock);
+        break;
       }
     }
     return nearby_docks;

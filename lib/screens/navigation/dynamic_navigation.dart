@@ -14,6 +14,7 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 import 'package:googleapis/admob/v1.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 
 import 'package:location/location.dart' as loc;
@@ -63,6 +64,10 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
   bool reached = false;
   bool cancelled = false;
   List<LatLng> past_journeys =[];
+  bool muted = false;
+
+  var ttsState;
+
   
 
   void _onMapCreated(GoogleMapController controller) {
@@ -105,7 +110,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
       polylineId: const PolylineId('past_journey'),
       color: Colors.grey,
       width: 5,
-      points: polylinepoints
+      points: past_journeys
           .map((e) => LatLng(e.latitude, e.longitude))
           .toList(),
       ),
@@ -113,7 +118,9 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
         polylineId: const PolylineId('rest_of_journey'),
         color: STANDARD_COLOR,
         width: 5,
-        points: past_journeys,
+        points: polylinepoints
+          .map((e) => LatLng(e.latitude, e.longitude))
+          .toList(),
       ),
     };
   }
@@ -126,6 +133,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    print(polylinepoints.first.toString());
     final args = ModalRoute.of(context)!.settings.arguments as RouteData;
     _info = args.jdwr.route;
     jdwr = args.jdwr;
@@ -151,15 +159,24 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
               markers: _markers,
               polylines: _info != null ? _polyline() : {},
             ),
-                      Positioned(
+          Positioned(
             child: IconButton(
               iconSize: 20,
               icon: Icon(Icons.backspace),
-              onPressed: () => _cancelTrip(),
+              onPressed: ()async => await _cancelTrip(),
             ),
             left: 10,
-            top: 10,
-        ),
+            bottom: 10,
+          ),
+          Positioned(
+            child: IconButton(
+              icon: Icon(Icons.redo_rounded),
+              iconSize: 20,
+              onPressed: () async => await _reroute(),
+            ),
+            left :40,
+            bottom: 10,
+          ),
         if(_locationSubscription != null)
         Positioned(
           child:  InstructionWidget(instruction: current_instruction as Instruction),
@@ -182,32 +199,36 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
         Marker _new_marker = UserMarker(user: UserPosition(_center) );
         _markers.add(_new_marker);
         if(instructions != null && nextCheckPoint !=null ){
-          print(nextCheckPoint);
-          if(_reached_next_check_point()){
-            _update_instruction();
-            }     
+          print(nextCheckPoint); 
         }
       });
+      if(_reached_next_check_point()){
+        _update_instruction();
+        if(!muted){
+          await _speak();
+      }
+      }    
+      
     }
-    // else{
-    //     _center = LatLng(current_position.latitude as double, current_position.longitude as double);
-    //     _markers.removeWhere((m) => m.markerId.value == 'current_location');
-    //     Marker _new_marker = UserMarker(user: UserPosition(_center) );
-    //     _markers.add(_new_marker);
-    //     if(instructions != null && nextCheckPoint !=null ){
-    //       print(nextCheckPoint);
-    //       if(_reached_next_check_point()){
-    //         _update_instruction();
-    //         }     
-    //     }
-    //   }
 }
+
+  String _editString(String s){
+    RegExp exp = RegExp(r"<[^>]*>",multiLine: true,caseSensitive: true);
+    return s.replaceAll(exp, ' ');
+  }
+
+  _speak() async{
+    final flutterTts = FlutterTts();
+    
+    var result = await flutterTts.speak(_editString(current_instruction!.instruction));
+  }
+
 
   bool is_on_route(){
     LatLng cur_pos = LatLng(current_position.latitude as double, current_position.longitude as double);
-    const double TOLERANCE = 500;
+    const double TOLERANCE = 10;
     int len = _info!.polylinePoints.length;
-    List<PointLatLng> points = _info!.polylinePoints.sublist(len/4 as int,3*len/4 as int);
+    List<PointLatLng> points = _info!.polylinePoints.sublist((len/4).toInt(),(3*len/4 ).toInt());
     for(PointLatLng point in points){
       LatLng latlng = LatLng(point.latitude, point.longitude);
       double distance = _calculate_distance(from: cur_pos, to: latlng);
@@ -218,7 +239,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
     return false;
   }
 
-  void _reroute() async{
+  _reroute() async{
     //fetch directions to latest endpoint
     LatLng curr_pos = LatLng(current_position.latitude as double, current_position.longitude as double);
     LatLng end_point = current_instruction!.end_loc;
@@ -234,7 +255,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
     polypoints.addAll(_info!.polylinePoints);
     for(PointLatLng point in _info!.polylinePoints){
       final latlng = LatLng(point.latitude,point.longitude);
-      if(_calculate_distance(from: end_point, to: latlng)<= 20){
+      if(_calculate_distance(from: end_point, to: latlng)<= TOLERANCE){
         break;
       }
       polypoints.remove(point);
@@ -257,7 +278,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
   void _update_instruction(){
     LatLng cur_pos = LatLng(current_position.latitude as double, current_position.longitude as double);
     bool onRoute = is_on_route();
-    bool stillOnCurrentInstruction = current_instruction!.stillInInstruction(cur_pos);
+    bool stillOnCurrentInstruction = _reached_next_check_point();//current_instruction!.stillInInstruction(cur_pos);
     if(instruction_index < instructions.instructions.length){
       current_instruction = instructions.get(instruction_index);
       nextCheckPoint = current_instruction!.end_loc;
@@ -304,7 +325,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
   }
 
   bool _reached_next_check_point(){
-    double tolerance = 2;
+    double tolerance = 20;
     if(nextCheckPoint != null){
       double distance =  _calculate_distance(
         from: LatLng(current_position.latitude as double, current_position.longitude as double,),
@@ -322,12 +343,13 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
     await _requestPermission();
   }
 
-  void _pastPoint(){
+  _pastPoint()  {
     LatLng cur_point = LatLng(current_position.latitude as double, current_position.longitude as double);
-    const int TOLEARANCE = 1;
+    const int TOLEARANCE =50;
     LatLng reached_point = LatLng(_info!.polylinePoints.first.latitude, _info!.polylinePoints.first.longitude);
-    if(_calculate_distance(from: cur_point, to: reached_point) <= 1 ){
-      setState(() {
+    print(_calculate_distance(from: cur_point, to: reached_point));
+    if(_calculate_distance(from: cur_point, to: reached_point) <= TOLEARANCE ){
+      setState(()  {
         PointLatLng past_point = _info!.polylinePoints.removeAt(0);
         past_journeys.add(LatLng(past_point.latitude, past_point.longitude));
       });

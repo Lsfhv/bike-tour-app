@@ -137,7 +137,7 @@ class _ToPageState extends State<ToPage> {
     });
     if( route == null){
       showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
-      title : Text("You have not added any destinations in your plan! Please choose a destination!"),
+      title : Text("Route is invalid!"),
       actions : <Widget>[
         TextButton( onPressed: () => Navigator.pop(context, "No") , child: const Text("Ok!"))
       ]
@@ -153,7 +153,7 @@ class _ToPageState extends State<ToPage> {
   }
 
   void autoCompleteSearch(String value) async {
-    String edited_value = value + " london";
+    String edited_value = value + "";//" london";
     var result = await googlePlace.autocomplete.get(edited_value);
     if (result != null && result.predictions != null && mounted) {
       setState(() {
@@ -278,10 +278,8 @@ class _ToPageState extends State<ToPage> {
   _delete_destination_at(int index) async {
     late Destination removed;
     setState(() {
-      print(list_of_destinations.length);
       removed = list_of_destinations.removeAt(index);
-      print(list_of_destinations.length);
-      print('removed');
+      _markers!.removeWhere((e) => e.markerId == MarkerId(list_of_destinations[index].name));
     });
 
     showDialog(

@@ -45,7 +45,7 @@ class _FromPageState extends State<FromPage> {
   }
 
   Future<void> _getCurrentLocation() async{
-    locationPermission = await Permission.location.request().isGranted;
+    locationPermission = (await Permission.location.request().isGranted) || (await Permission.locationWhenInUse.serviceStatus.isEnabled);
     if(locationPermission){
       setState(() {
         _fetchingLocation = true;
@@ -71,7 +71,10 @@ class _FromPageState extends State<FromPage> {
           print(e);
         });
     }
-  }
+    else{
+      //await openAppSettings();
+    }
+   }
 
   _onPress(){
     Navigator.pop(context); 
@@ -107,7 +110,7 @@ class _FromPageState extends State<FromPage> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title : LocationGetter(onSubmitted: _handleSubmit, onTap : _getCurrentLocation),
+          title : LocationGetter(onSubmitted: _handleSubmit, onTap : () async => _getCurrentLocation()),
           automaticallyImplyLeading: false,
           centerTitle: true,
           backgroundColor: STANDARD_COLOR,

@@ -84,6 +84,7 @@ class Instruction {
   });
 
   bool stillInInstruction(LatLng point){
+    
     String polylineResult = encodePoint(point.latitude) + encodePoint(point.longitude); 
     if(polyline.contains(polylineResult)){
       return true;

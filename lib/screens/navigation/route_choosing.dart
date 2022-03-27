@@ -7,6 +7,7 @@ import 'package:bike_tour_app/models/tfl-api/get_api.dart';
 import 'package:bike_tour_app/repository/direction.dart';
 import 'package:bike_tour_app/screens/markers/bike_markers.dart';
 import 'package:bike_tour_app/screens/markers/destination_marker.dart';
+import 'package:bike_tour_app/screens/navigation/constants.dart';
 import 'package:bike_tour_app/screens/navigation/dynamic_navigation.dart';
 import 'package:bike_tour_app/screens/widgets/compass.dart';
 import 'package:flutter/material.dart';
@@ -88,8 +89,8 @@ class JourneyData {
           markers.add(DestinationMarker(destination: end));
           markers.add(BikeMarker(station: ending_dock));
 
-          bike_api.increaseBikeUsed(starting_dock, number: number_of_bikers);
-          bike_api.increaseParkingUsed(ending_dock, number: number_of_bikers);
+          await bike_api.increaseBikeUsed(starting_dock, number: number_of_bikers);
+          await bike_api.increaseParkingUsed(ending_dock, number: number_of_bikers);
         }
       }
       else{
@@ -218,7 +219,7 @@ class _RoutingMap extends State<RoutingMap> {
               if (_info != null)
                 Polyline(
                   polylineId: const PolylineId('overview_polyline'),
-                  color: Colors.red,
+                  color: STANDARD_COLOR,
                   width: 5,
                   points: _info!.polylinePoints
                       .map((e) => LatLng(e.latitude, e.longitude))

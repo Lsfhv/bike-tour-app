@@ -63,6 +63,7 @@ dependencies:
   data_connection_checker_nulls: ^0.0.2
   google_polyline_algorithm: ^3.1.0
   platform: ^3.1.0
+  flutter_tts: ^3.3.3
   
 
 dev_dependencies:
