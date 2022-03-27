@@ -262,7 +262,7 @@ void main() {
 
       expect(
           find.text(
-              r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length, but no more than 32."""),
+              r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length."""),
           findsOneWidget);
     });
 
@@ -286,7 +286,7 @@ void main() {
 
       expect(
           find.text(
-              r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length, but no more than 32."""),
+              r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length."""),
           findsOneWidget);
     });
 
@@ -311,7 +311,7 @@ void main() {
 
       expect(
           find.text(
-              r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length, but no more than 32."""),
+              r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length."""),
           findsOneWidget);
     });
     testWidgets("Test4", (WidgetTester tester) async {
@@ -334,7 +334,7 @@ void main() {
 
       expect(
           find.text(
-              r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length, but no more than 32."""),
+              r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length."""),
           findsOneWidget);
     });
   });
@@ -360,7 +360,7 @@ void main() {
 
       expect(
           find.text(
-              r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length, but no more than 32."""),
+              r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length."""),
           findsNothing);
     });
 
@@ -384,7 +384,7 @@ void main() {
 
       expect(
           find.text(
-              r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length, but no more than 32."""),
+              r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length."""),
           findsNothing);
     });
 
@@ -408,7 +408,31 @@ void main() {
 
       expect(
           find.text(
-              r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length, but no more than 32."""),
+              r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length."""),
+          findsNothing);
+    });
+
+    testWidgets("Test4", (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(
+          home: Scaffold(
+        body: SignUpForm(),
+      )));
+
+      var passwordField = find.byKey(const Key("PasswordField"));
+      expect(passwordField, findsOneWidget);
+
+      var register = find.text("Register");
+      expect(register, findsOneWidget);
+
+      await tester.enterText(passwordField, r"""!@#\$&*~1aA""");
+      expect(find.text(r"""!@#\$&*~1aA"""), findsOneWidget);
+
+      await tester.tap(register);
+      await tester.pump();
+
+      expect(
+          find.text(
+              r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length."""),
           findsNothing);
     });
   });

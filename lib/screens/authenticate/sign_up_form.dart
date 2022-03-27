@@ -27,13 +27,6 @@ class _SignUpFormState extends State<SignUpForm> {
   final RegExp _validPasswordRegExp =
       RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
 
-
-  // final RegExp _validPasswordRegExp =
-  //     RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,32}$');
-
-//This stronger regexp doesnt work
-// r"""^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|\]).{8,32}$"""
-
   @override
   void dispose() {
     _emailController.dispose();
@@ -90,7 +83,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   key: _passwordKey,
                   validator: (value) {
                     if (!_validPasswordRegExp.hasMatch(value!)) {
-                      return r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length, but no more than 32.""";
+                      return r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length.""";
                     } else {
                       return null;
                     }
