@@ -1,19 +1,37 @@
-import 'dart:math';
-
-import 'package:bike_tour_app/firebase_options.dart';
-import 'package:bike_tour_app/main.dart';
-import 'package:bike_tour_app/screens/authenticate/sign_in.dart';
 import 'package:bike_tour_app/screens/authenticate/sign_in_form.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('Testing sign in', (WidgetTester tester) async {
-    await tester.pumpWidget(const MaterialApp(home: Scaffold(body: SignInForm(),),));
-    await tester.pumpAndSettle();
-    var x = find.byKey(Key("1"));
-    expect(x, findsOneWidget);
-    assert(1==1);
+  group("Accept valid passwords", () {
+    testWidgets("Test1", (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(
+          home: Scaffold(
+        body: SignInForm(),
+      )));
+
+      var passwordField = find.byKey(const Key("PasswordFieldKey"));
+      expect(passwordField, findsOneWidget);
+
+      var loginButton = find.byKey(const Key("LoginContainer"));
+      expect(loginButton, findsOneWidget);
+
+      await tester.enterText(passwordField, r"""qQqQqQqQq1010!*&$""");
+      expect(find.text(r"""qQqQqQqQq1010!*&$"""), findsOneWidget);
+
+      await tester.tap(loginButton);
+      await tester.pump();
+
+      expect(
+          find.text(
+              r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length."""),
+          findsNothing);
     });
+
+    testWidgets("Test2", (WidgetTester tester) async {});
+
+    testWidgets("Test3", (WidgetTester tester) async {});
+
+    testWidgets("Test4", (WidgetTester tester) async {});
+  });
 }
