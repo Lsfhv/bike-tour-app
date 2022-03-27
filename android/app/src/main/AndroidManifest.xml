@@ -7,10 +7,10 @@
         android:label="bike_tour_app"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-        <meta-data
+        <!-- <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBIF3s1kX5QoK8Oe-wORMoupH1pHcQWJx0"
-            />
+            android:value="${googleMapsApiKey}"
+            /> -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
