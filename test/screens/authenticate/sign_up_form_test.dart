@@ -174,7 +174,7 @@ void main() {
       await tester.tap(register);
       await tester.pump();
 
-      expect(find.text('Email is valid'), findsOneWidget);
+      expect(find.text('Not a valid email'), findsNothing);
     });
 
     testWidgets("Test2", (WidgetTester tester) async {
@@ -195,7 +195,7 @@ void main() {
       await tester.tap(register);
       await tester.pump();
 
-      expect(find.text('Email is valid'), findsOneWidget);
+      expect(find.text('Not a valid email'), findsNothing);
     });
 
     testWidgets("Test3", (WidgetTester tester) async {
@@ -216,7 +216,7 @@ void main() {
       await tester.tap(register);
       await tester.pump();
 
-      expect(find.text('Email is valid'), findsOneWidget);
+      expect(find.text('Not a valid email'), findsNothing);
     });
 
     testWidgets("Test4", (WidgetTester tester) async {
@@ -237,7 +237,7 @@ void main() {
       await tester.tap(register);
       await tester.pump();
 
-      expect(find.text('Email is valid'), findsOneWidget);
+      expect(find.text('Not a valid email'), findsNothing);
     });
   });
 
@@ -358,7 +358,10 @@ void main() {
       await tester.tap(register);
       await tester.pump();
 
-      expect(find.text("Password is valid"), findsOneWidget);
+      expect(
+          find.text(
+              r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length, but no more than 32."""),
+          findsNothing);
     });
 
     testWidgets("Test2", (WidgetTester tester) async {
@@ -379,7 +382,10 @@ void main() {
       await tester.tap(register);
       await tester.pump();
 
-      expect(find.text("Password is valid"), findsOneWidget);
+      expect(
+          find.text(
+              r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length, but no more than 32."""),
+          findsNothing);
     });
 
     testWidgets("Test3", (WidgetTester tester) async {
@@ -400,7 +406,10 @@ void main() {
       await tester.tap(register);
       await tester.pump();
 
-      expect(find.text("Password is valid"), findsOneWidget);
+      expect(
+          find.text(
+              r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length, but no more than 32."""),
+          findsNothing);
     });
   });
 }
