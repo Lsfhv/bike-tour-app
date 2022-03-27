@@ -7,15 +7,10 @@ import 'package:bike_tour_app/models/tfl-api/bike_docking_points.dart';
 class BikeMarker extends Marker {
   final BikePointModel station;
   BikeMarker({required this.station})
-    : super(markerId: MarkerId(station.id as String) ,draggable: false, position: LatLng(station.lat, station.lon),
-    icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen));
-
-
-
-
-
-  
-    
-
-
+      : super(
+            markerId: MarkerId(station.id as String),
+            draggable: false,
+            position: LatLng(station.lat, station.lon),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueGreen));
 }

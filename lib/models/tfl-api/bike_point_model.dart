@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class BikePointModel {
   final id;
   final commonName;
-  
+
   final lat;
   final lon;
   final NbBikes;
@@ -26,17 +26,18 @@ class BikePointModel {
 
   factory BikePointModel.fromJson(Map<String, dynamic> json) {
     return BikePointModel(
-      id: json['id'],
-      commonName: json['commonName'],
-      NbBikes: json['additionalProperties'][6]['value'],
-      NbEmptyDocks: json['additionalProperties'][7]['value'],
-      NbDocks: json['additionalProperties'][8]['value'],
-      lat : json['lat'],
-      lon : json['lon']
-    );
+        id: json['id'],
+        commonName: json['commonName'],
+        NbBikes: json['additionalProperties'][6]['value'],
+        NbEmptyDocks: json['additionalProperties'][7]['value'],
+        NbDocks: json['additionalProperties'][8]['value'],
+        lat: json['lat'],
+        lon: json['lon']);
   }
 
-  void setDistance(double distance){
+  get additionalProperties => null;
+
+  void setDistance(double distance) {
     this.distance = distance;
   }
 }
