@@ -16,7 +16,6 @@ import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 import 'package:googleapis/admob/v1.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
-
 import 'package:location/location.dart' as loc;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:app_settings/app_settings.dart';
@@ -62,17 +61,16 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
   double CAMERA_TILT = 1;
   double CAMERA_BEARING = 45;
   bool reached = false;
+
   bool cancelled = false;
   List<LatLng> past_journeys =[];
   bool muted = false;
 
   var ttsState;
 
-  
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
-
   }
 
   Future<bool> enableBackgroundMode() async {
@@ -186,8 +184,8 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
       )
     );
   }
+
   void updatePinOnMap() async {
-   
     if(mounted){
       _pastPoint();
       setState(() {
@@ -310,15 +308,13 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
       double b1 = (to.latitude - from.latitude) * pi/180;
       double b2 = (to.longitude - from.longitude) * pi/180;
 
-      double k = sin(b1/2) * sin(b1/2) +
-                cos(a1) * cos(a2) *
-                sin(b2/2) * sin(b2/2);
-      double c = 2 * atan2(sqrt(k), sqrt(1-k));
+    double k = sin(b1 / 2) * sin(b1 / 2) +
+        cos(a1) * cos(a2) * sin(b2 / 2) * sin(b2 / 2);
+    double c = 2 * atan2(sqrt(k), sqrt(1 - k));
 
-      distance = c * RADIUS_OF_EARTH;
-      
+    distance = c * RADIUS_OF_EARTH;
 
-      return distance;
+    return distance;
   }
 
   bool _reached_next_check_point(){
@@ -363,11 +359,12 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
       // so we're holding on to it
       current_position = cLoc;
       updatePinOnMap();
+
       if(reached || cancelled){
         _stopListening();
         await jdwr!.journeyData.endTrip();
       }
-   });
+    });
   }
 
   _stopListening() {
@@ -383,7 +380,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
     } else if (status.isDenied) {
       _requestPermission();
     } else if (status.isPermanentlyDenied) {
-      AppSettings.openLocationSettings;  
+      AppSettings.openLocationSettings;
     }
   }
 }

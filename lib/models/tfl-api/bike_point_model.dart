@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 class BikePointModel {
   final id;
   final commonName;
+  
   static const String DEFAULT_NUMBER_FOR_NO_DATA= '100';
+
   final lat;
   final lon;
   int NbBikes;

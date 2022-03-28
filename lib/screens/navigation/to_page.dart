@@ -1,4 +1,5 @@
 
+
 import 'dart:math';
 import 'dart:ui';
 
@@ -113,7 +114,6 @@ class _ToPageState extends State<ToPage> {
   JourneyData? jd;
   DestinationMarker? _suggestedMarker = null;
   bool loading_state = false;
-
 
   
   _handleNavigateToNextPage(UserPosition args){
@@ -493,7 +493,7 @@ class _ToPageState extends State<ToPage> {
         title: appBar(),
         automaticallyImplyLeading: false,
         centerTitle: true,
-        backgroundColor: STANDARD_COLOR,
+       backgroundColor: Color.fromARGB(202, 85, 190, 56),
         actions: [
           IconButton(
             icon: Icon(Icons.arrow_circle_right_outlined),

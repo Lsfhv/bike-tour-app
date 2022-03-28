@@ -23,7 +23,6 @@ import '../markers/user_location_marker.dart';
 import 'to_page.dart';
 // import '../../.env.dart';
 
-
 class JourneyData {
   UserPosition currentPosition;
   List<Destination> destinations;
@@ -50,7 +49,6 @@ class JourneyData {
       );
       i++;
     }
-
 
 
     //Initialise markers with data
@@ -146,6 +144,7 @@ class JourneyData {
     //_destinations.clear();
     for(var i in args!.waypointsOrder){
       destinations.add(buffer[i]);
+
     }
   }
 
@@ -192,7 +191,7 @@ class JourneyData {
         if(ending_dock != null){
           //add starting_dock,destination,ending_dock
           waypoints.add(LatLng(starting_dock.lat, starting_dock.lon));
-          waypoints.add(LatLng(ending_dock.lat,ending_dock.lon));
+          waypoints.add(LatLng(ending_dock.lat, ending_dock.lon));
           waypoints.add(end.position);
 
           markers.add(BikeMarker(station: starting_dock));
@@ -204,24 +203,23 @@ class JourneyData {
           await bike_api.increaseBikeUsed(starting_dock, number: number_of_bikers);
           await bike_api.increaseParkingUsed(ending_dock, number: number_of_bikers);
         }
-      }
-      else{
+      } else {
         waypoints.add(end.position);
         markers.add(DestinationMarker(destination: end));
       }
-    } 
+    }
   }
 
 
   
   BikePointModel? choosingDock(Set<BikePointModel> docks){ //update to accommodate number restriction
     if(docks.isEmpty){
+
       return null;
-    }
-    else{
-      BikePointModel chosen = docks.first; 
-      for(BikePointModel dock in docks){
-        if(dock.distance < chosen.distance){
+    } else {
+      BikePointModel chosen = docks.first;
+      for (BikePointModel dock in docks) {
+        if (dock.distance < chosen.distance) {
           chosen = dock;
         }
       }
@@ -269,11 +267,12 @@ class JourneyDataWithRoute {
     };
     
   }
+
 }
 
 class RoutingMap extends StatefulWidget {
   const RoutingMap({Key? key}) : super(key: key);
-  
+
   static const routeName = '/routingMap';
   @override
   _RoutingMap createState() => _RoutingMap();
@@ -288,7 +287,6 @@ class _RoutingMap extends State<RoutingMap> {
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
-
   }
 
   _start_navigation(Directions? args, JourneyDataWithRoute? jdwr){
@@ -316,7 +314,6 @@ class _RoutingMap extends State<RoutingMap> {
   @override
   void initState() {
     super.initState();
-    
   }
 
   @override
@@ -373,19 +370,35 @@ class _RoutingMap extends State<RoutingMap> {
                     )
                   ],
                 ),
-                child: Text(
-                  '${_info!.totalDistance}, ${_info!.totalDuration}',
-                  style: const TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.w600,
+                if (_info != null)
+                  Positioned(
+                    top: 20.0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 6.0,
+                        horizontal: 12.0,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.yellowAccent,
+                        borderRadius: BorderRadius.circular(20.0),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black26,
+                            offset: Offset(0, 2),
+                            blurRadius: 6.0,
+                          )
+                        ],
+                      ),
+                      child: Text(
+                        '${_info!.totalDistance}, ${_info!.totalDuration}',
+                        style: const TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
-        ],
-      )
-    )
-    );
+              ],
+            )));
   }
 }
-
