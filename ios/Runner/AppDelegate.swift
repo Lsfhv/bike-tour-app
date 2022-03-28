@@ -1,7 +1,7 @@
 import UIKit
 import Flutter
-import GoogleMaps
-import Firebase
+//import RaxelPulse
+import GoogleMaps;
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
@@ -9,9 +9,14 @@ import Firebase
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    FirebaseApp.configure()
+       GMSServices.provideAPIKey("AIzaSyApryzTKCbb-9EQKqFsK7HuGzxz1SFf-OI")
+      //RPEntry.initialize(withRequestingPermissions: false)
+      
+      //let options = launchOptions ?? [:]
+      //RPEntry.application(application, didFinishLaunchingWithOptions: options)
+     // GMSServices.provideAPIKey(Bundle.main.object(forInfoDictionaryKey:"googleMapsApiKey") as? String ?? "");
+//    GMSPlacesClient.provideAPIKey("AIzaSyA75AqNa-yxMDYqffGrN0AqyUPumqkmuEs")
     GeneratedPluginRegistrant.register(with: self)
-    GMSServices.provideAPIKey("AIzaSyBIF3s1kX5QoK8Oe-wORMoupH1pHcQWJx0")
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }

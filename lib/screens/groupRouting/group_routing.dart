@@ -1,4 +1,5 @@
 import 'package:bike_tour_app/screens/groupRouting/create_group.dart';
+import 'package:bike_tour_app/screens/groupRouting/join_page.dart';
 import 'package:flutter/material.dart';
 import 'package:googleapis/admob/v1.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -74,10 +75,13 @@ class _GroupRoutingPageState extends State<GroupRoutingPage> {
     );
   }
 
-  void _joinGroup() {}
+  void _joinGroup () {
+    Navigator.pushNamed(context, JoiningPage.routeName);
+  }
 
   void _createGroup() {
     Navigator.push(
         context, MaterialPageRoute(builder: ((context) => CreateGroup())));
   }
 }
+
