@@ -1,10 +1,8 @@
-import 'package:bike_tour_app/screens/authenticate/sign_in.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'valid_regex.dart';
 
 void main() {
- test('Empty email test', () {
+  test('Empty email test', () {
     var emptyInput = ' ';
 
     var result = ValidRegex().getValidEmailRegExp().hasMatch(emptyInput);
@@ -13,7 +11,7 @@ void main() {
   });
 
   
-  test('Given empty password input', () async {
+  test('Given empty password input', (){
     var emptyInput = ' ';
 
     var result = ValidRegex().getValidPasswordRegExp().hasMatch(emptyInput);
@@ -22,7 +20,7 @@ void main() {
   });
 
   
-  test('Given valid email address', () async {
+  test('Given valid email address', () {
     var result = ValidRegex().getValidEmailRegExp().hasMatch('JohnDoe1@example.com');
 
     expect(result, true);
