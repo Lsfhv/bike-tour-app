@@ -7,11 +7,10 @@ import 'dart:math' as math;
 class UserMarker extends Marker {
   final UserPosition user;
   UserMarker({required this.user})
-    : 
-    super(
-      markerId: MarkerId('current_location') ,
-      draggable: false, 
-      position: user.center as LatLng,
-      icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-      );
+      : super(
+          markerId: MarkerId('current_location'),
+          draggable: false,
+          position: user.center as LatLng,
+          icon: BitmapDescriptor.defaultMarkerWithHue(100),
+        );
 }

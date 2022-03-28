@@ -516,30 +516,30 @@ class _ToPageState extends State<ToPage> {
       child: DestinationListViewer(
           destinations: list_of_destinations,
           onDismiss: _delete_destination_at),
-      // child : ListView.builder(
-      //   itemCount: list_of_destinations.length,
-      //   itemBuilder: (context, index) {
-      //     return Dismissible(
-      //         key : UniqueKey(),
-      //         child: ListTile(
-      //           leading: CircleAvatar(
-      //             child: Icon(
-      //               Icons.pin_drop,
-      //               color: Colors.white,
-      //             ),
-      //           ),
-      //           title:  Text(list_of_destinations[index].name as String),
-      //         ),
-      //         direction: DismissDirection.horizontal,
-      //         onDismissed: (direction) async {_delete_destination_at(index);},
-      //       );
-      //     },
-      //   ),
-      //child : Icon(Icons.youtube_searched_for),
-      onDismissed: (direction) async {
-        _closeDestinationView();
+      onDismissed: (direction) {
+        _delete_destination_at(list_of_destinations.length - 1);
       },
     );
+    // child : ListView.builder(
+    //   itemCount: list_of_destinations.length,
+    //   itemBuilder: (context, index) {
+    //     return Dismissible(
+    //         key : UniqueKey(),
+    //         child: ListTile(
+    //           leading: CircleAvatar(
+    //             child: Icon(
+    //               Icons.pin_drop,
+    //               color: Colors.white,
+    //             ),
+    //           ),
+    //           title:  Text(list_of_destinations[index].name as String),
+    //         ),
+    //         direction: DismissDirection.horizontal,
+    //         onDismissed: (direction) async {_delete_destination_at(index);},
+    //       );
+    //     },
+    //   ),
+    //child : Icon(Icons.youtube_searched_for),
   }
 
   Widget appBar() {
