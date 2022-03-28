@@ -13,8 +13,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -52,7 +50,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(      
+    return MultiProvider(
         providers: [
           Provider<AuthService>(
             create: (_) => AuthService(FirebaseAuth.instance),
@@ -63,12 +61,13 @@ class _MyAppState extends State<MyApp> {
           ),
         ],
         child: MaterialApp(
-        routes : {
-          ToPage.routeName : (context) => const ToPage(),
-          RoutingMap.routeName : (context) => const RoutingMap(),
-          DynamicNavigation.routeName : (context) => const DynamicNavigation(),
-          DestinationSelector.routeName : (context) => const DestinationSelector(),
-        },
+          routes: {
+            ToPage.routeName: (context) => const ToPage(),
+            RoutingMap.routeName: (context) => const RoutingMap(),
+            DynamicNavigation.routeName: (context) => const DynamicNavigation(),
+            DestinationSelector.routeName: (context) =>
+                const DestinationSelector(),
+          },
           title: 'London Cycle',
           theme: ThemeData(
             primarySwatch: Colors.red,
