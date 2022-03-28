@@ -1,12 +1,8 @@
-import 'dart:io';
-
 import 'package:bike_tour_app/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:googleapis/binaryauthorization/v1.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
-import 'package:bike_tour_app/services/auth_service.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -32,27 +28,63 @@ class _SettingsPageState extends State<SettingsPage> {
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (!snapshot.hasData) {
-            return const Text(
-                "loading, your internet is probably not working if you ever see this");
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           } else {
             var data = snapshot.data;
             return SettingsList(
               sections: [
                 SettingsSection(
-                  title: const Text('ACCOUNT SETTINGS'),
+                  title: const Text(
+                    'ACCOUNT SETTINGS',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    textAlign: TextAlign.center,
+                    textScaleFactor: 1.5,
+                  ),
                   tiles: <SettingsTile>[
                     SettingsTile.navigation(
+                      title: const Text(
+                        'Name',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 17 / 0.9,
+                            color: Color.fromARGB(202, 85, 190, 56)),
+                      ),
                       // leading: const Icon(Icons.language),
-                      title: Text(data['firstName'] + " " + data['lastName']),
-                      value: const Text('Name'),
+                      value: Text(
+                        data['firstName'] + " " + data['lastName'],
+                      ),
                     ),
                     SettingsTile.navigation(
-                      title: Text(data['email']),
-                      value: const Text('Email'),
+                      value: Text(data['email']),
+                      title: const Text(
+                        'E-mail',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 17 / 0.9,
+                            color: Color.fromARGB(202, 85, 190, 56)),
+                      ),
                     ),
                     SettingsTile.navigation(
-                      title: const Text("routing history"),
-                      value: const Text('and store ur routes history here'),
+                      title: const Text(
+                        'Routing History',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 17 / 0.9,
+                            color: Color.fromARGB(202, 85, 190, 56)),
+                      ),
+                      value: const Text('Routes will go here...'),
+                    ),
+                    SettingsTile.navigation(
+                      title: const Text(
+                        'Group History',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 17 / 0.9,
+                            color: Color.fromARGB(202, 85, 190, 56)),
+                      ),
+                      value: const Text('Groups will go here...'),
                     ),
                     SettingsTile.navigation(
                       title: TextButton(
