@@ -1,4 +1,6 @@
 // ignore_for_file: prefer_const_constructors
+import 'dart:convert';
+
 import 'package:bike_tour_app/screens/groupRouting/group_routing.dart';
 import 'package:bike_tour_app/models/tfl-api/get_api.dart';
 import 'package:bike_tour_app/screens/markers/bike_markers.dart';
@@ -10,6 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:bike_tour_app/screens/navigation/from_page.dart';
 //import 'package:bike_tour_app/screens/navigation/route_planner.dart';
 import 'package:location/location.dart';
+import 'package:bike_tour_app/screens/navigation/request.dart';
 
 class MainMap extends StatefulWidget {
   const MainMap({Key? key}) : super(key: key);
@@ -142,7 +145,29 @@ class _MainMapState extends State<MainMap> {
   }
 
   Set<Marker> getmarkers() {
-    setState(() {
+    setState(() async {
+      var data = await getData('http://10.0.2.2:5000/');
+      var decodedData = jsonDecode(data);
+
+      var name;
+      var lat;
+      var lon;
+      var bike_available;
+      var bike_space;
+
+      for(var data in decodedData){
+        bikePoints.add(Marker(
+          markerId: MarkerId(name),
+          position: LatLng(lat,  lon),
+          infoWindow: InfoWindow(
+          //popup info
+          title: name,
+          snippet: "Bikes spaces: " + bike_space + "Bikes available: " + bike_available,
+        ),
+        icon: mapMarker, //Icon for Marker
+        ));
+      }
+
       bikePoints.add(Marker(
         //add first marker
         markerId: MarkerId("Santander Cycles, Bush House."),
