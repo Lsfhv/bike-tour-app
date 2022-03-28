@@ -20,12 +20,19 @@ PODS:
   - Firebase/Functions (8.11.0):
     - Firebase/CoreOnly
     - FirebaseFunctions (~> 8.11.0)
+  - Firebase/Storage (8.11.0):
+    - Firebase/CoreOnly
+    - FirebaseStorage (~> 8.11.0)
   - firebase_auth (3.3.10):
     - Firebase/Auth (= 8.11.0)
     - firebase_core
     - Flutter
   - firebase_core (1.13.1):
     - Firebase/CoreOnly (= 8.11.0)
+    - Flutter
+  - firebase_storage (10.2.9):
+    - Firebase/Storage (= 8.11.0)
+    - firebase_core
     - Flutter
   - FirebaseAuth (8.11.0):
     - FirebaseCore (~> 8.0)
@@ -50,6 +57,9 @@ PODS:
   - FirebaseFirestore/WithLeveldb (8.11.0):
     - FirebaseFirestore/Base
   - FirebaseFunctions (8.11.0):
+    - FirebaseCore (~> 8.0)
+    - GTMSessionFetcher/Core (~> 1.5)
+  - FirebaseStorage (8.11.0):
     - FirebaseCore (~> 8.0)
     - GTMSessionFetcher/Core (~> 1.5)
   - Flutter (1.0.0)
@@ -118,6 +128,7 @@ DEPENDENCIES:
   - cloud_functions (from `.symlinks/plugins/cloud_functions/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
+  - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
   - FirebaseFirestore (from `https://github.com/invertase/firestore-ios-sdk-frameworks.git`, tag `8.11.0`)
   - Flutter (from `Flutter`)
   - flutter_compass (from `.symlinks/plugins/flutter_compass/ios`)
@@ -135,6 +146,8 @@ DEPENDENCIES:
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
 
 SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - FirebaseStorage
   trunk:
     - Firebase
     - FirebaseAuth
@@ -160,6 +173,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_auth/ios"
   firebase_core:
     :path: ".symlinks/plugins/firebase_core/ios"
+  firebase_storage:
+    :path: ".symlinks/plugins/firebase_storage/ios"
   FirebaseFirestore:
     :git: https://github.com/invertase/firestore-ios-sdk-frameworks.git
     :tag: 8.11.0
@@ -202,11 +217,13 @@ SPEC CHECKSUMS:
   Firebase: 44dd9724c84df18b486639e874f31436eaa9a20c
   firebase_auth: fa562bf84ce3e872cc4225374cb687edb32e8d26
   firebase_core: 08f6a85f62060111de5e98d6a214810d11365de9
+  firebase_storage: 5b964cad5f351e9c35f8b0e0b878cdd095f30d09
   FirebaseAuth: d96d73aba85d192d7a7aa0b86dd6d7f8ec170b4b
   FirebaseCore: 2f4f85b453cc8fea4bb2b37e370007d2bcafe3f0
   FirebaseCoreDiagnostics: fd0c8490f34287229c1d6c103d3a55f81ec85712
   FirebaseFirestore: 8a0c6a06219bbaad86c72bcb66688c28995dde84
   FirebaseFunctions: 2bad3e4365dee72a85a6baa6ccd684f024d14696
+  FirebaseStorage: 4d05cb1112ff8822a0f9f5090da8bd6d550602ec
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   flutter_compass: cbbd285cea1584c7ac9c4e0c3e1f17cbea55e855
   flutter_tts: 0f492aab6accf87059b72354fcb4ba934304771d

@@ -1,13 +1,35 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'dart:collection';
+// import 'dart:html';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 
+
 class Instructions {
   final List<Instruction> instructions;
   const Instructions({required this.instructions});
+
+  factory Instructions.fromFS(Map<String, dynamic> value){
+   List<Instruction> instructions =[];
+   final Map<String,dynamic> _instructions = value["instructions"];
+   for(int i =0; i< _instructions.values.length; i++){
+     instructions.insert(i,Instruction.fromFS(_instructions[i.toString()]));
+   }
+   return Instructions(instructions: instructions);
+  }
+
+  Map<String, dynamic> toJson(){
+    Map<String,dynamic> map= {};
+    for(int i = 0; i < instructions.length ;i++){
+      map.addAll({i.toString() : instructions[i].toJson()});
+    }
+    return map;
+  }
 
   Instruction get(int i){
     if(i < instructions.length){
@@ -82,6 +104,39 @@ class Instruction {
     required this.distance_text,
     required this.time_text,
   });
+
+  factory Instruction.fromFS(Map<String, dynamic> value){
+    GeoPoint gp_start = value["start_loc"];
+    GeoPoint gp_end = value["end_loc"];
+    String poly = value["polyline"];
+    String instruc = value["instruction"];
+    String travel_mode = value["travel_mode"];
+    int distance = value["distance"];
+    int time = value["time"];
+    String distance_text = value["distance_text"];
+    String time_text = value["time_text"];
+    LatLng start = LatLng(gp_start.latitude, gp_start.longitude);
+    LatLng end = LatLng(gp_end.latitude, gp_end.longitude);
+
+    return Instruction(start_loc: start, end_loc: end, polyline: poly, 
+    instruction: instruc, travel_mode: travel_mode, distance: distance, 
+    time: time, distance_text: distance_text, time_text: time_text);
+
+  }
+
+  Map<String,dynamic> toJson(){
+    return {
+      "start_loc" :  GeoPoint(start_loc.latitude, start_loc.longitude),
+      "end_loc" :  GeoPoint(end_loc.latitude, end_loc.longitude),
+      "polyline" : polyline,
+      "instruction" : instruction,
+      "travel_mode" : travel_mode,
+      "distance" : distance,
+      "time" : time,
+      "distance_text" : distance_text,
+      "time_text" : time_text,
+    };
+  }
 
   bool stillInInstruction(LatLng point){
     

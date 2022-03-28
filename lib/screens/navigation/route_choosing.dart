@@ -1,6 +1,9 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_for_elements_to_map_fromiterable
 //import 'dart:html';
 
+
+import 'dart:collection';
+import 'dart:math';
 
 import 'package:bike_tour_app/models/tfl-api/bike_point_model.dart';
 import 'package:bike_tour_app/models/tfl-api/get_api.dart';
@@ -10,7 +13,9 @@ import 'package:bike_tour_app/screens/markers/destination_marker.dart';
 import 'package:bike_tour_app/screens/navigation/constants.dart';
 import 'package:bike_tour_app/screens/navigation/dynamic_navigation.dart';
 import 'package:bike_tour_app/screens/widgets/compass.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../models/directions_model.dart';
@@ -20,17 +25,122 @@ import 'to_page.dart';
 
 
 class JourneyData {
-  final UserPosition currentPosition;
+  UserPosition currentPosition;
   List<Destination> destinations;
-  late List<Destination> formated_list;
+  List<Destination> formated_list = [];
   GetApi bike_api = GetApi();
   List<LatLng> waypoints = [];
   Set<Marker> markers = {};
   Compass compass = Compass();
   int number_of_bikers = 1;
   JourneyData(this.currentPosition, this.destinations);
+  JourneyData._fromFS(this.currentPosition, this.destinations, 
+                      this.formated_list, this.markers, this.waypoints
+                      );
+  Set<BikePointModel> bikePointsUsed ={};
 
 
+  factory JourneyData.fromFS(Map<String, dynamic> value, UserPosition user){
+    //destination list dealt with
+    List<Destination> destinations = [];
+    final Map<String,dynamic>_destdata = value["destinations"];
+    for(int i =0; i< _destdata.values.length ; i++){
+      destinations.insert(i,
+        Destination.fromFS(_destdata[i.toString()])
+      );
+      i++;
+    }
+
+
+
+    //Initialise markers with data
+    Set<Marker> marker = {};
+    marker.add(UserMarker(user: user));
+    for(Destination d in destinations){
+      marker.add(DestinationMarker(destination: d));
+    }
+    
+    final Map<String,dynamic> _bikePointsData = value["bike_points_used"];
+    for(int j =0; j<_bikePointsData.values.length; j++){
+      marker.add(BikeMarker.fromFS(_bikePointsData["j"]));
+    }
+
+    
+
+    //destination list dealt with
+    List<Destination> formated_list = [];
+    if(destinations.length >2){
+      final Map<String,dynamic> data = value["formated_list"];
+      for(var v in data.values){
+        formated_list.add(
+          Destination.fromFS(v)
+        );
+      }
+    }
+
+        //destination list dealt with
+    List<LatLng> waypoints = [];
+    final Map<String,dynamic> w_data = value["waypoint"];
+    for(int k =0; k < w_data.values.length; k++){
+      waypoints.insert(k, LatLng( (w_data[k.toString()]).latitude, (w_data[k.toString()]).longitude));
+    }
+    
+    
+
+    return JourneyData._fromFS(user, destinations, formated_list, marker, waypoints);
+    
+  }
+
+  Map<String,dynamic> toJson(){
+    if(formated_list.isNotEmpty ){
+      return {
+        "destinations" : Map.fromIterable(destinations, 
+          key : (e) => destinations.indexOf(e).toString(),
+          value: (e) => (e as Destination).toJson()
+        ),
+        "formated_list" : Map.fromIterable(formated_list, 
+          key: (e) => formated_list.indexOf(e).toString(), 
+          value : (e) => (e as Destination).toJson()
+        ),
+        // "waypoint" :Map.fromIterable(
+        //   waypoints,
+        //   key: (element) => waypoints.indexOf(element),
+        //   value: (e) => GeoPoint((e as LatLng).latitude, (e as LatLng).longitude),
+        // ),
+        'markers' : Map.fromIterable(
+          markers,
+          key: (e) => (e as Marker).markerId.value,
+          value: (e) => [GeoPoint((e as Marker).position.latitude, (e as Marker).position.longitude), e.runtimeType],
+          ),
+        'bike_points_used' : Map.fromIterable(
+          bikePointsUsed,
+          key: (e) => (e as BikePointModel).id,
+          value: (e) => GeoPoint((e as BikePointModel).lat,(e as BikePointModel).lon)
+        )
+      };
+    }
+    return {
+        "destinations" : Map.fromIterable(destinations, 
+          key : (e) => destinations.indexOf(e).toString(),
+          value: (e) => (e as Destination).toJson()
+        ),
+        // "waypoint" :Map.fromIterable(
+        //   waypoints,
+        //   key: (element) => waypoints.indexOf(element).toString(),
+        //   value: (e) => GeoPoint((e as LatLng).latitude, (e as LatLng).longitude),
+        // ),
+        'markers' : Map.fromIterable(
+          markers,
+          key: (e) => (e as Marker).markerId.toString(),
+          value: (e) => GeoPoint((e as Marker).position.latitude, (e as Marker).position.longitude),
+          ),
+        'bike_points_used' : Map.fromIterable(
+          bikePointsUsed,
+          key: (e) => (e as BikePointModel).id,
+          value: (e) => GeoPoint((e as BikePointModel).lat,(e as BikePointModel).lon)
+        )
+      };
+  }
   rerouteWaypoints(Directions? args){
     List<Destination> buffer=List.of(destinations);
     //_destinations.clear();
@@ -89,6 +199,8 @@ class JourneyData {
           markers.add(DestinationMarker(destination: end));
           markers.add(BikeMarker(station: ending_dock));
 
+          bikePointsUsed.addAll({starting_dock as BikePointModel,ending_dock as BikePointModel});
+
           await bike_api.increaseBikeUsed(starting_dock, number: number_of_bikers);
           await bike_api.increaseParkingUsed(ending_dock, number: number_of_bikers);
         }
@@ -142,6 +254,21 @@ class JourneyDataWithRoute {
   final Directions? route;
 
   JourneyDataWithRoute({required this.journeyData, required this.route});
+
+  factory JourneyDataWithRoute.fromFS(Map<String, dynamic> value, UserPosition user){
+    return JourneyDataWithRoute(
+      journeyData: JourneyData.fromFS(value['journey']["journey data"],user), 
+      route: Directions.fromFS(value['journey']["directions"]));
+  }
+
+  Map<String, dynamic> toJson(){
+    //store markers,destinations and directions for navigation
+    return {
+      "journey data" : journeyData.toJson(),
+      'directions' : route!.toJson(),
+    };
+    
+  }
 }
 
 class RoutingMap extends StatefulWidget {

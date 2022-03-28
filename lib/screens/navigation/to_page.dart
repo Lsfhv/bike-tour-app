@@ -8,6 +8,7 @@ import 'package:bike_tour_app/screens/navigation/dynamic_navigation.dart';
 import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
 import 'package:bike_tour_app/screens/widgets/destination_list_viewer.dart';
 import 'package:bike_tour_app/screens/widgets/loading_widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_geocoding_api/google_geocoding_api.dart';
@@ -17,6 +18,8 @@ import 'package:google_place/google_place.dart';
 import '../../.env.dart';
 import '../../repository/direction.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../services/set_data_service.dart';
 import '../markers/user_location_marker.dart';
 import 'constants.dart';
 import 'location_details.dart';
@@ -30,6 +33,11 @@ class UserPosition {
   UserPosition(this.center); //,{this.place_id});
   //UserPosition.position(this.map_controller,this.position, {this.place_id , this.center});//this.user_id);
   //UserPosition.place_id(this.map_controller,this.place_id, { this.position, this.center});//this.user_id);
+  Map<String,dynamic> toJson(){
+    return {
+      'location' : new GeoPoint(center!.latitude, center!.longitude),
+    };
+  }
 
 }
 
@@ -38,6 +46,21 @@ class Destination {
   String name;
   Destination({required this.position, required this.name});
 
+
+  Map<String,dynamic> toJson(){
+    return {
+      "location" : new GeoPoint(position.latitude, position.longitude),
+      "name" : name
+    };
+  }
+
+  factory Destination.fromFS(Map<String, dynamic> value){
+    GeoPoint gp = value["location"];
+    String name = value["name"];
+    LatLng pos = LatLng(gp.latitude, gp.longitude);
+    return Destination(position: pos, name: name);
+
+  }
 
   bool equal(Destination other){
     const int tolerance = 50; // consider anywhere within 5 min to be the same destination
@@ -145,11 +168,42 @@ class _ToPageState extends State<ToPage> {
     );
     }
     else{
-      Navigator.pushNamed(context, RoutingMap.routeName, arguments : JourneyDataWithRoute(
+      JourneyDataWithRoute journey = JourneyDataWithRoute(
         journeyData: jd as JourneyData,
         route : route, 
-      ));
+      );
+      if(await _checkIfGroupLeader()){
+        String uid = FirebaseAuth.instance.currentUser!.uid;
+        String code = "";
+
+
+        await FirebaseFirestore.instance.collection("users").doc(uid).get().then((value) => code = value.get("group code"));
+        SetData().set_journey(journey: journey, code: code);
+      }
+      Navigator.pushNamed(context, RoutingMap.routeName, arguments : journey);
     }
+  }
+
+  bool _isLeader(DocumentSnapshot<Map<String, dynamic>> value){
+    try{
+      value.get("group code");
+    }
+    on StateError catch (_){
+      return false;
+    }
+    return true;
+  }
+
+  Future<bool> _checkIfGroupLeader() async{
+    //first check if user in a group, only leaders reach this page!
+    
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    bool isLeader = false;
+    await FirebaseFirestore.instance.collection("users").doc(uid).get().then(
+      (value) => isLeader = _isLeader(value)
+    );
+
+  return isLeader;
   }
 
   void autoCompleteSearch(String value) async {
@@ -278,8 +332,9 @@ class _ToPageState extends State<ToPage> {
   _delete_destination_at(int index) async {
     late Destination removed;
     setState(() {
-      removed = list_of_destinations.removeAt(index);
+
       _markers!.removeWhere((e) => e.markerId == MarkerId(list_of_destinations[index].name));
+      removed = list_of_destinations.removeAt(index);
     });
 
     showDialog(

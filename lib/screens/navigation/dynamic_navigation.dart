@@ -53,7 +53,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
   late LatLng nextCheckPoint;
   late Instruction? current_instruction =null;
   late Instructions instructions;
-  late List<PointLatLng> polylinepoints;
+  late List<PointLatLng> polylinepoints =[];
   late GoogleMapController mapController;
   StreamSubscription<loc.LocationData>? _locationSubscription;
   Set<Marker> _markers = {};
@@ -110,9 +110,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
       polylineId: const PolylineId('past_journey'),
       color: Colors.grey,
       width: 5,
-      points: past_journeys
-          .map((e) => LatLng(e.latitude, e.longitude))
-          .toList(),
+      points: past_journeys,
       ),
       Polyline(
         polylineId: const PolylineId('rest_of_journey'),
@@ -133,7 +131,6 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    print(polylinepoints.first.toString());
     final args = ModalRoute.of(context)!.settings.arguments as RouteData;
     _info = args.jdwr.route;
     jdwr = args.jdwr;
