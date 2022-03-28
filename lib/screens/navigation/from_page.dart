@@ -39,57 +39,60 @@ class _FromPageState extends State<FromPage> {
     super.dispose();
   }
 
-
-
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
 
-  Future<void> _getCurrentLocation() async{
-    locationPermission = (await Permission.location.request().isGranted) || (await Permission.locationWhenInUse.serviceStatus.isEnabled);
-    if(locationPermission){
+  Future<void> _getCurrentLocation() async {
+    locationPermission = (await Permission.location.request().isGranted) ||
+        (await Permission.locationWhenInUse.serviceStatus.isEnabled);
+    if (locationPermission) {
       setState(() {
         _fetchingLocation = true;
       });
-      await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
-        .then((Position position) {
-          setState(() {
-            LatLng pos =  LatLng(position.latitude, position.longitude);
-            _center = pos;
-            mapController.animateCamera(CameraUpdate.newLatLng(_center));
-            _currentPosition = UserPosition(pos);
-            _fetchingLocation = false;
-
-          });
-          showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
-            title : Text("Your journey starts now!" ),//+tag),
-            actions : <Widget>[
-              TextButton(onPressed: () => _onPress(), child: const Text("Ok!"))
-            ]
-            )
-          ); 
-        }).catchError((e) {
-          print(e);
+      await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.best)
+          .then((Position position) {
+        setState(() {
+          LatLng pos = LatLng(position.latitude, position.longitude);
+          _center = pos;
+          mapController.animateCamera(CameraUpdate.newLatLng(_center));
+          _currentPosition = UserPosition(pos);
+          _fetchingLocation = false;
         });
         showDialog(
             context: context,
-            builder: (BuildContext context) =>
-                AlertDialog(title: Text("Your journey starts now!"), //+tag),
+            builder: (BuildContext context) => AlertDialog(
+                    title: Text("Your journey starts now!"), //+tag),
                     actions: <Widget>[
-                      TextButton(
-                          onPressed: () => Navigator.pushNamed(
-                              context, ToPage.routeName,
-                              arguments: _currentPosition),
-                          child: const Text("Ok!")),
+                      TextButton(onPressed: () {}, child: const Text("Ok!"))
                     ]));
       }).catchError((e) {
         print(e);
       });
-    }
-    else{
+      showDialog(
+          context: context,
+          builder: (BuildContext context) =>
+              AlertDialog(title: Text("Your journey starts now!"), //+tag),
+                  actions: <Widget>[
+                    TextButton(
+                        onPressed: () => Navigator.pushNamed(
+                            context, ToPage.routeName,
+                            arguments: _currentPosition),
+                        child: const Text("Ok!")),
+                  ])).catchError((e) {
+        print(e);
+      });
+    } else {
       //await openAppSettings();
     }
-   }
+
+    @override
+    Widget build(BuildContext context) {
+      // TODO: implement build
+      throw UnimplementedError();
+    }
+  }
 
   _handleSubmit(String location) async {
     String edited_loc = location + " London";
