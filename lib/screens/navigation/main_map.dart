@@ -13,6 +13,7 @@ import 'package:bike_tour_app/screens/navigation/from_page.dart';
 //import 'package:bike_tour_app/screens/navigation/route_planner.dart';
 import 'package:location/location.dart';
 import 'package:bike_tour_app/screens/navigation/request.dart';
+import 'package:bike_tour_app/screens/navigation/point.dart';
 
 class MainMap extends StatefulWidget {
   const MainMap({Key? key}) : super(key: key);
@@ -149,20 +150,21 @@ class _MainMapState extends State<MainMap> {
       var data = await getData('http://10.0.2.2:5000/');
       var decodedData = jsonDecode(data);
 
-      var name;
-      var lat;
-      var lon;
-      var bike_available;
-      var bike_space;
-
       for(var data in decodedData){
+        var point =  Point(data["commonName"],
+              data['lat'], data['lon'],
+              data['additionalProperties'][6]['value'],
+              data['additionalProperties'][7]['value']
+        );
+
         bikePoints.add(Marker(
-          markerId: MarkerId(name),
-          position: LatLng(lat,  lon),
+          markerId: MarkerId(point.name),
+          position: LatLng(point.lat, point.lon),
           infoWindow: InfoWindow(
           //popup info
-          title: name,
-          snippet: "Bikes spaces: " + bike_space + "Bikes available: " + bike_available,
+          title: point.name,
+          snippet: "Bikes spaces: " + point.bikeSpace.toString()
+                      + "Bikes available: " + point.bikeAvailable.toString(),
         ),
         icon: mapMarker, //Icon for Marker
         ));

@@ -29,8 +29,11 @@ class BikeDataPull:
             response = requests.get(self.url)
             datas = json.loads(response.text)
             for data in datas:
-                common_names, lat, lon, bike_available, bike_space = data['commonName'], data['lat'], data[
-                    'lon'], data['additionalProperties'][6]['value'], data['additionalProperties'][7]['value']
+                common_names, lat, lon, bike_available, bike_space = data['commonName'], \
+                                                                     data['lat'], \
+                                                                     data['lon'], \
+                                                                     data['additionalProperties'][6]['value'], \
+                                                                     data['additionalProperties'][7]['value']
                 self.points[common_names] = (lat, lon)
                 self.bikeAvailable[common_names] = bike_available
                 self.bikeSpace[common_names] = bike_space
