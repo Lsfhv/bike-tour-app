@@ -1,4 +1,5 @@
-// ignore_for_file: prefer_const_constructors
+ // ignore_for_file: prefer_const_constructors
+import 'package:bike_tour_app/screens/groupRouting/join_page.dart';
 import 'package:bike_tour_app/screens/navigation/dynamic_navigation.dart';
 import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
 import 'package:bike_tour_app/screens/navigation/route_planner_form.dart';
@@ -12,8 +13,6 @@ import 'package:bike_tour_app/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,7 +51,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(      
+    return MultiProvider(
         providers: [
           Provider<AuthService>(
             create: (_) => AuthService(FirebaseAuth.instance),
@@ -68,6 +67,7 @@ class _MyAppState extends State<MyApp> {
           RoutingMap.routeName : (context) => const RoutingMap(),
           DynamicNavigation.routeName : (context) => const DynamicNavigation(),
           DestinationSelector.routeName : (context) => const DestinationSelector(),
+          JoiningPage.routeName : (context) => const JoiningPage(),
         },
           title: 'London Cycle',
           theme: ThemeData(

@@ -113,7 +113,15 @@ class _SignUpFormState extends State<SignUpForm> {
                   height: 50,
                   width: 250,
                   decoration: BoxDecoration(
-                      color: Colors.blue,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.green,
+                          blurRadius: 2,
+                          offset: Offset(2, 2),
+                          spreadRadius: 1,
+                        )
+                      ],
+                      color: Colors.green,
                       borderRadius: BorderRadius.circular(20)),
                   child: TextButton(
                     onPressed: () async {

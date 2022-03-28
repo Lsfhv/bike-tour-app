@@ -1,8 +1,9 @@
 import 'package:bike_tour_app/screens/groupRouting/create_group.dart';
-import 'package:bike_tour_app/screens/navigation/main_map.dart';
+import 'package:bike_tour_app/screens/groupRouting/join_page.dart';
 import 'package:flutter/material.dart';
 import 'package:googleapis/admob/v1.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:bike_tour_app/screens/navigation/main_map.dart';
 
 class GroupRoutingPage extends StatefulWidget {
   const GroupRoutingPage({Key? key}) : super(key: key);
@@ -75,7 +76,8 @@ class _GroupRoutingPageState extends State<GroupRoutingPage> {
     );
   }
 
-  void _joinGroup() {}
+  void _joinGroup () {
+    Navigator.pushNamed(context, JoiningPage.routeName);
 
   void _createGroup() {
     Navigator.push(

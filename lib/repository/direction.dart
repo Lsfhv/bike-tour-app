@@ -41,7 +41,7 @@ class DirectionsRepository {
         'destination': '${ending_bike_dock.latitude},${ending_bike_dock.longitude}',
         'waypoints' : destinations_string(destinations, optimize),
         'key': "AIzaSyCZTV0UOqPHZ4Skv6_OcrPmrORhzP316n4",
-        'mode' : 'bicycling',
+        'mode' : 'walking',
         'region' : 'uk',
         'units' : 'metric',
       },

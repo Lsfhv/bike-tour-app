@@ -1,12 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'package:bike_tour_app/screens/groupRouting/group_routing.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../services/auth_service.dart';
 import '../../services/set_data_service.dart';
+
+import 'package:bike_tour_app/screens/groupRouting/group_routing.dart';
 
 import 'dart:math';
 
