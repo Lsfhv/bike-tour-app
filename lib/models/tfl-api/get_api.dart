@@ -1,17 +1,24 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
-import 'package:bike_tour_app/models/tfl-api/bike_point_model.dart';
-import 'package:bike_tour_app/models/tfl-api/model_constants.dart';
+import 'package:bike_tour_app/models/bike_point_model.dart';
+import 'package:bike_tour_app/models/model_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_geocoding_api/google_geocoding_api.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import '../../.env.dart';
 
 class GetApi {
 
-  static const double RADIUS = 2000; // in metres
-
+  static const double RADIUS = 1000 ; // in metres
+  Map<int,BikePointModel> _data ={};
   GetApi(){}
 
   final bikesRef = FirebaseFirestore.instance.collection(BikeCollectionConstants.collectionName);
@@ -19,9 +26,25 @@ class GetApi {
     //await updateFirebase();
   }
 
+  Future<String> getPostCode(LatLng pos) async{
+    final _google_geocode_API = GoogleGeocodingApi(googleAPIKey, isLogged: true);
+    final GoogleGeocodingResponse verboseData = await _google_geocode_API.reverse('${pos.latitude}, ${pos.longitude}', language: 'en');
+    String postcode = verboseData.results.first.addressComponents.last.longName as String;
+    return postcode;
+  }
+
+  Future<String> getPostCodeFromString(String lat, String lon) async{
+    final _google_geocode_API = GoogleGeocodingApi(googleAPIKey, isLogged: true);
+    final GoogleGeocodingResponse verboseData = await _google_geocode_API.reverse('$lat, $lon', language: 'en');
+    
+    String postcode = verboseData.results.first.addressComponents.last.longName as String;
+    return postcode;
+  }
+
   Future<Set<BikePointModel>> fetchBikePoints() async {
     // Stopwatch stopwatch = Stopwatch()..start();
     Set<BikePointModel> bikePoints ={};
+    _data = {};
     var response = await http.get(Uri.parse('https://api.tfl.gov.uk/BikePoint/')).whenComplete(() => print("Bike Fetch Complete")).catchError((error) => print(error));
     if(response.statusCode == 429){
       await Future.delayed(Duration(seconds: 60));
@@ -34,38 +57,80 @@ class GetApi {
         DocumentReference<Map<String, dynamic>> ss = bikesRef.doc(json[i]['id']);
         await dock.init_withDS(ss);
         bikePoints.add(dock); //CAN BE NULL, STATUS_CODE 429, RATE LIMIT EXCEEDED, TRY AGAIN IN XX SECONDS
+        _data.addAll({i : dock});
       }
       // print('executed in ${stopwatch.elapsed}');
     }
     return bikePoints;
   }
 
-  Future<Set<BikePointModel>> getNearbyParkingDocks(LatLng point, Set<BikePointModel> bikePoints, {int uses = 1}) async{
-    Set<BikePointModel> nearby_docks = {};
-    for(BikePointModel dock in bikePoints){
-      LatLng dock_latlng = LatLng(dock.lat,dock.lon);
-      double distance = _calculate_distance(from : point, to : dock_latlng);
-      if(distance <= RADIUS && dock.NbEmptyDocks >= uses){
-        dock.setDistance(distance);
-        nearby_docks.add(dock);
-        break;
-      }
+  String strippedPostcode(String postcode){
+    String edited = postcode.substring(0,2);
+    RegExp regex = RegExp(r'^[a-zA-Z]+$');
+    if(regex.hasMatch(edited[1])){
+      return edited;
     }
-    return nearby_docks;
+    else{
+      return edited[0] as String;
+    }
   }
 
-  Future<Set<BikePointModel>> getNearbyBikingDocks(LatLng point, Set<BikePointModel> bikePoints, {int uses = 1}) async{
-    Set<BikePointModel> nearby_docks = {};
-    for(BikePointModel dock in bikePoints){
-      LatLng dock_latlng = LatLng(dock.lat,dock.lon);
-      double distance = _calculate_distance(from : point, to : dock_latlng);
-      if(distance <= RADIUS && dock.NbBikes >= uses){
-        dock.setDistance(distance);
-        nearby_docks.add(dock);
-        break;
+
+
+  Future<Map<String,List<BikePointModel>>> fetchBikePointsGroupedByPostCode() async {
+    Set<BikePointModel> bikePoints = await fetchBikePoints();
+    Map<String,List<BikePointModel>> data = {};
+    List<String> postcodes = (await rootBundle.loadString('assets/data/postcodes.txt')).split('\n');
+      for(int i =0; i < postcodes.length ;i++){
+        String postcode = postcodes[i];
+        BikePointModel point = _data[i] as BikePointModel;
+        String key = strippedPostcode(postcode);
+        if(data[key]== null || data[key]!.isEmpty  ){
+          data.addAll({key : [point]});
+        }
+        else{
+          (data[key])!.add(point);
+        }
       }
+    return data;
+  }
+
+  Future<Set<BikePointModel>> getNearbyParkingDocks(LatLng point, Map<String , List<BikePointModel>> bikePoints, String postcode, {int uses = 1}) async{
+    Set<BikePointModel> nearby_docks = {};
+    if(bikePoints[strippedPostcode(postcode)] != null){
+      for(BikePointModel dock in bikePoints[strippedPostcode(postcode)]!){
+        LatLng dock_latlng = LatLng(dock.lat,dock.lon);
+        double distance = _calculate_distance(from : point, to : dock_latlng);
+        if(distance <= RADIUS && dock.NbEmptyDocks >= uses){
+          dock.setDistance(distance);
+          nearby_docks.add(dock);
+          break;
+        }
+      }
+      return nearby_docks;
     }
-    return nearby_docks;
+    else{
+      return {};
+    }
+  }
+
+  Future<Set<BikePointModel>> getNearbyBikingDocks(LatLng point, Map<String , List<BikePointModel>> bikePoints, String postcode,{int uses = 1}) async{
+    Set<BikePointModel> nearby_docks = {};
+    if(bikePoints[strippedPostcode(postcode)] != null){
+      for(BikePointModel dock in bikePoints[strippedPostcode(postcode)]!){
+        LatLng dock_latlng = LatLng(dock.lat,dock.lon);
+        double distance = _calculate_distance(from : point, to : dock_latlng);
+        if(distance <= RADIUS && dock.NbBikes >= uses){
+          dock.setDistance(distance);
+          nearby_docks.add(dock);
+          break;
+        }
+      }
+      return nearby_docks;
+    }
+    else{
+      return {};
+    }
   }
   
   /*

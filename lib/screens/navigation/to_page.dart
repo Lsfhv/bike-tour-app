@@ -4,7 +4,6 @@ import 'dart:ui';
 
 import 'package:bike_tour_app/models/directions_model.dart';
 import 'package:bike_tour_app/screens/markers/destination_marker.dart';
-import 'package:bike_tour_app/screens/navigation/dynamic_navigation.dart';
 import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
 import 'package:bike_tour_app/screens/widgets/destination_list_viewer.dart';
 import 'package:bike_tour_app/screens/widgets/loading_widget.dart';
@@ -16,77 +15,24 @@ import 'package:google_place/google_place.dart';
 
 // import '../../.env.dart';
 import '../../.env.dart';
+import '../../models/destination_model.dart';
+import '../../models/journey_data.dart';
+import '../../models/journey_data_with_route_model.dart';
+import '../../models/user_data.dart';
 import '../../repository/direction.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/set_data_service.dart';
 import '../markers/user_location_marker.dart';
+import '../widgets/destination_retriever.dart';
 import 'constants.dart';
 import 'location_details.dart';
 
 
 
-class UserPosition {
-  final LatLng? center;
-  //final String user_id;
-
-  UserPosition(this.center); //,{this.place_id});
-  //UserPosition.position(this.map_controller,this.position, {this.place_id , this.center});//this.user_id);
-  //UserPosition.place_id(this.map_controller,this.place_id, { this.position, this.center});//this.user_id);
-  Map<String,dynamic> toJson(){
-    return {
-      'location' : new GeoPoint(center!.latitude, center!.longitude),
-    };
-  }
-
-}
-
-class Destination {
-  LatLng position;
-  String name;
-  Destination({required this.position, required this.name});
 
 
-  Map<String,dynamic> toJson(){
-    return {
-      "location" : new GeoPoint(position.latitude, position.longitude),
-      "name" : name
-    };
-  }
 
-  factory Destination.fromFS(Map<String, dynamic> value){
-    GeoPoint gp = value["location"];
-    String name = value["name"];
-    LatLng pos = LatLng(gp.latitude, gp.longitude);
-    return Destination(position: pos, name: name);
-
-  }
-
-  bool equal(Destination other){
-    const int tolerance = 50; // consider anywhere within 5 min to be the same destination
-    return _calculate_distance(from : this.position, to : other.position) <= tolerance;
-
-  }
-
-  double _calculate_distance({required LatLng from,required LatLng to}){
-      double distance = 0;
-      const double RADIUS_OF_EARTH = 6371000;
-      double a1 = from.latitude * pi/180;
-      double a2 = to.latitude * pi/180;
-      double b1 = (to.latitude - from.latitude) * pi/180;
-      double b2 = (to.longitude - from.longitude) * pi/180;
-
-      double k = sin(b1/2) * sin(b1/2) +
-                cos(a1) * cos(a2) *
-                sin(b2/2) * sin(b2/2);
-      double c = 2 * atan2(sqrt(k), sqrt(1-k));
-
-      distance = c * RADIUS_OF_EARTH;
-      
-
-      return distance;
-   }
-}
 
 class ToPage extends StatefulWidget {
   const ToPage({Key? key}) : super(key: key);
@@ -113,6 +59,7 @@ class _ToPageState extends State<ToPage> {
   JourneyData? jd;
   DestinationMarker? _suggestedMarker = null;
   bool loading_state = false;
+  String suggested_postcode = "";
 
 
   
@@ -143,8 +90,7 @@ class _ToPageState extends State<ToPage> {
     await args.init();
     LatLng origin = args.currentPosition.center as LatLng;
     LatLng destination = args.getLastDockingStation();
-    final directions = await DirectionsRepository().getDirections(origin: origin, ending_bike_dock: destination, destinations: args.waypoints);
-    //error here    
+    final directions = await DirectionsRepository().getDirections(origin: origin, ending_bike_dock: destination, destinations: args.waypoints); 
     return directions;
   }
 
@@ -235,11 +181,12 @@ class _ToPageState extends State<ToPage> {
     String description = ' ';
     GoogleGeocodingResponse loc =
         await _google_geocode_API.search(edited_destination, region: "uk");
-  
     LatLng pos = LatLng(loc.results.first.geometry!.location.lat,
       loc.results.first.geometry!.location.lng);
+    final GoogleGeocodingResponse verboseData = await _google_geocode_API.reverse('${pos.latitude}, ${pos.longitude}', language: 'en');
+    String postcode = verboseData.results.first.addressComponents.last.longName as String;
     description = loc.results.first.formattedAddress;
-    Destination dest = Destination(position: pos, name: description);
+    Destination dest = Destination(position: pos, name: description,postcode: postcode);
     //Pop that you are adding new destination
     bool destinationExist = false;
     for(Destination d in list_of_destinations){
@@ -292,16 +239,19 @@ class _ToPageState extends State<ToPage> {
   _handleSuggestionTap(AutocompletePrediction prediction) async {
     GoogleGeocodingResponse loc = await _google_geocode_API
         .search(prediction.description as String, region: "uk");
+    LatLng pos = LatLng(loc.results.first.geometry!.location.lat,
+      loc.results.first.geometry!.location.lng);
+    final GoogleGeocodingResponse verboseData = await _google_geocode_API.reverse('${pos.latitude}, ${pos.longitude}', language: 'en');
+    String postcode = verboseData.results.first.addressComponents.last.longName as String;
+    Destination destination =
+          Destination(position: pos, name: prediction.description as String, postcode: postcode);
     setState(() {
       _suggestionSelected = true;
       _showDetail = true;
       currPrediction = prediction;
-      LatLng pos = LatLng(loc.results.first.geometry!.location.lat,
-          loc.results.first.geometry!.location.lng);
-      Destination destination =
-          Destination(position: pos, name: prediction.description as String);
       _suggestedMarker = DestinationMarker(destination: destination);
       _markers?.add(_suggestedMarker as DestinationMarker);
+      suggested_postcode = postcode;
       _center = pos;
       mapController.animateCamera(CameraUpdate.newLatLng(_center));
     });
@@ -315,6 +265,9 @@ class _ToPageState extends State<ToPage> {
       if (_suggestedMarker != null) {
         _markers?.remove(_suggestedMarker);
         _suggestedMarker = null;
+      }
+      if(suggested_postcode.isNotEmpty){
+        suggested_postcode = "";
       }
     });
     //_showDetail = false;
@@ -356,15 +309,24 @@ class _ToPageState extends State<ToPage> {
   }
 
   Widget _showDestinationList() {
-    return Dismissible(
-      direction: DismissDirection.down,
-      key: UniqueKey(),
-      child: DestinationListViewer(
-          destinations: list_of_destinations,
-          onDismiss: _delete_destination_at),
-      onDismissed: (direction) async {
-        _closeDestinationView();
-      },
+    // return GestureDetector(
+    //   child :Dismissible(
+    //     direction: DismissDirection.down,
+    //     key: UniqueKey(),
+    //     child: DestinationListViewer(
+    //         destinations: list_of_destinations,
+    //         onDismiss: _delete_destination_at),
+    //     onDismissed: (direction) async {
+    //       _closeDestinationView();
+    //     },
+    //   ),
+    //   behavior: HitTestBehavior.translucent,
+    // );
+    return GestureDetector(
+      child : DestinationListViewer(
+            destinations: list_of_destinations,
+            onDismiss: _delete_destination_at),
+      behavior: HitTestBehavior.translucent,
     );
   }
 
@@ -425,7 +387,7 @@ class _ToPageState extends State<ToPage> {
 
   _addDestination() async {
     Marker curr_marker = _suggestedMarker as Marker;
-    Destination dest = Destination(position: curr_marker.position,name: currPrediction!.description as String);
+    Destination dest = Destination(position: curr_marker.position,name: currPrediction!.description as String, postcode: suggested_postcode);
     bool destination_already_exist =false;
     for(Destination d in list_of_destinations){
       if(dest.equal(d)){
@@ -489,85 +451,92 @@ class _ToPageState extends State<ToPage> {
     }
     return MaterialApp(
         home: Scaffold(
-      appBar: AppBar(
-        title: appBar(),
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        backgroundColor: STANDARD_COLOR,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.arrow_circle_right_outlined),
-            onPressed: () => _handleNavigateToNextPage(args),
-          ),
-          IconButton(
-              onPressed: () => _showDestinations(),
-              icon: Icon(Icons.route_outlined)),
-          if (_suggestionSelected && _suggestedMarker != null)
-            IconButton(
-                onPressed: () => _addDestination(), icon: Icon(Icons.add)),
-        ],
-      ),
-      body: Stack(alignment: Alignment.center, children: [
-        Center(
-          child: GoogleMap(
-            onMapCreated: _onMapCreated,
-            initialCameraPosition: CameraPosition(target: _center, zoom: 15),
-            markers: _markers as Set<Marker>,
-            myLocationEnabled: false,
-          ),
-        ),
-
-        if (!_showDetail && !_viewingDestinationList)
-          Row(children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: predictions.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                      color: Colors.white,
-                      child: ListTile(
-                        tileColor: isSelected ? Colors.white : Colors.blue,
-                        leading: CircleAvatar(
-                          child: Icon(
-                            Icons.pin_drop,
-                            color: Colors.white,
-                          ),
-                          backgroundColor: STANDARD_COLOR,
-                        ),
-                        title: TextField(
-                          decoration: InputDecoration(
-                            hintText: predictions[index].description as String,
-                            hintStyle: TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontStyle: FontStyle.italic,
-                            ),
-                            border: InputBorder.none,
-                          ),
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                          onSubmitted: (String destination) async {
-                            _handleSearchBarSubmit(destination);
-                          },
-                          enabled: false,
-                        ),
-                        onTap: () {
-                          _handleSuggestionTap(predictions[index]);
-                        },
-                      ));
-                },
+          appBar: AppBar(
+            title: appBar(),
+            automaticallyImplyLeading: false,
+            centerTitle: true,
+            backgroundColor: STANDARD_COLOR,
+            actions: [
+              IconButton(
+                icon: Icon(Icons.arrow_circle_right_outlined),
+                onPressed: () => _handleNavigateToNextPage(args),
               ),
-            )
-          ]),
-
-        //if(_showDetail && currPrediction != null ) _showDetailPage(),
-
-              if(!_showDetail && _viewingDestinationList) _showDestinationList(),
-              if(loading_state) const LoadingWidget(loading_text: "Loading The Route"),
-            ]
+              IconButton(
+                  onPressed: () => _showDestinations(),
+                  icon: Icon(Icons.route_outlined)),
+              if (_suggestionSelected && _suggestedMarker != null)
+                IconButton(
+                    onPressed: () => _addDestination(), icon: Icon(Icons.add)),
+            ],
           ),
-          
+        body: Stack(
+          alignment: Alignment.center, 
+          children: [
+            Center(
+              child: GestureDetector(
+                child : GoogleMap(
+                  onMapCreated: _onMapCreated,
+                  initialCameraPosition: CameraPosition(target: _center, zoom: 15),
+                  markers: _markers as Set<Marker>,
+                ),
+                behavior: HitTestBehavior.translucent,
+              ),
+            ),
+
+            if (!_showDetail && !_viewingDestinationList)
+              GestureDetector(
+                child :Row(
+                  children: [ Expanded(
+                    child: ListView.builder(
+                      itemCount: predictions.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          color: Colors.white,
+                          child: ListTile(
+                            tileColor: isSelected ? Colors.white : Colors.blue,
+                            leading: CircleAvatar(
+                              child: Icon(
+                                Icons.pin_drop,
+                                color: Colors.white,
+                              ),
+                              backgroundColor: STANDARD_COLOR,
+                            ),
+                            title: TextField(
+                              decoration: InputDecoration(
+                                hintText: predictions[index].description as String,
+                                hintStyle: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 18,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                                border: InputBorder.none,
+                              ),
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                              onSubmitted: (String destination) async {
+                                _handleSearchBarSubmit(destination);
+                              },
+                              enabled: false,
+                            ),
+                            onTap: () {
+                              _handleSuggestionTap(predictions[index]);
+                            },
+                          )
+                        );
+                      },
+                    ),
+                  )
+                ]),
+                behavior: HitTestBehavior.translucent,
+              ),
+
+            //if(_showDetail && currPrediction != null ) _showDetailPage(),
+
+            if(!_showDetail && _viewingDestinationList) _showDestinationList(),
+            if(loading_state) IgnorePointer(child: const LoadingWidget(loading_text: "Loading The Route"), ignoring: true,),
+          ]
+        ),
       )
     );
   }
@@ -579,66 +548,3 @@ class _ToPageState extends State<ToPage> {
 
 }
 
-class Destination_Retriever extends StatefulWidget {
-  const Destination_Retriever(
-      {Key? key, required this.onSubmitted, required this.onChanged})
-      : super(key: key);
-
-  final ValueChanged<String>? onSubmitted;
-  final ValueChanged<String>? onChanged;
-  @override
-  _Destination_RetrieverState createState() => _Destination_RetrieverState();
-}
-
-class _Destination_RetrieverState extends State<Destination_Retriever> {
-  late TextEditingController _controller;
-  final String hintText = 'Where do you want to go?';
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _handleSubmit(String destination) {
-    widget.onSubmitted!(destination);
-    _controller.clear();
-  }
-
-  void _handleChange(String destination) {
-    widget.onChanged!(destination);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(children: <Widget>[
-      Expanded(
-          child: TextField(
-        decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontStyle: FontStyle.italic,
-          ),
-          border: InputBorder.none,
-        ),
-        style: TextStyle(
-          color: Colors.white,
-        ),
-        controller: _controller,
-        onSubmitted: (String destination) async {
-          _handleSubmit(destination);
-        },
-        onChanged: (String destination) async {
-          _handleChange(destination);
-        },
-      ))
-    ]);
-  }
-}

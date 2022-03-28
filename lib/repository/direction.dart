@@ -47,7 +47,7 @@ class DirectionsRepository {
       },
     );
     if(optimize){
-      print(Map<String, dynamic>.from(response.data['routes'][0])['waypoint_order']);
+      //print(Map<String, dynamic>.from(response.data['routes'][0])['waypoint_order']);
     }
 
     // Check if response is successful

@@ -67,6 +67,7 @@ dependencies:
   google_polyline_algorithm: ^3.1.0
   platform: ^3.1.0
   flutter_tts: ^3.3.3
+  path_provider: ^2.0.9
   
 
 dev_dependencies:
@@ -93,6 +94,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/data/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

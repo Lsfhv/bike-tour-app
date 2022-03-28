@@ -1,7 +1,9 @@
 
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../navigation/to_page.dart';
+
+import '../../models/destination_model.dart';
+
 
 class DestinationMarker extends Marker {
   final Destination destination;

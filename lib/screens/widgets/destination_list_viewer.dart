@@ -2,6 +2,7 @@ import 'package:bike_tour_app/screens/navigation/constants.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 
+import '../../models/destination_model.dart';
 import '../navigation/to_page.dart';
 
 class DestinationListViewer extends StatefulWidget {
@@ -22,32 +23,44 @@ class _DestinationListViewerState extends State<DestinationListViewer> {
   }
   @override
   Widget build(BuildContext context) {
-    return Expanded( 
+    return Column( 
+      children : [
+        Expanded( 
           child : ListView.builder(
             itemCount: widget.destinations.length,
             itemBuilder: (context, index) {
               return Dismissible(
                   key : UniqueKey(),
-                  child: Container(
-                    color: Colors.white,
-                    child :ListTile(
-                      leading: CircleAvatar(
-                        child: Icon(
-                          Icons.pin_drop,
-                          color: Colors.white,
-                        ),
-                        backgroundColor: STANDARD_COLOR,
+                  child: SafeArea(
+                    minimum: EdgeInsets.all(5.0),
+                    child : Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15.0),
                       ),
-                      title:  Text(widget.destinations[index].name as String),
-                      onTap: () { 
-                      },
+                        child :ListTile(
+                          shape : RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
+                          leading: CircleAvatar(
+                            child: Icon(
+                              Icons.pin_drop,
+                              color: Colors.white,
+                            ),
+                            backgroundColor: STANDARD_COLOR,
+                          ),
+                          title:  Text(widget.destinations[index].name as String),
+                          onTap: () { 
+                          },
+                        ),
+                      ),
                     ),
-                  ),
                   direction: DismissDirection.horizontal,
                   onDismissed: (direction) async {_list_tile_dismiss(index);},
                 );
             },
           )
+      )],
     );
     
   }

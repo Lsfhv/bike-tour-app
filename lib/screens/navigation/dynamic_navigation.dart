@@ -5,15 +5,11 @@ import 'package:bike_tour_app/models/instruction_model.dart';
 import 'package:bike_tour_app/repository/direction.dart';
 import 'package:bike_tour_app/screens/markers/user_location_marker.dart';
 import 'package:bike_tour_app/screens/navigation/constants.dart';
-import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
-import 'package:bike_tour_app/screens/navigation/to_page.dart';
 import 'package:bike_tour_app/screens/widgets/instruction_widget.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
-import 'package:googleapis/admob/v1.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 
@@ -22,19 +18,11 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:app_settings/app_settings.dart';
 
 import '../../models/directions_model.dart';
-import '../../models/tfl-api/get_api.dart';
+import '../../models/journey_data_with_route_model.dart';
+import '../../models/route_model.dart';
+import '../../models/user_data.dart';
 
-class RouteData{
-  // final Directions directions;
-  // final UserPosition user_loc;
-  // final Set<Marker> markers;
-  // final List<LatLng> waypoints;
 
-  final UserPosition user_loc;
-  final JourneyDataWithRoute jdwr;
-
-  RouteData({ required this.user_loc, required this.jdwr});
-}
 
 class DynamicNavigation extends StatefulWidget {
   const DynamicNavigation({Key? key}) : super(key: key);
