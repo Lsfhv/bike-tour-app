@@ -9,6 +9,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:googleapis/trafficdirector/v2.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:bike_tour_app/screens/groupRouting/group_routing.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../navigation/route_choosing.dart';
 
@@ -135,9 +136,14 @@ class _JoiningPageState extends State<JoiningPage> {
                   margin: const EdgeInsets.all(30),
                   child: Text(
                     "Enter group code",
-                    style: TextStyle(
+                    style: GoogleFonts.lato(
                         fontSize: 30,
-                        color: Color.fromARGB(202, 85, 190, 56),
+                        color: Color.fromARGB(
+                          202,
+                          85,
+                          190,
+                          56,
+                        ),
                         fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -147,15 +153,22 @@ class _JoiningPageState extends State<JoiningPage> {
                       hintText: "Enter group code",
                       border: OutlineInputBorder(),
                       labelText: "Group code",
-                      labelStyle: TextStyle(fontSize: 20)),
+                      labelStyle: TextStyle(
+                          fontSize: 20,
+                          fontFamily: GoogleFonts.lato().fontFamily)),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: RaisedButton(
+                    disabledColor: Colors.grey,
                     onPressed: () {
                       _grabJourney(group_code);
                     },
-                    child: Text("Join"),
+                    child: Text(
+                      "Join",
+                      style:
+                          GoogleFonts.lato(fontSize: 20, color: Colors.black),
+                    ),
                   ),
                 )
               ],
