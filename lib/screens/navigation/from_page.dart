@@ -134,7 +134,7 @@ class _FromPageState extends State<FromPage> {
             ),
             body: Stack(
               alignment: Alignment.center,
-              children: [
+              children: <Widget>[
                 Center(
                   child: GoogleMap(
                     onMapCreated: _onMapCreated,
