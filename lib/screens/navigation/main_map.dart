@@ -37,7 +37,7 @@ class _MainMapState extends State<MainMap> {
         ImageConfiguration(size: Size(35, 35)),
         'assets/images/bike-marker.png');
   }
-  
+
   final CheckWifi checkWifi = CheckWifi();
 
   void _onMapCreated(GoogleMapController _cntlr) {
@@ -56,14 +56,6 @@ class _MainMapState extends State<MainMap> {
       _cntlr.dispose();
       super.dispose();
     }
-  }
-
-  @override
-  void initState(){
-    // TODO: implement initState
-    super.initState();
-    checkWifi.checkConnection(context);
-
   }
 
   @override
@@ -136,7 +128,6 @@ class _MainMapState extends State<MainMap> {
                     ),
                     color: Color.fromARGB(202, 85, 190, 56).withOpacity(1),
                     onPressed: () {
-
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) => FromPage()));
                     },

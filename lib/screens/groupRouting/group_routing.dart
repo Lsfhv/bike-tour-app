@@ -49,7 +49,10 @@ class _GroupRoutingPageState extends State<GroupRoutingPage> {
                         GoogleFonts.lato(color: Colors.white, fontSize: 16.5),
                   ),
                   color: Color.fromARGB(202, 85, 190, 56).withOpacity(1),
-                  onPressed: _createGroup,
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => CreateGroup()));
+                  },
                 ),
               ),
             ),
@@ -76,11 +79,12 @@ class _GroupRoutingPageState extends State<GroupRoutingPage> {
     );
   }
 
-  void _joinGroup () {
+  void _joinGroup() {
     Navigator.pushNamed(context, JoiningPage.routeName);
 
-  void _createGroup() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: ((context) => CreateGroup())));
+    void _createGroup() {
+      Navigator.push(
+          context, MaterialPageRoute(builder: ((context) => CreateGroup())));
+    }
   }
 }
