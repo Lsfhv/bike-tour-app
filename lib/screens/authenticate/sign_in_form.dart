@@ -88,7 +88,7 @@ class _SignInFormState extends State<SignInForm> {
               },
               child: Text("Forgot Password"),
               style: TextButton.styleFrom(
-                primary: Colors.blue,
+                primary: Colors.red,
               ),
             ),
             Container(
@@ -96,7 +96,8 @@ class _SignInFormState extends State<SignInForm> {
               height: 50,
               width: 250,
               decoration: BoxDecoration(
-                  color: Colors.blue, borderRadius: BorderRadius.circular(20)),
+                  color: Color.fromARGB(202, 85, 190, 56),
+                  borderRadius: BorderRadius.circular(10)),
               child: TextButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
@@ -128,7 +129,7 @@ class _SignInFormState extends State<SignInForm> {
               },
               child: Text("New User? Create Account"),
               style: TextButton.styleFrom(
-                primary: Colors.blue,
+                primary: Color.fromARGB(202, 85, 190, 56),
               ),
             ),
           ],
