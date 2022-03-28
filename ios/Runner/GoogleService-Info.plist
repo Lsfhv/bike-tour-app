@@ -19,16 +19,18 @@
 	<key>STORAGE_BUCKET</key>
 	<string>londoncyclee.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<false></false>
+	<false/>
+	<key>CFBundleIdentifier</key>
+	<string></string>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false></false>
+	<false/>
 	<key>IS_APPINVITE_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_GCM_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:665235210465:ios:bf4501224f82c1be3f77a0</string>
+	<string>1:665235210465:ios:42bc22c6f19cdf8a3f77a0</string>
 </dict>
 </plist>

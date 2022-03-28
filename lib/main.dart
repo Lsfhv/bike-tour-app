@@ -1,4 +1,5 @@
-// ignore_for_file: prefer_const_constructors
+ // ignore_for_file: prefer_const_constructors
+import 'package:bike_tour_app/screens/groupRouting/join_page.dart';
 import 'package:bike_tour_app/screens/navigation/dynamic_navigation.dart';
 import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
 import 'package:bike_tour_app/screens/navigation/route_planner_form.dart';
@@ -68,6 +69,7 @@ class _MyAppState extends State<MyApp> {
           RoutingMap.routeName : (context) => const RoutingMap(),
           DynamicNavigation.routeName : (context) => const DynamicNavigation(),
           DestinationSelector.routeName : (context) => const DestinationSelector(),
+          JoiningPage.routeName : (context) => const JoiningPage(),
         },
           title: 'London Cycle',
           theme: ThemeData(

@@ -1,5 +1,7 @@
-import 'package:bike_tour_app/screens/navigation/route_planner_form.dart';
+import 'package:bike_tour_app/screens/navigation/constants.dart';
 import 'package:bike_tour_app/screens/navigation/to_page.dart';
+import 'package:bike_tour_app/screens/widgets/loading_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -36,11 +38,14 @@ class _FromPageState extends State<FromPage> {
     super.dispose();
   }
 
+
+
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
+
   Future<void> _getCurrentLocation() async{
-    locationPermission = await Permission.location.request().isGranted;
+    locationPermission = (await Permission.location.request().isGranted) || (await Permission.locationWhenInUse.serviceStatus.isEnabled);
     if(locationPermission){
       setState(() {
         _fetchingLocation = true;
@@ -58,7 +63,7 @@ class _FromPageState extends State<FromPage> {
           showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
             title : Text("Your journey starts now!" ),//+tag),
             actions : <Widget>[
-              TextButton(onPressed: () => Navigator.pushNamed(context, ToPage.routeName, arguments : _currentPosition), child: const Text("Ok!")),
+              TextButton(onPressed: () => _onPress(), child: const Text("Ok!"))
             ]
             )
           ); 
@@ -66,6 +71,14 @@ class _FromPageState extends State<FromPage> {
           print(e);
         });
     }
+    else{
+      //await openAppSettings();
+    }
+   }
+
+  _onPress(){
+    Navigator.pop(context); 
+    Navigator.pushNamed(context, ToPage.routeName, arguments : _currentPosition);
   }
 
 
@@ -97,9 +110,10 @@ class _FromPageState extends State<FromPage> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title : LocationGetter(onSubmitted: _handleSubmit, onTap : _getCurrentLocation),
+          title : LocationGetter(onSubmitted: _handleSubmit, onTap : () async => _getCurrentLocation()),
           automaticallyImplyLeading: false,
           centerTitle: true,
+          backgroundColor: STANDARD_COLOR,
           ),
 
           body: Stack(alignment: Alignment.center,
@@ -111,7 +125,7 @@ class _FromPageState extends State<FromPage> {
                 initialCameraPosition: CameraPosition(target: _center, zoom: 15),
               ),
             ),
-            if(_fetchingLocation && locationPermission) Center(child: CircularProgressIndicator()),
+            if(_fetchingLocation && locationPermission) Center(child: LoadingWidget(loading_text: "Finding Your Location",)),
             
           ]
           ,) 

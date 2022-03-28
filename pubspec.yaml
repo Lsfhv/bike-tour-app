@@ -61,6 +61,12 @@ dependencies:
   firebase_auth_mocks: ^0.8.2
   fake_cloud_firestore: ^1.2.2
   firebase_storage_mocks: ^0.5.0
+  sliding_up_panel: ^2.0.0+1
+  flutter_html: ^2.2.1
+  data_connection_checker_nulls: ^0.0.2
+  google_polyline_algorithm: ^3.1.0
+  platform: ^3.1.0
+  flutter_tts: ^3.3.3
   
 
 dev_dependencies:

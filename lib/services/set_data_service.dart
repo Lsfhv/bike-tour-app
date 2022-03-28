@@ -1,6 +1,7 @@
 /// "service" to save data into firebase firestore
 
 import 'package:bike_tour_app/models/user_model.dart';
+import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SetData {
@@ -18,13 +19,40 @@ class SetData {
   }
 
   void generateGroup ({required String uid, required String code}) async {
-    _firestore.collection('users').doc(uid).update({
-      "Group $code":[uid,],
+    //create group route data
+    await _firestore.collection('group_journey').doc(code).set({
+      "leader" : uid,
+      "members" : [],
+    });
+  //set leader's code
+   await  _firestore.collection('users').doc(uid).update({
+      'group code' : code,
+    });
+  }
+
+  void join_group({required String uid, required String code}) async {
+    await  _firestore.collection('group_journey').doc(code).collection('members').update({
+      'member $uid' : uid,
     }).then((_){
       
     }).catchError((_){
       print("handle this error pls");
     });
+    //set member group code
+    await  _firestore.collection('users').doc(uid).update({
+      'group code' : code,
+    });
   }
+
+  set_journey({required JourneyDataWithRoute journey, required String code}) async{
+    await _firestore.collection('group_journey').doc(code).set({
+      'journey' : journey.toJson(),
+    });
+  }
+
+  delete_journey({required String code}) async{
+    await _firestore.collection('group_journey').doc(code).delete();
+  }
+
 
 }
