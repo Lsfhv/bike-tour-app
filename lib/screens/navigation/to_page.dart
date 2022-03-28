@@ -593,55 +593,63 @@ class _ToPageState extends State<ToPage> {
     }
     return MaterialApp(
         home: Scaffold(
-      appBar: AppBar(
-        title: appBar(),
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.arrow_circle_right_outlined),
-            onPressed: () => _handleNavigateToNextPage(args),
-          ),
-          IconButton(
-              onPressed: () => _showDestinations(),
-              icon: Icon(Icons.route_outlined)),
-        ],
-      ),
-      body: Stack(alignment: Alignment.center, children: [
-        Center(
-          child: GoogleMap(
-            onMapCreated: _onMapCreated,
-            initialCameraPosition: CameraPosition(target: _center, zoom: 15),
-            markers: _markers as Set<Marker>,
-          ),
-        ),
-        if (!_showDetail && !_viewingDestinationList)
-          Expanded(
-            child: ListView.builder(
-              itemCount: predictions.length,
-              itemBuilder: (context, index) {
-                return Container(
-                    color: Colors.white,
-                    child: ListTile(
-                      tileColor: isSelected ? Colors.white : Colors.blue,
-                      leading: CircleAvatar(
-                        child: Icon(
-                          Icons.pin_drop,
-                          color: Colors.white,
-                        ),
-                      ),
-                      title: Text(predictions[index].description as String),
-                      onTap: () {
-                        _handleSuggestionTap(predictions[index]);
-                      },
-                    ));
-              },
+            appBar: AppBar(
+              title: appBar(),
+              automaticallyImplyLeading: false,
+              centerTitle: true,
+              backgroundColor: Color.fromARGB(202, 85, 190, 56),
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.arrow_circle_right_outlined),
+                  onPressed: () => _handleNavigateToNextPage(args),
+                ),
+                IconButton(
+                    onPressed: () => _showDestinations(),
+                    icon: Icon(Icons.route_outlined)),
+              ],
             ),
-          ),
-        if (_showDetail && currPrediction != null) _showDetailPage(),
-        if (!_showDetail && _viewingDestinationList) _showDestinationList(),
-      ]),
-    ));
+            body: Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              child: Stack(alignment: Alignment.center, children: [
+                Center(
+                  child: GoogleMap(
+                    onMapCreated: _onMapCreated,
+                    initialCameraPosition:
+                        CameraPosition(target: _center, zoom: 15),
+                    markers: _markers as Set<Marker>,
+                  ),
+                ),
+                if (!_showDetail && !_viewingDestinationList)
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: predictions.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                            color: Colors.white,
+                            child: ListTile(
+                              tileColor:
+                                  isSelected ? Colors.white : Colors.blue,
+                              leading: CircleAvatar(
+                                child: Icon(
+                                  Icons.pin_drop,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              title: Text(
+                                  predictions[index].description as String),
+                              onTap: () {
+                                _handleSuggestionTap(predictions[index]);
+                              },
+                            ));
+                      },
+                    ),
+                  ),
+                if (_showDetail && currPrediction != null) _showDetailPage(),
+                if (!_showDetail && _viewingDestinationList)
+                  _showDestinationList(),
+              ]),
+            )));
   }
 
   //void _generateBikeMarkers(){
