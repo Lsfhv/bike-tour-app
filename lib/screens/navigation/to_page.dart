@@ -1,10 +1,12 @@
-
-
 import 'dart:math';
 import 'dart:ui';
 
 import 'package:bike_tour_app/models/directions_model.dart';
 import 'package:bike_tour_app/screens/markers/destination_marker.dart';
+import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
+import 'package:bike_tour_app/screens/widgets/destination_list_viewer.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:bike_tour_app/screens/navigation/dynamic_navigation.dart';
 import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
 import 'package:bike_tour_app/screens/widgets/destination_list_viewer.dart';
@@ -329,6 +331,12 @@ class _ToPageState extends State<ToPage> {
         closePage: _closePage);
   }
 
+  _delete_destination_at(int index) {
+    setState(() {
+      print(list_of_destinations.length);
+      list_of_destinations.removeAt(index);
+      print(list_of_destinations.length);
+      print('removed');
   _delete_destination_at(int index) async {
     late Destination removed;
     setState(() {
@@ -513,6 +521,35 @@ class _ToPageState extends State<ToPage> {
             onMapCreated: _onMapCreated,
             initialCameraPosition: CameraPosition(target: _center, zoom: 15),
             markers: _markers as Set<Marker>,
+          ),
+        ),
+        if (!_showDetail && !_viewingDestinationList)
+          Expanded(
+            child: ListView.builder(
+              itemCount: predictions.length,
+              itemBuilder: (context, index) {
+                return Container(
+                    color: Colors.white,
+                    child: ListTile(
+                      tileColor: isSelected ? Colors.white : Colors.blue,
+                      leading: CircleAvatar(
+                        child: Icon(
+                          Icons.pin_drop,
+                          color: Colors.white,
+                        ),
+                      ),
+                      title: Text(predictions[index].description as String),
+                      onTap: () {
+                        _handleSuggestionTap(predictions[index]);
+                      },
+                    ));
+              },
+            ),
+          ),
+        if (_showDetail && currPrediction != null) _showDetailPage(),
+        if (!_showDetail && _viewingDestinationList) _showDestinationList(),
+      ]),
+    ));
             myLocationEnabled: false,
           ),
         ),

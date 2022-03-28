@@ -12,6 +12,7 @@ class GroupRoutingPage extends StatefulWidget {
   State<GroupRoutingPage> createState() => _GroupRoutingPageState();
 }
 
+@override
 class _GroupRoutingPageState extends State<GroupRoutingPage> {
   @override
   Widget build(BuildContext context) {
@@ -77,11 +78,9 @@ class _GroupRoutingPageState extends State<GroupRoutingPage> {
 
   void _joinGroup () {
     Navigator.pushNamed(context, JoiningPage.routeName);
-  }
 
   void _createGroup() {
     Navigator.push(
         context, MaterialPageRoute(builder: ((context) => CreateGroup())));
   }
 }
-

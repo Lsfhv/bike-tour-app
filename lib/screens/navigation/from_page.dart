@@ -91,11 +91,6 @@ class _FromPageState extends State<FromPage> {
     }
    }
 
-  _onPress(){
-    Navigator.pop(context); 
-    Navigator.pushNamed(context, ToPage.routeName, arguments : _currentPosition);
-  }
-
   _handleSubmit(String location) async {
     String edited_loc = location + " London";
     GoogleGeocodingResponse loc = await _searcher.search(edited_loc);
@@ -126,30 +121,29 @@ class _FromPageState extends State<FromPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title : LocationGetter(onSubmitted: _handleSubmit, onTap : () async => _getCurrentLocation()),
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-          backgroundColor: Color.fromARGB(202, 85, 190, 56),,
-          ),
-
-          body: Stack(alignment: Alignment.center,
-          children: [
-            Center(
-              child: GoogleMap(
-                onMapCreated: _onMapCreated,
-                markers: {if (_currLoc != null) _currLoc as Marker},
-                initialCameraPosition: CameraPosition(target: _center, zoom: 15),
-              ),
+        home: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Color.fromARGB(202, 85, 190, 56),
+              title: LocationGetter(
+                  onSubmitted: _handleSubmit, onTap: _getCurrentLocation),
+              automaticallyImplyLeading: false,
+              centerTitle: true,
             ),
-            if(_fetchingLocation && locationPermission) Center(child: LoadingWidget(loading_text: "Finding Your Location",)),
-            
-          ]
-          ,) 
-
-      )
-    );
+            body: Stack(
+              alignment: Alignment.center,
+              children: [
+                Center(
+                  child: GoogleMap(
+                    onMapCreated: _onMapCreated,
+                    markers: {if (_currLoc != null) _currLoc as Marker},
+                    initialCameraPosition:
+                        CameraPosition(target: _center, zoom: 15),
+                  ),
+                ),
+                if (_fetchingLocation && locationPermission)
+                  Center(child: CircularProgressIndicator()),
+              ],
+            )));
   }
 
   //void _generateBikeMarkers(){
