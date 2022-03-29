@@ -5,11 +5,10 @@ import '../../models/user_data.dart';
 class UserMarker extends Marker {
   final UserPosition user;
   UserMarker({required this.user})
-    : 
-    super(
-      markerId: const MarkerId('current_location') ,
-      draggable: false, 
-      position: user.center as LatLng,
-      icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-      );
+      : super(
+          markerId: MarkerId('current_location'),
+          draggable: false,
+          position: user.center as LatLng,
+          icon: BitmapDescriptor.defaultMarkerWithHue(100),
+        );
 }
