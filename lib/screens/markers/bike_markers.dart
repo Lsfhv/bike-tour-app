@@ -1,4 +1,4 @@
-import 'package:bike_tour_app/models/tfl-api/bike_point_model.dart';
+import 'package:bike_tour_app/models/bike_point_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class BikeMarker extends Marker {

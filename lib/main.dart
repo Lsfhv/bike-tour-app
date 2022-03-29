@@ -1,6 +1,7 @@
  // ignore_for_file: prefer_const_constructors
 import 'package:bike_tour_app/screens/groupRouting/join_page.dart';
 import 'package:bike_tour_app/screens/navigation/dynamic_navigation.dart';
+import 'package:bike_tour_app/screens/navigation/main_map.dart';
 import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
 import 'package:bike_tour_app/screens/navigation/route_planner_form.dart';
 import 'package:bike_tour_app/screens/navigation/to_page.dart';
@@ -63,6 +64,7 @@ class _MyAppState extends State<MyApp> {
         ],
         child: MaterialApp(
         routes : {
+          MainMap.routeName :(context) => const MainMap(),
           ToPage.routeName : (context) => const ToPage(),
           RoutingMap.routeName : (context) => const RoutingMap(),
           DynamicNavigation.routeName : (context) => const DynamicNavigation(),

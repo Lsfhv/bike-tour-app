@@ -3,7 +3,6 @@ import 'package:bike_tour_app/screens/groupRouting/group_routing.dart';
 import 'package:bike_tour_app/models/tfl-api/get_api.dart';
 import 'package:bike_tour_app/screens/markers/bike_markers.dart';
 import 'package:bike_tour_app/screens/settings/settings.dart';
-import 'package:bike_tour_app/screens/widgets/check_wifi.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,6 +13,7 @@ import 'package:location/location.dart';
 class MainMap extends StatefulWidget {
   const MainMap({Key? key}) : super(key: key);
   static final GetApi getApi = GetApi();
+  static final routeName = '/mainMap';
   @override
   _MainMapState createState() => _MainMapState();
 }
@@ -23,26 +23,8 @@ class _MainMapState extends State<MainMap> {
   late GoogleMapController _controller;
   final Location _location = Location();
 
-  final Set<Marker> bikePoints = new Set();
-
-  BitmapDescriptor mapMarker = BitmapDescriptor.defaultMarkerWithHue(107);
-  @override
-  void initState() {
-    super.initState();
-    setCustomMarker();
-  }
-
-  void setCustomMarker() async {
-    mapMarker = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(35, 35)),
-        'assets/images/bike-marker.png');
-  }
-
-  final CheckWifi checkWifi = CheckWifi();
-
   void _onMapCreated(GoogleMapController _cntlr) {
     _controller = _cntlr;
-
     _location.onLocationChanged.listen((l) {
       _controller.animateCamera(
         CameraUpdate.newCameraPosition(
@@ -50,19 +32,6 @@ class _MainMapState extends State<MainMap> {
         ),
       );
     });
-
-    @override
-    void dispose() {
-      _cntlr.dispose();
-      super.dispose();
-    }
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    checkWifi.dispose();
   }
 
   @override
@@ -78,7 +47,6 @@ class _MainMapState extends State<MainMap> {
                 initialCameraPosition:
                     CameraPosition(target: _initialcameraposition),
                 mapType: MapType.normal,
-                markers: getmarkers(),
                 onMapCreated: _onMapCreated,
                 myLocationEnabled: true,
               ),
@@ -104,10 +72,7 @@ class _MainMapState extends State<MainMap> {
                   heroTag: "Persons",
                   onPressed: () {
                     // person
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: ((context) => GroupRoutingPage())));
+                    Navigator.push(context, MaterialPageRoute(builder: ((context) => GroupRoutingPage())));
                   },
                   backgroundColor:
                       Color.fromARGB(202, 85, 190, 56).withOpacity(1),
@@ -127,9 +92,10 @@ class _MainMapState extends State<MainMap> {
                           GoogleFonts.lato(color: Colors.white, fontSize: 16.5),
                     ),
                     color: Color.fromARGB(202, 85, 190, 56).withOpacity(1),
-                    onPressed: () {
+                    onPressed: () async {
+                        
                       Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => FromPage()));
+                        MaterialPageRoute(builder: (context) => FromPage()));
                     },
                   ),
                 ),
@@ -139,49 +105,5 @@ class _MainMapState extends State<MainMap> {
         ),
       ),
     );
-  }
-
-  Set<Marker> getmarkers() {
-    setState(() {
-      bikePoints.add(Marker(
-        //add first marker
-        markerId: MarkerId("Santander Cycles, Bush House."),
-        position: LatLng(51.515164, -0.117833), //position of marker
-        infoWindow: InfoWindow(
-          //popup info
-          title: 'Santander Cycles: Sardinia House',
-          snippet: 'Bikes Available: X  Free Spaces: Y',
-        ),
-        icon: mapMarker, //Icon for Marker
-      ));
-
-      bikePoints.add(Marker(
-        //add second marker
-        markerId: MarkerId("2"),
-        position: LatLng(51.509941, -0.117634), //position of marker
-        infoWindow: InfoWindow(
-          //popup info
-          title: 'Santander Cycles: Somerset House',
-          snippet: 'Bikes Available: X  Free Spaces: Y',
-        ),
-        icon: mapMarker, //Icon for Marker
-      ));
-
-      bikePoints.add(Marker(
-        //add third marker
-        markerId: MarkerId("3"),
-        position: LatLng(51.509625, -0.119038), //position of marker
-        infoWindow: InfoWindow(
-          //popup info
-          title: 'Santander Cycles: Embankment',
-          snippet: 'Bikes Available: X  Free Spaces: Y',
-        ),
-        icon: mapMarker, //Icon for Marker
-      ));
-
-      //add more markers here
-    });
-
-    return bikePoints;
   }
 }

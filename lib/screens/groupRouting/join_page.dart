@@ -1,16 +1,15 @@
 import 'package:bike_tour_app/screens/navigation/constants.dart';
-import 'package:bike_tour_app/screens/navigation/to_page.dart';
 import 'package:bike_tour_app/screens/widgets/loading_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:googleapis/trafficdirector/v2.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:bike_tour_app/screens/groupRouting/group_routing.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../models/journey_data_with_route_model.dart';
+import '../../models/user_data.dart';
 import '../navigation/route_choosing.dart';
 
 class JoiningPage extends StatefulWidget {
@@ -67,7 +66,6 @@ class _JoiningPageState extends State<JoiningPage> {
       print(_);
       return false;
     }
-    return false;
   }
 
   _waitForJourney(String code) async {

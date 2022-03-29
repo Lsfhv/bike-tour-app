@@ -42,4 +42,7 @@
         <meta-data android:name="com.google.android.maps.v2.API_KEY"
           android:value="AIzaSyA75AqNa-yxMDYqffGrN0AqyUPumqkmuEs"/>
     </application>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
 </manifest>

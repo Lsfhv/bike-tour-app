@@ -5,35 +5,25 @@ import 'package:bike_tour_app/models/instruction_model.dart';
 import 'package:bike_tour_app/repository/direction.dart';
 import 'package:bike_tour_app/screens/markers/user_location_marker.dart';
 import 'package:bike_tour_app/screens/navigation/constants.dart';
-import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
-import 'package:bike_tour_app/screens/navigation/to_page.dart';
+import 'package:bike_tour_app/screens/navigation/main_map.dart';
 import 'package:bike_tour_app/screens/widgets/instruction_widget.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
-import 'package:googleapis/admob/v1.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+
 
 import 'package:location/location.dart' as loc;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:app_settings/app_settings.dart';
 
 import '../../models/directions_model.dart';
-import '../../models/tfl-api/get_api.dart';
+import '../../models/journey_data_with_route_model.dart';
+import '../../models/route_model.dart';
+import '../../models/user_data.dart';
 
-class RouteData {
-  // final Directions directions;
-  // final UserPosition user_loc;
-  // final Set<Marker> markers;
-  // final List<LatLng> waypoints;
 
-  final UserPosition user_loc;
-  final JourneyDataWithRoute jdwr;
-
-  RouteData({required this.user_loc, required this.jdwr});
-}
 
 class DynamicNavigation extends StatefulWidget {
   const DynamicNavigation({Key? key}) : super(key: key);
@@ -50,9 +40,10 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
   final loc.Location location = loc.Location();
   late loc.LocationData current_position;
   late LatLng nextCheckPoint;
-  late Instruction? current_instruction = null;
+  late Instruction? current_instruction =null;
   late Instructions instructions;
-  late List<PointLatLng> polylinepoints = [];
+  late List<PointLatLng> polylinepoints =[];
+  
   late GoogleMapController mapController;
   StreamSubscription<loc.LocationData>? _locationSubscription;
   Set<Marker> _markers = {};
@@ -61,15 +52,17 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
   double CAMERA_TILT = 1;
   double CAMERA_BEARING = 45;
   bool reached = false;
-
   bool cancelled = false;
-  List<LatLng> past_journeys = [];
+  List<LatLng> past_journeys =[];
   bool muted = false;
 
   var ttsState;
 
+  
+
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
+
   }
 
   Future<bool> enableBackgroundMode() async {
@@ -89,8 +82,8 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
       }
       print(_bgModeEnabled); //True!
       return _bgModeEnabled;
-    }
-  }
+ }
+}
 
   @override
   void initState() {
@@ -100,29 +93,57 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
     enableBackgroundMode(); // CALLED BY THIS
     _listenLocation();
   }
-
-  Set<Polyline> _polyline() {
+  
+  Set<Polyline> _polyline(){
     return {
       Polyline(
-        polylineId: const PolylineId('past_journey'),
-        color: Colors.grey,
-        width: 5,
-        points: past_journeys,
+      polylineId: const PolylineId('past_journey'),
+      color: Colors.grey,
+      width: 5,
+      points: past_journeys,
       ),
       Polyline(
         polylineId: const PolylineId('rest_of_journey'),
         color: STANDARD_COLOR,
         width: 5,
-        points:
-            polylinepoints.map((e) => LatLng(e.latitude, e.longitude)).toList(),
+        points: polylinepoints
+          .map((e) => LatLng(e.latitude, e.longitude))
+          .toList(),
       ),
     };
   }
 
-  _cancelTrip() {
+  _endTrip() async {
     setState(() {
       cancelled = true;
     });
+    await jdwr!.journeyData.endTrip();
+    showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+      title : const Text("Trip Cancelled!"),
+      actions : <Widget>[
+        TextButton(onPressed: () => _navigateNextPage(), child: const Text("Ok")),
+      ]
+    )
+    );
+    
+  }
+
+  _navigateNextPage(){
+    Navigator.popUntil(context, ModalRoute.withName(MainMap.routeName));
+    Navigator.pushNamed(context, MainMap.routeName);
+
+  }
+
+
+  _cancelTrip(){
+    showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+      title : const Text("Do you want to end the trip?"),
+      actions : <Widget>[
+        TextButton(onPressed: () async =>await _endTrip(), child: const Text("Yes")),
+        TextButton(onPressed: () => Navigator.pop(context, "No") , child: const Text("No"))
+      ]
+    )
+    );
   }
 
   @override
@@ -132,219 +153,221 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
     jdwr = args.jdwr;
     instructions = _info!.instruction as Instructions;
     polylinepoints = _info!.polylinePoints;
-    if (current_instruction == null) {
+    if(current_instruction == null){
       current_instruction = instructions.get(0);
       nextCheckPoint = current_instruction!.end_loc;
     }
     _center = args.user_loc.center as LatLng;
     _markers = args.jdwr.journeyData.markers;
     return Scaffold(
-        body: Stack(
-      alignment: Alignment.center,
-      children: [
+      body : Stack(
+        alignment: Alignment.center,
+        children: [ 
         GoogleMap(
-          myLocationButtonEnabled: false,
-          compassEnabled: true,
-          rotateGesturesEnabled: true,
-          zoomControlsEnabled: false,
-          initialCameraPosition: CameraPosition(target: _center, zoom: 15),
-          onMapCreated: _onMapCreated,
-          markers: _markers,
-          polylines: _info != null ? _polyline() : {},
-        ),
-        Positioned(
-          child: IconButton(
-            iconSize: 20,
-            icon: Icon(Icons.backspace),
-            onPressed: () async => await _cancelTrip(),
-          ),
-          left: 10,
-          bottom: 10,
-        ),
-        Positioned(
-          child: IconButton(
-            icon: Icon(Icons.redo_rounded),
-            iconSize: 20,
-            onPressed: () async => await _reroute(),
-          ),
-          left: 40,
-          bottom: 10,
-        ),
-        if (_locationSubscription != null)
+              myLocationButtonEnabled: false,
+              compassEnabled: true,
+              rotateGesturesEnabled: true,
+              zoomControlsEnabled: false,
+              initialCameraPosition:CameraPosition(target: _center, zoom: 15),
+              onMapCreated: _onMapCreated,
+              markers: _markers,
+              polylines: _info != null ? _polyline() : {},
+            ),
           Positioned(
-            child: InstructionWidget(
-                instruction: current_instruction as Instruction),
-            top: 0,
-            left: 0,
-            right: 0,
+            child : Row(
+              children : [
+              Card(
+                child: IconButton(
+                  iconSize: 20,
+                  icon: Icon(Icons.backspace),
+                  onPressed: ()async => await _cancelTrip(),
+                ),
+              ),
+              Card(
+                child : IconButton(
+                  icon: Icon(Icons.redo_rounded),
+                  iconSize: 20,
+                  onPressed: () async => await _reroute(),
+                ),
+              ),
+            ]
+            ),
+            left :40,
+            bottom: 10,
           ),
-      ],
-    ));
-  }
+        if(_locationSubscription != null)
+        Positioned(
+          child:  InstructionWidget(instruction: current_instruction as Instruction),
+          top :0,
+          left :0,
+          right : 0,
+        ),
 
+        ],
+      )
+    );
+  }
   void updatePinOnMap() async {
-    if (mounted) {
+   
+    if(mounted){
       _pastPoint();
       setState(() {
-        _center = LatLng(current_position.latitude as double,
-            current_position.longitude as double);
+        _center = LatLng(current_position.latitude as double, current_position.longitude as double);
         _markers.removeWhere((m) => m.markerId.value == 'current_location');
-        Marker _new_marker = UserMarker(user: UserPosition(_center));
+        Marker _new_marker = UserMarker(user: UserPosition(_center) );
         _markers.add(_new_marker);
-        if (instructions != null && nextCheckPoint != null) {
-          print(nextCheckPoint);
+        if(instructions != null && nextCheckPoint !=null ){
+          print(nextCheckPoint); 
         }
       });
-      if (_reached_next_check_point()) {
+      if(_reached_next_check_point()){
         _update_instruction();
-        if (!muted) {
+        if(!muted){
           await _speak();
-        }
       }
+      }    
+      
     }
-  }
+}
 
-  String _editString(String s) {
-    RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+  String _editString(String s){
+    RegExp exp = RegExp(r"<[^>]*>",multiLine: true,caseSensitive: true);
     return s.replaceAll(exp, ' ');
   }
 
-  _speak() async {
+  _speak() async{
     final flutterTts = FlutterTts();
-
-    var result =
-        await flutterTts.speak(_editString(current_instruction!.instruction));
+    
+    var result = await flutterTts.speak(_editString(current_instruction!.instruction));
   }
 
-  bool is_on_route() {
-    LatLng cur_pos = LatLng(current_position.latitude as double,
-        current_position.longitude as double);
+
+  bool is_on_route(){
+    LatLng cur_pos = LatLng(current_position.latitude as double, current_position.longitude as double);
     const double TOLERANCE = 10;
     int len = _info!.polylinePoints.length;
-    List<PointLatLng> points =
-        _info!.polylinePoints.sublist((len / 4).toInt(), (3 * len / 4).toInt());
-    for (PointLatLng point in points) {
+    List<PointLatLng> points = _info!.polylinePoints.sublist((len/4).toInt(),(3*len/4 ).toInt());
+    for(PointLatLng point in points){
       LatLng latlng = LatLng(point.latitude, point.longitude);
       double distance = _calculate_distance(from: cur_pos, to: latlng);
-      if (distance <= TOLERANCE) {
+      if(distance <= TOLERANCE){
         return true;
       }
     }
     return false;
   }
 
-  _reroute() async {
+  _reroute() async{
     //fetch directions to latest endpoint
-    LatLng curr_pos = LatLng(current_position.latitude as double,
-        current_position.longitude as double);
+    LatLng curr_pos = LatLng(current_position.latitude as double, current_position.longitude as double);
     LatLng end_point = current_instruction!.end_loc;
     LatLng start_point = current_instruction!.start_loc;
-    final reroute_directions = await DirectionsRepository().getDirections(
-        origin: curr_pos, destinations: [], ending_bike_dock: end_point);
+    final reroute_directions = await DirectionsRepository().getDirections(origin: curr_pos, destinations: [], ending_bike_dock: end_point);
     Instructions reroute_instructions = reroute_directions!.instruction;
-
+    
     //Clear all previous trip
 
     // Now we need to identify where old trip was disrupted and remove irrelevant polyline and instructions
     const double TOLERANCE = 20;
     List<PointLatLng> polypoints = [];
     polypoints.addAll(_info!.polylinePoints);
-    for (PointLatLng point in _info!.polylinePoints) {
-      final latlng = LatLng(point.latitude, point.longitude);
-      if (_calculate_distance(from: end_point, to: latlng) <= TOLERANCE) {
+    for(PointLatLng point in _info!.polylinePoints){
+      final latlng = LatLng(point.latitude,point.longitude);
+      if(_calculate_distance(from: end_point, to: latlng)<= TOLERANCE){
         break;
       }
       polypoints.remove(point);
     }
 
     //we remove current_instruction as it is now irrelevant,
-    Instructions new_instructions = Instructions(
-        instructions:
-            instructions.instructions.sublist(instruction_index += 1));
+    Instructions new_instructions = Instructions(instructions: instructions.instructions.sublist(instruction_index+=1));
     new_instructions = reroute_instructions + new_instructions;
-
+    
     //now polyline and instruction reloaded,
     setState(() {
       polylinepoints = polypoints;
-      past_journeys = []; //since rerouting clear all pass journey
+      past_journeys =[]; //since rerouting clear all pass journey
       instructions = new_instructions;
       instruction_index = 0;
     });
+
   }
 
-  void _update_instruction() {
-    LatLng cur_pos = LatLng(current_position.latitude as double,
-        current_position.longitude as double);
+  void _update_instruction(){
+    LatLng cur_pos = LatLng(current_position.latitude as double, current_position.longitude as double);
     bool onRoute = is_on_route();
-    bool stillOnCurrentInstruction =
-        _reached_next_check_point(); //current_instruction!.stillInInstruction(cur_pos);
-    if (instruction_index < instructions.instructions.length) {
+    bool stillOnCurrentInstruction = _reached_next_check_point();//current_instruction!.stillInInstruction(cur_pos);
+    if(instruction_index < instructions.instructions.length){
       current_instruction = instructions.get(instruction_index);
       nextCheckPoint = current_instruction!.end_loc;
       instruction_index++;
-    } else if (_locationSubscription == null) {
+    }
+    else if(_locationSubscription == null){
       //set ERROR
-    } else if (reached) {
+    }
+    else if(reached){
       current_instruction = REACHED_INSTRUCTION;
       nextCheckPoint = REACHED_LOC;
-    } else if (!stillOnCurrentInstruction) {
-      if (!onRoute) {
-        current_instruction = instructions.get(instruction_index);
-        nextCheckPoint = current_instruction!.end_loc;
-        instruction_index++;
-      }
-    } else {
+    }
+    else if(!stillOnCurrentInstruction){
+      if(!onRoute){
+      current_instruction = instructions.get(instruction_index);
+      nextCheckPoint = current_instruction!.end_loc;
+      instruction_index++;
+      }  
+    }
+    else{
       //indicate reached location
       reached = true;
     }
   }
 
-  double _calculate_distance({required LatLng from, required LatLng to}) {
-    double distance = 0;
-    const double RADIUS_OF_EARTH = 6371000;
-    double a1 = from.latitude * pi / 180;
-    double a2 = to.latitude * pi / 180;
-    double b1 = (to.latitude - from.latitude) * pi / 180;
-    double b2 = (to.longitude - from.longitude) * pi / 180;
 
-    double k = sin(b1 / 2) * sin(b1 / 2) +
-        cos(a1) * cos(a2) * sin(b2 / 2) * sin(b2 / 2);
-    double c = 2 * atan2(sqrt(k), sqrt(1 - k));
+  double _calculate_distance({required LatLng from,required LatLng to}){
+      double distance = 0;
+      const double RADIUS_OF_EARTH = 6371000;
+      double a1 = from.latitude * pi/180;
+      double a2 = to.latitude * pi/180;
+      double b1 = (to.latitude - from.latitude) * pi/180;
+      double b2 = (to.longitude - from.longitude) * pi/180;
 
-    distance = c * RADIUS_OF_EARTH;
+      double k = sin(b1/2) * sin(b1/2) +
+                cos(a1) * cos(a2) *
+                sin(b2/2) * sin(b2/2);
+      double c = 2 * atan2(sqrt(k), sqrt(1-k));
 
-    return distance;
+      distance = c * RADIUS_OF_EARTH;
+      
+
+      return distance;
   }
 
-  bool _reached_next_check_point() {
+  bool _reached_next_check_point(){
     double tolerance = 20;
-    if (nextCheckPoint != null) {
-      double distance = _calculate_distance(
-          from: LatLng(
-            current_position.latitude as double,
-            current_position.longitude as double,
-          ),
-          to: nextCheckPoint);
+    if(nextCheckPoint != null){
+      double distance =  _calculate_distance(
+        from: LatLng(current_position.latitude as double, current_position.longitude as double,),
+        to: nextCheckPoint
+      );
       return distance <= tolerance;
-    } else {
+    }
+    else{
       return true;
     }
   }
 
-  Future<void> _handleError() async {
+  Future<void> _handleError() async{
     _locationSubscription?.cancel();
     await _requestPermission();
   }
 
-  _pastPoint() {
-    LatLng cur_point = LatLng(current_position.latitude as double,
-        current_position.longitude as double);
-    const int TOLEARANCE = 50;
-    LatLng reached_point = LatLng(_info!.polylinePoints.first.latitude,
-        _info!.polylinePoints.first.longitude);
+  _pastPoint()  {
+    LatLng cur_point = LatLng(current_position.latitude as double, current_position.longitude as double);
+    const int TOLEARANCE =50;
+    LatLng reached_point = LatLng(_info!.polylinePoints.first.latitude, _info!.polylinePoints.first.longitude);
     print(_calculate_distance(from: cur_point, to: reached_point));
-    if (_calculate_distance(from: cur_point, to: reached_point) <= TOLEARANCE) {
-      setState(() {
+    if(_calculate_distance(from: cur_point, to: reached_point) <= TOLEARANCE ){
+      setState(()  {
         PointLatLng past_point = _info!.polylinePoints.removeAt(0);
         past_journeys.add(LatLng(past_point.latitude, past_point.longitude));
       });
@@ -352,8 +375,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
   }
 
   Future<void> _listenLocation() async {
-    _locationSubscription =
-        location.onLocationChanged.handleError((onError) async {
+    _locationSubscription = location.onLocationChanged.handleError((onError) async {
       print(onError);
       await _handleError();
     }).listen((loc.LocationData cLoc) async {
@@ -362,12 +384,10 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
       // so we're holding on to it
       current_position = cLoc;
       updatePinOnMap();
-
-      if (reached || cancelled) {
+      if(cancelled || reached){
         _stopListening();
-        await jdwr!.journeyData.endTrip();
       }
-    });
+   });
   }
 
   _stopListening() {
@@ -383,7 +403,8 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
     } else if (status.isDenied) {
       _requestPermission();
     } else if (status.isPermanentlyDenied) {
-      AppSettings.openLocationSettings;
+      AppSettings.openLocationSettings;  
     }
   }
 }
+

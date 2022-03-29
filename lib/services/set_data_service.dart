@@ -1,7 +1,7 @@
 /// "service" to save data into firebase firestore
 
+import 'package:bike_tour_app/models/journey_data_with_route_model.dart';
 import 'package:bike_tour_app/models/user_model.dart';
-import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SetData {
@@ -45,7 +45,7 @@ class SetData {
   }
 
   set_journey({required JourneyDataWithRoute journey, required String code}) async{
-    await _firestore.collection('group_journey').doc(code).set({
+    await _firestore.collection('group_journey').doc(code).update({
       'journey' : journey.toJson(),
     });
   }

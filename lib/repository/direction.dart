@@ -25,6 +25,9 @@ class DirectionsRepository {
     for(LatLng destination in destinations){
       destinations_out += 'via:${destination.latitude},${destination.longitude}|';     
     }
+    if(destinations_out.isEmpty){
+      return '';
+    }
     return destinations_out.substring(0, destinations_out.length - 1);
   }
 
@@ -47,7 +50,7 @@ class DirectionsRepository {
       },
     );
     if(optimize){
-      print(Map<String, dynamic>.from(response.data['routes'][0])['waypoint_order']);
+      //print(Map<String, dynamic>.from(response.data['routes'][0])['waypoint_order']);
     }
 
     // Check if response is successful

@@ -13,6 +13,7 @@ class PostCodePull:
                 datas = json.loads(response.text)
                 for data in datas:
                     lat, lon = data['lat'], data['lon']
+                    
                     latlon = str(lat) + ", " + str(lon)
                     outfile.write(latlon + "\n")
             except requests.ConnectionError:
