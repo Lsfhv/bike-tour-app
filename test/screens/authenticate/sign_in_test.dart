@@ -1,50 +1,43 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'valid_regex.dart';
+import 'package:bike_tour_app/screens/authenticate/sign_in_form.dart';
 
 void main() {
   test('Empty email test', () {
-    var emptyInput = ' ';
-
-    var result = ValidRegex().getValidEmailRegExp().hasMatch(emptyInput);
-
-    expect(result, false);
+    final result = EmailValidator.validate('');
+    expect(result, 'Not a valid email');
   });
 
   
   test('Given empty password input', (){
-    var emptyInput = ' ';
-
-    var result = ValidRegex().getValidPasswordRegExp().hasMatch(emptyInput);
-
-    expect(result, false);
+    final result = PasswordValidator.validate('');
+    expect(result, 'Password must be 8 characters long, contain an Upper Case character, a Number and a Special character');
   });
 
   
   test('Given valid email address', () {
-    var result = ValidRegex().getValidEmailRegExp().hasMatch('JohnDoe1@example.com');
-
-    expect(result, true);
+    final result = EmailValidator.validate('JohnDoe1@example.com');
+    expect(result, '');
   });
 
   
   test('Given valid Password', () {  
-    var result = ValidRegex().getValidPasswordRegExp().hasMatch('Qwerty13!');
+    final result = PasswordValidator.validate('Qwerty13!');
 
-    expect(result, true);
+    expect(result, '');
   });
 
   
   test('Given Invalid Email', (){
-     var result = ValidRegex().getValidEmailRegExp().hasMatch('JohnDoe1example.com');
+     final result = EmailValidator.validate('johndoe.com');
 
-    expect(result, false);
+    expect(result, 'Not a valid email');
   });
 
   
   test('Given Invalid Password', () {
-    var result = ValidRegex().getValidPasswordRegExp().hasMatch('happy');
+    final result = PasswordValidator.validate('happy');
 
-    expect(result, false);
+    expect(result,  'Password must be 8 characters long, contain an Upper Case character, a Number and a Special character' );
   });
 
 }
