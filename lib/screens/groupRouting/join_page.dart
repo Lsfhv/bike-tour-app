@@ -64,7 +64,6 @@ class _JoiningPageState extends State<JoiningPage> {
       print(_);
       return false;
     }
-    return false;
   }
 
   _waitForJourney(String code) async {

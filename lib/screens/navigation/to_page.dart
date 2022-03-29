@@ -1,4 +1,5 @@
 
+import 'dart:isolate';
 import 'dart:math';
 import 'dart:ui';
 
@@ -68,7 +69,7 @@ class _ToPageState extends State<ToPage> {
       showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
         title : const Text("Have you added all the places you want to visit?"),
         actions : <Widget>[
-          TextButton(onPressed: () =>_navigateToNextPage(args), child: const Text("Yes")),
+          TextButton(onPressed: () async =>await _navigateToNextPage(args), child: const Text("Yes")),
           TextButton(onPressed: () => Navigator.pop(context, "No") , child: const Text("No"))
         ]
       )
@@ -94,11 +95,16 @@ class _ToPageState extends State<ToPage> {
     return directions;
   }
 
-  _navigateToNextPage(UserPosition args)async{
+
+  _setToLoadingState(){
     Navigator.pop(context);
     setState(() {
       loading_state = true;
     });
+  }
+
+  _navigateToNextPage(UserPosition args)async{
+    _setToLoadingState();
     jd = JourneyData(args, list_of_destinations);
     Directions? route = await _generateRoute(jd as JourneyData);
     setState(() {
@@ -121,8 +127,6 @@ class _ToPageState extends State<ToPage> {
       if(await _checkIfGroupLeader()){
         String uid = FirebaseAuth.instance.currentUser!.uid;
         String code = "";
-
-
         await FirebaseFirestore.instance.collection("users").doc(uid).get().then((value) => code = value.get("group code"));
         SetData().set_journey(journey: journey, code: code);
       }
@@ -130,26 +134,39 @@ class _ToPageState extends State<ToPage> {
     }
   }
 
-  bool _isLeader(DocumentSnapshot<Map<String, dynamic>> value){
+  bool _isLeader(DocumentSnapshot<Map<String, dynamic>> value, String uid){
     try{
-      value.get("group code");
+      return uid == value.data()!["leader"];
     }
     on StateError catch (_){
       return false;
     }
-    return true;
   }
 
   Future<bool> _checkIfGroupLeader() async{
     //first check if user in a group, only leaders reach this page!
     
     String uid = FirebaseAuth.instance.currentUser!.uid;
+    String group_code ='';
     bool isLeader = false;
-    await FirebaseFirestore.instance.collection("users").doc(uid).get().then(
-      (value) => isLeader = _isLeader(value)
-    );
-
-  return isLeader;
+    try{
+      await FirebaseFirestore.instance.collection("users").doc(uid).get().then(
+        (value) => group_code = value.data()!['group code']
+      );
+      await FirebaseFirestore.instance.collection("group_journey").doc(group_code).get().then(
+        (value) => isLeader = _isLeader(value, uid)
+      );
+      return isLeader;
+    }
+    on NullThrownError catch(_){
+      return false;
+    }
+    on StateError catch(_){
+      return false;
+    }
+    on TypeError catch(_){
+      return false;
+    }
   }
 
   void autoCompleteSearch(String value) async {
@@ -343,6 +360,7 @@ class _ToPageState extends State<ToPage> {
           border: InputBorder.none,
         ),
         onTap: _closePage,
+        readOnly: !loading_state,
       );
     } else if (_viewingDestinationList) {
       return TextField(
@@ -356,6 +374,7 @@ class _ToPageState extends State<ToPage> {
           border: InputBorder.none,
         ),
         onTap: _closeDestinationView,
+        readOnly: !loading_state,
       );
     } else {
       return Destination_Retriever(
@@ -478,12 +497,14 @@ class _ToPageState extends State<ToPage> {
                   onMapCreated: _onMapCreated,
                   initialCameraPosition: CameraPosition(target: _center, zoom: 15),
                   markers: _markers as Set<Marker>,
+                  zoomGesturesEnabled: !loading_state,
+                  rotateGesturesEnabled: !loading_state,
                 ),
                 behavior: HitTestBehavior.translucent,
               ),
             ),
 
-            if (!_showDetail && !_viewingDestinationList)
+            if (!_showDetail && !_viewingDestinationList && !loading_state)
               GestureDetector(
                 child :Row(
                   children: [ Expanded(
@@ -533,7 +554,7 @@ class _ToPageState extends State<ToPage> {
 
             //if(_showDetail && currPrediction != null ) _showDetailPage(),
 
-            if(!_showDetail && _viewingDestinationList) _showDestinationList(),
+            if(!_showDetail && _viewingDestinationList && !loading_state) _showDestinationList(),
             if(loading_state) IgnorePointer(child: const LoadingWidget(loading_text: "Loading The Route"), ignoring: true,),
           ]
         ),

@@ -13,6 +13,7 @@ import 'package:location/location.dart';
 class MainMap extends StatefulWidget {
   const MainMap({Key? key}) : super(key: key);
   static final GetApi getApi = GetApi();
+  static final routeName = '/mainMap';
   @override
   _MainMapState createState() => _MainMapState();
 }

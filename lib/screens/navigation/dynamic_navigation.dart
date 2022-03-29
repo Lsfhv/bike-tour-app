@@ -5,6 +5,7 @@ import 'package:bike_tour_app/models/instruction_model.dart';
 import 'package:bike_tour_app/repository/direction.dart';
 import 'package:bike_tour_app/screens/markers/user_location_marker.dart';
 import 'package:bike_tour_app/screens/navigation/constants.dart';
+import 'package:bike_tour_app/screens/navigation/main_map.dart';
 import 'package:bike_tour_app/screens/widgets/instruction_widget.dart';
 
 import 'package:flutter/material.dart';
@@ -42,6 +43,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
   late Instruction? current_instruction =null;
   late Instructions instructions;
   late List<PointLatLng> polylinepoints =[];
+  
   late GoogleMapController mapController;
   StreamSubscription<loc.LocationData>? _locationSubscription;
   Set<Marker> _markers = {};
@@ -111,10 +113,37 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
     };
   }
 
-  _cancelTrip(){
+  _endTrip() async {
     setState(() {
       cancelled = true;
     });
+    await jdwr!.journeyData.endTrip();
+    showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+      title : const Text("Trip Cancelled!"),
+      actions : <Widget>[
+        TextButton(onPressed: () => _navigateNextPage(), child: const Text("Ok")),
+      ]
+    )
+    );
+    
+  }
+
+  _navigateNextPage(){
+    Navigator.popUntil(context, ModalRoute.withName(MainMap.routeName));
+    Navigator.pushNamed(context, MainMap.routeName);
+
+  }
+
+
+  _cancelTrip(){
+    showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+      title : const Text("Do you want to end the trip?"),
+      actions : <Widget>[
+        TextButton(onPressed: () async =>await _endTrip(), child: const Text("Yes")),
+        TextButton(onPressed: () => Navigator.pop(context, "No") , child: const Text("No"))
+      ]
+    )
+    );
   }
 
   @override
@@ -145,19 +174,23 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
               polylines: _info != null ? _polyline() : {},
             ),
           Positioned(
-            child: IconButton(
-              iconSize: 20,
-              icon: Icon(Icons.backspace),
-              onPressed: ()async => await _cancelTrip(),
-            ),
-            left: 10,
-            bottom: 10,
-          ),
-          Positioned(
-            child: IconButton(
-              icon: Icon(Icons.redo_rounded),
-              iconSize: 20,
-              onPressed: () async => await _reroute(),
+            child : Row(
+              children : [
+              Card(
+                child: IconButton(
+                  iconSize: 20,
+                  icon: Icon(Icons.backspace),
+                  onPressed: ()async => await _cancelTrip(),
+                ),
+              ),
+              Card(
+                child : IconButton(
+                  icon: Icon(Icons.redo_rounded),
+                  iconSize: 20,
+                  onPressed: () async => await _reroute(),
+                ),
+              ),
+            ]
             ),
             left :40,
             bottom: 10,
@@ -351,9 +384,8 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
       // so we're holding on to it
       current_position = cLoc;
       updatePinOnMap();
-      if(reached || cancelled){
+      if(cancelled || reached){
         _stopListening();
-        await jdwr!.journeyData.endTrip();
       }
    });
   }

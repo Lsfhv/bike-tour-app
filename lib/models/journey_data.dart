@@ -1,5 +1,6 @@
 import 'package:bike_tour_app/models/tfl-api/get_api.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../repository/direction.dart';
@@ -179,7 +180,7 @@ class JourneyData {
       else{
         start =  destinations[i];
         end = destinations[i+1];
-        String start_postcode = await bike_api.getPostCode(LatLng((start as BikePointModel).lat,(start as BikePointModel).lon));
+        String start_postcode = await bike_api.getPostCode((start as Destination).position);
         starting_dock = choosingDock(await bike_api.getNearbyBikingDocks((start as Destination).position, bikePoints, start_postcode, uses: number_of_bikers));
       }
       print('starting dock choosing executed in ${stopwatch.elapsed}');
@@ -234,17 +235,91 @@ class JourneyData {
     return waypoints.last;
   }
 
+  Future<String> _getGroupCode() async{
+    try {
+      String uid = await FirebaseAuth.instance.currentUser!.uid;
+      String group_code = "";
+      await FirebaseFirestore.instance.collection('users').doc(uid).get().then((value) => group_code = value.data()!['group code']);
+      return group_code;
+    }on StateError catch (e) {
+      return "";
+    }
+    on TypeError catch(e){
+      return "";
+    }
+  }
+  
+  Future<bool> _checkValidityOfCode(String code)async {
+    try{
+      bool exist = false;
+      print(code);
+      await FirebaseFirestore.instance.collection("group_journey").doc(code).get().then((value) => {
+        if(value.exists){
+          exist = true
+        }
+      });
+      return exist;
+    }
+    on StateError catch (_){
+      print(_);
+      return false;
+    }
+  }
+
+   bool _isLeader(DocumentSnapshot<Map<String, dynamic>> value, String uid){
+    try{
+      return uid == value.data()!["leader"];
+    }
+    on StateError catch (_){
+      return false;
+    }
+  }
+
+  Future<bool> _checkIfGroupLeader() async{
+    //first check if user in a group, only leaders reach this page!
+    
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    String group_code ='';
+    bool isLeader = false;
+    await FirebaseFirestore.instance.collection("users").doc(uid).get().then(
+      (value) => group_code = value.data()!['group code']
+    );
+    await FirebaseFirestore.instance.collection("group_journey").doc(group_code).get().then(
+      (value) => isLeader = _isLeader(value, uid)
+    );
+
+  return isLeader;
+  }
+
+
  endTrip() async{
-   for(int i =0; i < markers.length; i++){
-     if(markers.elementAt(i).runtimeType == BikeMarker){
-      BikePointModel starting_dock = (markers.elementAt(i) as BikeMarker).station;
-      BikePointModel end_dock = (markers.elementAt(i+2) as BikeMarker).station;
+  for(int i =0; i < markers.length; i++){
+    if(markers.elementAt(i).runtimeType == BikeMarker){
+    BikePointModel starting_dock = (markers.elementAt(i) as BikeMarker).station;
+    BikePointModel end_dock = (markers.elementAt(i+2) as BikeMarker).station;
 
-      i = i+2;
+    i = i+2;
 
-      bike_api.decreaseBikeUsed(starting_dock, number: number_of_bikers);
-      bike_api.decreaseParkingUsed(end_dock, number: number_of_bikers);
-     }
-   }
+    await bike_api.decreaseBikeUsed(starting_dock, number: number_of_bikers);
+    await bike_api.decreaseParkingUsed(end_dock, number: number_of_bikers);
+    }
+  }
+  String group_code = await _getGroupCode();
+  String uid = await FirebaseAuth.instance.currentUser!.uid;
+  if(group_code.isNotEmpty && await _checkValidityOfCode(group_code)){
+    if(await _checkIfGroupLeader()){
+      //await FirebaseFirestore.instance.collection("group_journey").doc(group_code).update({"leader" : FieldValue.delete()}).then((value) => print("Leader removed"));
+      await FirebaseFirestore.instance.collection("group_journey").doc(group_code).delete().then((value) => print("Journey deleted"));
+    }
+    else{
+    // var val= [];
+    // val.add(uid);
+    // await FirebaseFirestore.instance.collection('group_journey').doc(group_code).update({'members' : FieldValue.arrayRemove(val) }).then((value) => 
+    // print("Removed member from journey"));
+    }
+    await FirebaseFirestore.instance.collection('users').doc(uid).update({'group code' : FieldValue.delete()}).then((value) => print("Group code for user deleted"));
+  }
+  //check if its group leader
  }
+
 }

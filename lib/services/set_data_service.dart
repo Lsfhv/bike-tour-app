@@ -45,7 +45,7 @@ class SetData {
   }
 
   set_journey({required JourneyDataWithRoute journey, required String code}) async{
-    await _firestore.collection('group_journey').doc(code).set({
+    await _firestore.collection('group_journey').doc(code).update({
       'journey' : journey.toJson(),
     });
   }

@@ -25,6 +25,9 @@ class DirectionsRepository {
     for(LatLng destination in destinations){
       destinations_out += 'via:${destination.latitude},${destination.longitude}|';     
     }
+    if(destinations_out.isEmpty){
+      return '';
+    }
     return destinations_out.substring(0, destinations_out.length - 1);
   }
 
