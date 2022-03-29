@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:bike_tour_app/screens/authenticate/forgot_password.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -86,6 +87,15 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                       value: const Text('Groups will go here...'),
                     ),
+                    SettingsTile.navigation(
+                        title: TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ForgotPassword()));
+                            },
+                            child: const Text("Reset Password"))),
                     SettingsTile.navigation(
                       title: TextButton(
                           onPressed: () {
