@@ -34,4 +34,30 @@ void main() {
 
     testWidgets("Test4", (WidgetTester tester) async {});
   });
+
+  group("Test invalid password", () {
+    testWidgets("Test1", (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(
+          home: Scaffold(
+        body: SignInForm(),
+      )));
+
+      var passwordField = find.byKey(const Key("PasswordFieldKey"));
+      expect(passwordField, findsOneWidget);
+
+      var loginButton = find.byKey(const Key("LoginContainer"));
+      expect(loginButton, findsOneWidget);
+
+      await tester.enterText(passwordField, r"""password123""");
+      expect(find.text(r"""password123"""), findsOneWidget);
+
+      await tester.tap(loginButton);
+      await tester.pump();
+
+      expect(
+          find.text(
+              r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length."""),
+          findsOneWidget);
+    });
+  });
 }

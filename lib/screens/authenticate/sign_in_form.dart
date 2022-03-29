@@ -87,9 +87,10 @@ class _SignInFormState extends State<SignInForm> {
               child: TextFormField(
                 validator: (value) {
                   if (!_validPasswordRegExp.hasMatch(value!)) {
-                    return 'Password must be 8 characters long, contain an Upper Case character, a Number and a Special character';
+                    return r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length.""";
                   }
                 },
+                key: Key("PasswordFieldKey"),
                 controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
@@ -111,6 +112,7 @@ class _SignInFormState extends State<SignInForm> {
               ),
             ),
             Container(
+              key: Key("LoginContainer"),
               height: 50,
               width: 250,
               decoration: BoxDecoration(
