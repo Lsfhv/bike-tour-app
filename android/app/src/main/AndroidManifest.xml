@@ -4,7 +4,7 @@
      <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
    <application
-        android:label="bike_tour_app"
+        android:label="London Cycle"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <!-- <meta-data
@@ -38,6 +38,9 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <meta-data android:name="com.google.android.maps.v2.API_KEY"
+          android:value="AIzaSyA75AqNa-yxMDYqffGrN0AqyUPumqkmuEs"/>
     </application>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>

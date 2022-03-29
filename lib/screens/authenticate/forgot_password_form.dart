@@ -58,7 +58,8 @@ class _ForgotPasswordFromState extends State<ForgotPasswordFrom> {
               height: 50,
               width: 250,
               decoration: BoxDecoration(
-                  color: Colors.blue, borderRadius: BorderRadius.circular(20)),
+                  color: Color.fromARGB(202, 85, 190, 56),
+                  borderRadius: BorderRadius.circular(10)),
               child: TextButton(
                 onPressed: () {
                   var result = context
