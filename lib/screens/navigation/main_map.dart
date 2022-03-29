@@ -145,28 +145,36 @@ class _MainMapState extends State<MainMap> {
     );
   }
 
+  getPointData() async {
+    var data = await getData('http://10.0.2.2:5000/');
+    return data;
+  }
+
   Set<Marker> getmarkers() {
-    setState(() async {
-      var data = await getData('http://10.0.2.2:5000/');
+    setState(() {
+      var data = getPointData();
       var decodedData = jsonDecode(data);
-    
-      for(var data in decodedData){
-        var point =  Point(data["commonName"],
-              data['lat'], data['lon'],
-              data['additionalProperties'][6]['value'],
-              data['additionalProperties'][7]['value']
-        );
+
+      for (var data in decodedData) {
+        var point = Point(
+            data["commonName"],
+            data['lat'],
+            data['lon'],
+            data['additionalProperties'][6]['value'],
+            data['additionalProperties'][7]['value']);
 
         bikePoints.add(Marker(
           markerId: MarkerId(point.name),
           position: LatLng(point.lat, point.lon),
           infoWindow: InfoWindow(
-          //popup info
-          title: point.name,
-          snippet: "Bikes spaces: " + point.bikeSpace.toString()
-                      + "Bikes available: " + point.bikeAvailable.toString(),
-        ),
-        icon: mapMarker, //Icon for Marker
+            //popup info
+            title: point.name,
+            snippet: "Bikes spaces: " +
+                point.bikeSpace.toString() +
+                "Bikes available: " +
+                point.bikeAvailable.toString(),
+          ),
+          icon: mapMarker, //Icon for Marker
         ));
       }
 
