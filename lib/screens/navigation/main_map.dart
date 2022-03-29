@@ -149,7 +149,7 @@ class _MainMapState extends State<MainMap> {
     setState(() async {
       var data = await getData('http://10.0.2.2:5000/');
       var decodedData = jsonDecode(data);
-
+    
       for(var data in decodedData){
         var point =  Point(data["commonName"],
               data['lat'], data['lon'],
