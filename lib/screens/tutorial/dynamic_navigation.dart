@@ -1,11 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:bike_tour_app/models/directions_model.dart';
 import 'package:bike_tour_app/models/instruction_model.dart';
-import 'package:bike_tour_app/models/journey_data_with_route_model.dart';
-import 'package:bike_tour_app/models/route_model.dart';
-import 'package:bike_tour_app/models/user_data.dart';
 import 'package:bike_tour_app/repository/direction.dart';
 import 'package:bike_tour_app/screens/markers/user_location_marker.dart';
 import 'package:bike_tour_app/screens/navigation/constants.dart';
@@ -22,31 +18,34 @@ import 'package:location/location.dart' as loc;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:app_settings/app_settings.dart';
 
-import 'data/Test_Data_model.dart';
+import '../../models/directions_model.dart';
+import '../../models/journey_data_with_route_model.dart';
+import '../../models/route_model.dart';
+import '../../models/user_data.dart';
 
 
 
-
-class DynamicNavigation_Test extends StatefulWidget {
-  const DynamicNavigation_Test({Key? key}) : super(key: key);
-  static const routeName = '/DynamicNavigation_Test';
+class DynamicNavigation extends StatefulWidget {
+  const DynamicNavigation({Key? key}) : super(key: key);
+  static const routeName = '/dynamicNavigation';
   @override
-  _DynamicNavigation_TestState createState() => _DynamicNavigation_TestState();
+  _DynamicNavigationState createState() => _DynamicNavigationState();
 }
 
-class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
+class _DynamicNavigationState extends State<DynamicNavigation> {
   //Completer<GoogleMapController> _controller = Completer();
   int instruction_index = 1;
   late LatLng _center;
   JourneyDataWithRoute? jdwr;
-  late LatLng current_position;
+  final loc.Location location = loc.Location();
+  late loc.LocationData current_position;
   late LatLng nextCheckPoint;
   late Instruction? current_instruction =null;
   late Instructions instructions;
   late List<PointLatLng> polylinepoints =[];
   
   late GoogleMapController mapController;
-  late List<LatLng> _locationStream = [];
+  StreamSubscription<loc.LocationData>? _locationSubscription;
   Set<Marker> _markers = {};
   Directions? _info;
   double CAMERA_ZOOM = 15;
@@ -67,12 +66,33 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
 
   }
 
-  
+  Future<bool> enableBackgroundMode() async {
+    bool _bgModeEnabled = await location.isBackgroundModeEnabled();
+    if (_bgModeEnabled) {
+      return true;
+    } else {
+      try {
+        await location.enableBackgroundMode();
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+      try {
+        _bgModeEnabled = await location.enableBackgroundMode();
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+      print(_bgModeEnabled); //True!
+      return _bgModeEnabled;
+ }
+}
 
   @override
   void initState() {
     super.initState();
-
+    _requestPermission();
+    location.changeSettings(accuracy: loc.LocationAccuracy.high);
+    enableBackgroundMode(); // CALLED BY THIS
+    _listenLocation();
   }
   
   Set<Polyline> _polyline(){
@@ -94,7 +114,11 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
     };
   }
 
-  _endTrip() {
+  _endTrip() async {
+    setState(() {
+      cancelled = true;
+    });
+    await jdwr!.journeyData.endTrip();
     showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
       title : const Text("Trip Cancelled!"),
       actions : <Widget>[
@@ -116,7 +140,7 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
     showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
       title : const Text("Do you want to end the trip?"),
       actions : <Widget>[
-        TextButton(onPressed: () => _endTrip(), child: const Text("Yes")),
+        TextButton(onPressed: () async =>await _endTrip(), child: const Text("Yes")),
         TextButton(onPressed: () => Navigator.pop(context, "No") , child: const Text("No"))
       ]
     )
@@ -125,18 +149,17 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as TestData;
-    _locationStream = args.locationStream;
-    _info = args.data.jdwr.route;
-    jdwr = args.data.jdwr;
+    final args = ModalRoute.of(context)!.settings.arguments as RouteData;
+    _info = args.jdwr.route;
+    jdwr = args.jdwr;
     instructions = _info!.instruction as Instructions;
     polylinepoints = _info!.polylinePoints;
     if(current_instruction == null){
       current_instruction = instructions.get(0);
       nextCheckPoint = current_instruction!.end_loc;
     }
-    _center = args.data.user_loc.center as LatLng;
-    _markers = args.data.jdwr.journeyData.markers;
+    _center = args.user_loc.center as LatLng;
+    _markers = args.jdwr.journeyData.markers;
     return Scaffold(
       body : Stack(
         alignment: Alignment.center,
@@ -159,7 +182,7 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
                     child: IconButton(
                       iconSize: 20,
                       icon: Icon(Icons.backspace),
-                      onPressed: () =>  _cancelTrip(),
+                      onPressed: ()async => await _cancelTrip(),
                     ),
                   ),
                   Card(
@@ -169,13 +192,6 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
                       onPressed: () async => await _reroute(),
                     ),
                   ),
-                  Card(
-                    child : IconButton(
-                      icon: Icon(Icons.star),
-                      iconSize: 20,
-                      onPressed: () async => _listenLocation(),
-                    ),
-                  ),
                 ]
                 ),      
                 behavior: HitTestBehavior.translucent,
@@ -183,7 +199,7 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
               ,left :40,
               bottom: 10,
             ),
-        if(!reached)
+        if(_locationSubscription != null)
         Positioned(
           child :GestureDetector(
             child:  InstructionWidget(instruction: current_instruction as Instruction),
@@ -295,6 +311,9 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
       nextCheckPoint = current_instruction!.end_loc;
       instruction_index++;
     }
+    else if(_locationSubscription == null){
+      //set ERROR
+    }
     else if(reached){
       current_instruction = REACHED_INSTRUCTION;
       nextCheckPoint = REACHED_LOC;
@@ -346,9 +365,14 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
     }
   }
 
+  Future<void> _handleError() async{
+    _locationSubscription?.cancel();
+    await _requestPermission();
+  }
+
   _pastPoint()  {
     LatLng cur_point = LatLng(current_position.latitude as double, current_position.longitude as double);
-    const int TOLEARANCE =20;
+    const int TOLEARANCE =50;
     LatLng reached_point = LatLng(_info!.polylinePoints.first.latitude, _info!.polylinePoints.first.longitude);
     print(_calculate_distance(from: cur_point, to: reached_point));
     if(_calculate_distance(from: cur_point, to: reached_point) <= TOLEARANCE ){
@@ -360,14 +384,35 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
   }
 
   Future<void> _listenLocation() async {
-  for(LatLng cLoc in _locationStream){
-    // cLoc contains the lat and long of the
-    // current user's position in real time,
-    // so we're holding on to it
-    current_position = cLoc;
-    print('taking location');
-    await updatePinOnMap();
-    await Future.delayed(Duration(seconds: 1));
+    _locationSubscription = location.onLocationChanged.handleError((onError) async {
+      print(onError);
+      await _handleError();
+    }).listen((loc.LocationData cLoc) async {
+      // cLoc contains the lat and long of the
+      // current user's position in real time,
+      // so we're holding on to it
+      current_position = cLoc;
+      await updatePinOnMap();
+      if(cancelled || reached){
+        _stopListening();
+      }
+   });
+  }
+
+  _stopListening() {
+    _locationSubscription?.cancel();
+    setState(() {
+      _locationSubscription = null;
+    });
+  }
+
+  _requestPermission() async {
+    var status = await Permission.location.request();
+    if (status.isGranted) {
+    } else if (status.isDenied) {
+      _requestPermission();
+    } else if (status.isPermanentlyDenied) {
+      AppSettings.openLocationSettings;  
     }
   }
 }
