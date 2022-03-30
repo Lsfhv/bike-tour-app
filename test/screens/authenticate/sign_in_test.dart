@@ -1,15 +1,43 @@
-import 'package:bike_tour_app/screens/authenticate/sign_in.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bike_tour_app/screens/authenticate/sign_in_form.dart';
 
 void main() {
-  group("Test", () {
-    testWidgets("Test1", (WidgetTester tester) async {});
-
-    testWidgets("Test2", (WidgetTester tester) async {});
-
-    testWidgets("Test3", (WidgetTester tester) async {});
-
-    testWidgets("Test4", (WidgetTester tester) async {});
+  test('Empty email test', () {
+    final result = EmailValidator.validate('');
+    expect(result, 'Not a valid email');
   });
+
+  
+  test('Given empty password input', (){
+    final result = PasswordValidator.validate('');
+    expect(result, 'Password must be 8 characters long, contain an Upper Case character, a Number and a Special character');
+  });
+
+  
+  test('Given valid email address', () {
+    final result = EmailValidator.validate('JohnDoe1@example.com');
+    expect(result, '');
+  });
+
+  
+  test('Given valid Password', () {  
+    final result = PasswordValidator.validate('Qwerty13!');
+
+    expect(result, '');
+  });
+
+  
+  test('Given Invalid Email', (){
+     final result = EmailValidator.validate('johndoe.com');
+
+    expect(result, 'Not a valid email');
+  });
+
+  
+  test('Given Invalid Password', () {
+    final result = PasswordValidator.validate('happy');
+
+    expect(result,  'Password must be 8 characters long, contain an Upper Case character, a Number and a Special character' );
+  });
+
 }

@@ -2,6 +2,22 @@ import 'package:bike_tour_app/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 
+class EmailFieldValidator {
+  static validate(value) {
+
+    String output = ""; 
+
+    final RegExp _validEmailRegExp = RegExp(
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+
+    if (!_validEmailRegExp.hasMatch(value!)) {
+        output += 'Not a valid email';
+      } 
+      return output;
+  }
+}
+
+
 class ForgotPasswordFrom extends StatefulWidget {
   const ForgotPasswordFrom({Key? key}) : super(key: key);
 
@@ -11,9 +27,6 @@ class ForgotPasswordFrom extends StatefulWidget {
 
 class _ForgotPasswordFromState extends State<ForgotPasswordFrom> {
   final _emailController = TextEditingController();
-
-  final RegExp _vaidEmailRegExp = RegExp(
-      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 
   @override
   void dispose() {
@@ -42,9 +55,7 @@ class _ForgotPasswordFromState extends State<ForgotPasswordFrom> {
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: TextFormField(
                 validator: (value) {
-                  if (!_vaidEmailRegExp.hasMatch(value!)) {
-                    return 'Not a valid email';
-                  }
+                  EmailFieldValidator.validate(value);
                 },
                 controller: _emailController,
                 decoration: const InputDecoration(

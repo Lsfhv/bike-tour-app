@@ -1,15 +1,24 @@
-import 'package:bike_tour_app/screens/authenticate/forgot_password.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bike_tour_app/screens/authenticate/forgot_password_form.dart';
 
 void main() {
-  group("Test", () {
-    testWidgets("Test1", (WidgetTester tester) async {});
+ 
+  test('Empty email test', () {
+    final result = EmailFieldValidator.validate('');
 
-    testWidgets("Test2", (WidgetTester tester) async {});
-
-    testWidgets("Test3", (WidgetTester tester) async {});
-
-    testWidgets("Test4", (WidgetTester tester) async {});
+    expect(result, 'Not a valid email');
   });
+
+  test('Given invalid Email', () {
+    final result = EmailFieldValidator.validate('johnDoe@outlook');
+
+    expect(result, 'Not a valid email');
+  });
+
+  test('Given valid Email', () {
+    final result = EmailFieldValidator.validate('johnDoe@outlook.com');
+
+    expect(result, '');
+  });
+
 }
