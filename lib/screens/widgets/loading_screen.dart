@@ -1,6 +1,11 @@
 //courtesy of https://github.com/kdemanuele/Flutter-Loading-Screen/blob/master/lib/widget/loading_screen.dart
+// ignore_for_file: unnecessary_new
+
+import 'package:bike_tour_app/screens/widgets/destination_list_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+
+import '../../models/destination_model.dart';
 
 /// Loading Screen Widget that updates the screen once all inistializer methods
 /// are called
@@ -34,7 +39,7 @@ class LoadingScreen extends StatefulWidget {
   /// The message that is displayed on the first load of the widget
   final String initialMessage;
   static RichText DEFAULT_TITLE = RichText(text: const TextSpan(text: 'Welcome In Our App'));
-
+  final List<Destination> destinations;
   /// Constructor for the LoadingScreen widget with all the required
   /// initializers
   LoadingScreen(
@@ -46,7 +51,8 @@ class LoadingScreen extends StatefulWidget {
       this.backgroundColor = Colors.white,
       this.styleTextUnderTheLoader = const TextStyle(
           fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.black),
-      required this.initialMessage});
+      required this.initialMessage,
+      required this.destinations});
       // The Widget depends on the initializers and navigateToWidget to have a
       // valid value. Thus we assert that the values passed are valid and
       // not null
@@ -110,54 +116,62 @@ class _LoadingScreenState extends MessageState<LoadingScreen> {
   /// Render the LoadingScreen widget
   @override
   Widget build(BuildContext context) {
+    final destinations = widget.destinations;
     return Scaffold(
       backgroundColor: widget.backgroundColor,
-      body: new InkWell(
-        child: new Stack(
+      body:  InkWell(
+        child:  Stack(
           fit: StackFit.expand,
           children: <Widget>[
             /// Paint the area where the inner widgets are loaded with the
             /// background to keep consistency with the screen background
-            new Container(
+            Container(
               decoration: BoxDecoration(color: widget.backgroundColor),
             ),
             /// Render the background image
-            new Container(
-              child: widget.image,
-            ),
+            // Container(child: widget.image),
+        
+  
             /// Render the Title widget, loader and messages below each other
-            new Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                new Expanded(
-                  flex: 3,
-                  child: new Container(
-                      child: new Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          new Padding(
-                            padding: const EdgeInsets.only(top: 30.0),
-                          ),
-                          widget.title,
-                        ],
-                      )),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      /// Loader Animation Widget
-                      CircularProgressIndicator(
-                        valueColor: new AlwaysStoppedAnimation<Color>(
-                            widget.loaderColor),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.only(top: 20.0),
-                      ),
-                      Text(getMessage, style: widget.styleTextUnderTheLoader),
-                    ],
-                  ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+              //     Expanded(
+              //       flex: 3,
+              //       child: Container(
+              //           child:  Column(
+              //             mainAxisAlignment: MainAxisAlignment.start,
+              //             children: <Widget>[
+              //               // ignore: prefer_const_constructors
+              //               Padding(
+              //                 padding: const EdgeInsets.only(top: 30.0),
+              //               ),
+              //               widget.title,
+              //             ],
+              //           )),
+              //     ),
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        SafeArea(
+                          child: Container(
+                            child: DestinationViewerLoadingScreen(destinations : destinations),
+                            height: MediaQuery.of(context).size.height * 8/13,
+                            )),
+                        /// Loader Animation Widget
+                        // CircularProgressIndicator(
+                        //   valueColor: new AlwaysStoppedAnimation<Color>(
+                        //       widget.loaderColor),
+                        // ),
+                        Container(child: widget.image),//width: MediaQuery. of(context). size. width/3 ,), 
+                        // Padding(
+                        //   padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 1/13),
+                        // ),
+                        Text(getMessage, style: widget.styleTextUnderTheLoader),
+                      ],
+                    ),
                 ),
               ],
             ),

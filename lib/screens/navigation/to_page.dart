@@ -110,31 +110,34 @@ class _ToPageState extends State<ToPage> {
     _setToLoadingState();
     jd = JourneyData(args, list_of_destinations);
     Directions? route = await _generateRoute(jd as JourneyData);
-    setState(() {
-      loading_state = false;
-    });
-    if( route == null){
-        showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
-        title : Text("Route is invalid!"),
-        actions : <Widget>[
-          TextButton( onPressed: () => Navigator.pop(context, "No") , child: const Text("Ok!"))
-        ]
-      )
-      );
-    }
-    else{
-      JourneyDataWithRoute journey = JourneyDataWithRoute(
-        journeyData: jd as JourneyData,
-        route : route, 
-      );
-      if(await _checkIfGroupLeader()){
-        String uid = FirebaseAuth.instance.currentUser!.uid;
-        String code = "";
-        await FirebaseFirestore.instance.collection("users").doc(uid).get().then((value) => code = value.get("group code"));
-        SetData().set_journey(journey: journey, code: code);
+  
+    if(mounted){
+      setState(() {
+        loading_state = false;
+      });
+      if( route == null){
+          showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+          title : Text("Route is invalid!"),
+          actions : <Widget>[
+            TextButton( onPressed: () => Navigator.pop(context, "No") , child: const Text("Ok!"))
+          ]
+        )
+        );
       }
-      Navigator.pop(context, 'popped loading screen');
-      Navigator.pushNamed(context, RoutingMap.routeName, arguments : journey);
+      else{
+        JourneyDataWithRoute journey = JourneyDataWithRoute(
+          journeyData: jd as JourneyData,
+          route : route, 
+        );
+        if(await _checkIfGroupLeader()){
+          String uid = FirebaseAuth.instance.currentUser!.uid;
+          String code = "";
+          await FirebaseFirestore.instance.collection("users").doc(uid).get().then((value) => code = value.get("group code"));
+          SetData().set_journey(journey: journey, code: code);
+        }
+        Navigator.pop(context, 'popped loading screen');
+        Navigator.pushNamed(context, RoutingMap.routeName, arguments : journey);
+      }
     }
   }
 
@@ -474,6 +477,7 @@ class _ToPageState extends State<ToPage> {
     }
     if(loading_state) {
       return LoadingScreen(
+        destinations: list_of_destinations,
         loaderColor: STANDARD_COLOR, 
         image: Image.asset(
           IMAGE_PATH, 
@@ -570,7 +574,8 @@ class _ToPageState extends State<ToPage> {
             //if(_showDetail && currPrediction != null ) _showDetailPage(),
 
             if(!_showDetail && _viewingDestinationList && !loading_state) _showDestinationList(),
-            //IgnorePointer(child: const LoadingWidget(loading_text: "Loading The Route"), ignoring: true,),
+            // if(loading_state) 
+            // IgnorePointer(child: const LoadingWidget(loading_text: "Loading The Route"), ignoring: true,),
           ]
         ),
       )
