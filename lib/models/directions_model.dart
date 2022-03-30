@@ -14,8 +14,8 @@ class Directions {
   final String? totalDistance;
   final String? totalDuration;
   final Instructions instruction;
-  late List waypointsOrder;
-  static const default_order =[];
+  late List<dynamic> waypointsOrder;
+  static const List<dynamic> default_order =[];
   late String polypointsEncoded;
   Directions({
     required this.bounds,
@@ -52,6 +52,7 @@ class Directions {
       totalDistance: value['total Distance'],
       totalDuration: value['total Duration'],
       instruction: Instructions.fromFS(value),
+      waypointsOrder : value['waypointsOrder'] as List<dynamic>,
     );
   }
 
@@ -71,7 +72,7 @@ class Directions {
       "total Distance" : totalDistance,
       "total Duration" : totalDuration,
       "instructions" : instruction.toJson(),
-      "waypointsOrder" : Map.fromIterable(waypointsOrder, key :(e) => waypointsOrder.indexOf(e).toString(), value: (e) => e )
+      "waypointsOrder" : waypointsOrder//Map.fromIterable(waypointsOrder, key :(e) => waypointsOrder.indexOf(e).toString(), value: (e) => e )
     };
   }
 
@@ -85,7 +86,7 @@ class Directions {
     List<Instruction> instructions = [];
     // Get route information
     final data = Map<String, dynamic>.from(map['routes'][0]);
-    List order;
+    List<dynamic> order;
 
 
     // Bounds
@@ -105,7 +106,7 @@ class Directions {
       duration = leg['duration']['text'];
     }
     Instructions _instructions = Instructions.fromMap(map);
-    order = data['waypoint_order'] as List;
+    order = data['waypoint_order'];
   if(order.isNotEmpty){
     return Directions(
       bounds: bounds,

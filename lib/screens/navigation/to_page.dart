@@ -94,7 +94,10 @@ class _ToPageState extends State<ToPage> {
     await args.init();
     LatLng origin = args.currentPosition.center as LatLng;
     LatLng destination = args.getLastDockingStation();
-    final directions = await DirectionsRepository().getDirections(origin: origin, ending_bike_dock: destination, destinations: args.waypoints); 
+    Directions? directions = await DirectionsRepository().getDirections(origin: origin, ending_bike_dock: destination, destinations: args.waypoints); 
+    if(args.order.isNotEmpty){
+      directions!.waypointsOrder = args.order;
+    }
     return directions;
   }
 
@@ -134,6 +137,7 @@ class _ToPageState extends State<ToPage> {
           String code = "";
           await FirebaseFirestore.instance.collection("users").doc(uid).get().then((value) => code = value.get("group code"));
           SetData().set_journey(journey: journey, code: code);
+          SetData().set_test_journey(journey: journey, code: code);
         }
         Navigator.pop(context, 'popped loading screen');
         Navigator.pushNamed(context, RoutingMap.routeName, arguments : journey);
@@ -178,7 +182,7 @@ class _ToPageState extends State<ToPage> {
 
   void autoCompleteSearch(String value) async {
     String edited_value = value + "";//" london";
-    var result = await googlePlace.autocomplete.get(edited_value);
+    var result = await googlePlace.autocomplete.get(edited_value, region: 'uk');
     if (result != null && result.predictions != null && mounted) {
       setState(() {
         _showDetail = false;

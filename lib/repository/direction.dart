@@ -21,9 +21,14 @@ class DirectionsRepository {
     String destinations_out = '';
     if(optimize){
       destinations_out +='optimize:true|';
+      for(LatLng destination in destinations){
+        destinations_out += '${destination.latitude},${destination.longitude}|';     
+      }
     }
-    for(LatLng destination in destinations){
-      destinations_out += 'via:${destination.latitude},${destination.longitude}|';     
+    else{
+      for(LatLng destination in destinations){
+        destinations_out += 'via:${destination.latitude},${destination.longitude}|';     
+      }
     }
     if(destinations_out.isEmpty){
       return '';
@@ -44,14 +49,12 @@ class DirectionsRepository {
         'destination': '${ending_bike_dock.latitude},${ending_bike_dock.longitude}',
         'waypoints' : destinations_string(destinations, optimize),
         'key': "AIzaSyCZTV0UOqPHZ4Skv6_OcrPmrORhzP316n4",
-        'mode' : 'walking',
+        'mode' : 'cycling',
         'region' : 'uk',
         'units' : 'metric',
       },
     );
-    if(optimize){
-      //print(Map<String, dynamic>.from(response.data['routes'][0])['waypoint_order']);
-    }
+
 
     // Check if response is successful
     if (response.statusCode == 200) {

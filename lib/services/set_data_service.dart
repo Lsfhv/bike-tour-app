@@ -50,6 +50,12 @@ class SetData {
     });
   }
 
+  set_test_journey({required JourneyDataWithRoute journey, required String code}) async{
+    await _firestore.collection('test_journeys').doc(code).set({
+      'journey' : journey.toJson(),
+    });
+  }
+
   delete_journey({required String code}) async{
     await _firestore.collection('group_journey').doc(code).delete();
   }

@@ -2,13 +2,17 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:googleapis/eventarc/v1.dart';
 
 class Destination {
   LatLng position;
   String name;
-  final String postcode;
+  String postcode;
   Destination({required this.position, required this.name, required this.postcode});
-
+  // factory Destination.empty(){
+  //   return Destination(position: LatLng(0,0), name : 'null', postcode: 'null');
+  // }
+    
 
   Map<String,dynamic> toJson(){
     return {

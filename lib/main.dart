@@ -1,4 +1,5 @@
  // ignore_for_file: prefer_const_constructors
+import 'package:bike_tour_app/live_test/live_navigation/src/DynamicTestingNavigation.dart';
 import 'package:bike_tour_app/screens/groupRouting/join_page.dart';
 import 'package:bike_tour_app/screens/navigation/dynamic_navigation.dart';
 import 'package:bike_tour_app/screens/navigation/main_map.dart';
@@ -14,6 +15,8 @@ import 'package:bike_tour_app/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import 'live_test/live_navigation/integration_testing/navigation_test.dart';
 
 
 
@@ -72,6 +75,8 @@ class _MyAppState extends State<MyApp> {
           DynamicNavigation.routeName : (context) => const DynamicNavigation(),
           DestinationSelector.routeName : (context) => const DestinationSelector(),
           JoiningPage.routeName : (context) => const JoiningPage(),
+          NavigationTest.routeName : (context) => const NavigationTest(),
+          DynamicNavigation_Test.routeName : (context) => const DynamicNavigation_Test(),
         },
           title: 'London Cycle',
           theme: ThemeData(
