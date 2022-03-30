@@ -61,6 +61,7 @@ class _MyAppState extends State<MyApp> {
             initialData: null,
           ),
         ],
+        => Overlay Support (
         child: MaterialApp(
         routes : {
           ToPage.routeName : (context) => const ToPage(),
@@ -68,12 +69,29 @@ class _MyAppState extends State<MyApp> {
           DynamicNavigation.routeName : (context) => const DynamicNavigation(),
           DestinationSelector.routeName : (context) => const DestinationSelector(),
           JoiningPage.routeName : (context) => const JoiningPage(),
-        },
+        }),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(padding: EdgeInsets.all(12)),
+          child: Text('Check Connection', style: TextStyle(fontSize: 20)),
+          onPressed: () async {
+            final result = await Connectivity().checkConnectivity();
+            showConnectivitySnackBar(result);
+          }
+        )
           title: 'London Cycle',
           theme: ThemeData(
             primarySwatch: Colors.red,
           ),
           home: Wrapper(),
         ));
+  }
+
+  void showConnectivitySnackBar(ConnectivityResult result) {
+     final hasInternet = result != ConnectivityResult.none;
+     final message = hasInternet
+       ? 'You have again ${result.toString()}'
+       : 'You have no internet';
+     final colour = hasInternet ? Colors.green : Colors.red;
+     Utils.showTopSnackBar(context, message, color);
   }
 }

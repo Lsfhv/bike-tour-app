@@ -34,8 +34,13 @@ dependencies:
   google_maps_flutter_web: ^0.3.2+1
   google_fonts: ^2.3.1
   geolocator: ^8.2.0
-  location_permissions: ^4.0.1  
+  location_permissions: ^4.0.1
 
+  # detect if it has internet
+  connectivity: ^2.0.2
+
+  #show top snackbar
+  overlay_support: ^1.0.5
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -68,7 +73,7 @@ dependencies:
   google_polyline_algorithm: ^3.1.0
   platform: ^3.1.0
   flutter_tts: ^3.3.3
-  
+
 
 dev_dependencies:
   flutter_test:
