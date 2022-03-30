@@ -60,8 +60,9 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
 
   
 
-  void _onMapCreated(GoogleMapController controller) {
+   _onMapCreated(GoogleMapController controller) async {
     mapController = controller;
+    await _speak();
 
   }
 
@@ -173,41 +174,47 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
               markers: _markers,
               polylines: _info != null ? _polyline() : {},
             ),
-          Positioned(
-            child : Row(
-              children : [
-              Card(
-                child: IconButton(
-                  iconSize: 20,
-                  icon: Icon(Icons.backspace),
-                  onPressed: ()async => await _cancelTrip(),
-                ),
-              ),
-              Card(
-                child : IconButton(
-                  icon: Icon(Icons.redo_rounded),
-                  iconSize: 20,
-                  onPressed: () async => await _reroute(),
-                ),
-              ),
-            ]
+            Positioned(
+              child :GestureDetector(
+                child : Row(
+                  children : [
+                  Card(
+                    child: IconButton(
+                      iconSize: 20,
+                      icon: Icon(Icons.backspace),
+                      onPressed: ()async => await _cancelTrip(),
+                    ),
+                  ),
+                  Card(
+                    child : IconButton(
+                      icon: Icon(Icons.redo_rounded),
+                      iconSize: 20,
+                      onPressed: () async => await _reroute(),
+                    ),
+                  ),
+                ]
+                ),      
+                behavior: HitTestBehavior.translucent,
+                )
+              ,left :40,
+              bottom: 10,
             ),
-            left :40,
-            bottom: 10,
-          ),
         if(_locationSubscription != null)
         Positioned(
-          child:  InstructionWidget(instruction: current_instruction as Instruction),
+          child :GestureDetector(
+            child:  InstructionWidget(instruction: current_instruction as Instruction),
+            behavior: HitTestBehavior.translucent,
+          ),  
           top :0,
           left :0,
           right : 0,
-        ),
+          ),
 
         ],
       )
     );
   }
-  void updatePinOnMap() async {
+  updatePinOnMap() async {
    
     if(mounted){
       _pastPoint();
@@ -383,7 +390,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
       // current user's position in real time,
       // so we're holding on to it
       current_position = cLoc;
-      updatePinOnMap();
+      await updatePinOnMap();
       if(cancelled || reached){
         _stopListening();
       }

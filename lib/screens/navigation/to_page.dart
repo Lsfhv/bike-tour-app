@@ -6,6 +6,7 @@ import 'package:bike_tour_app/models/directions_model.dart';
 import 'package:bike_tour_app/screens/markers/destination_marker.dart';
 import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
 import 'package:bike_tour_app/screens/widgets/destination_list_viewer.dart';
+import 'package:bike_tour_app/screens/widgets/loading_screen.dart';
 import 'package:bike_tour_app/screens/widgets/loading_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,8 @@ class ToPage extends StatefulWidget {
 }
 
 class _ToPageState extends State<ToPage> {
+  final String IMAGE_PATH = 'assets/images/cycling.gif';
+
   late GoogleMapController mapController;
   bool first = true;
   LatLng _center = const LatLng(51.507399, -0.127689);
@@ -68,7 +71,7 @@ class _ToPageState extends State<ToPage> {
       showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
         title : const Text("Have you added all the places you want to visit?"),
         actions : <Widget>[
-          TextButton(onPressed: () async =>await _navigateToNextPage(args), child: const Text("Yes")),
+          TextButton(onPressed: () async => await  _navigateToNextPage(args) , child: const Text("Yes")),
           TextButton(onPressed: () => Navigator.pop(context, "No") , child: const Text("No"))
         ]
       )
@@ -110,13 +113,13 @@ class _ToPageState extends State<ToPage> {
       loading_state = false;
     });
     if( route == null){
-      showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
-      title : Text("Route is invalid!"),
-      actions : <Widget>[
-        TextButton( onPressed: () => Navigator.pop(context, "No") , child: const Text("Ok!"))
-      ]
-    )
-    );
+        showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+        title : Text("Route is invalid!"),
+        actions : <Widget>[
+          TextButton( onPressed: () => Navigator.pop(context, "No") , child: const Text("Ok!"))
+        ]
+      )
+      );
     }
     else{
       JourneyDataWithRoute journey = JourneyDataWithRoute(
@@ -129,6 +132,7 @@ class _ToPageState extends State<ToPage> {
         await FirebaseFirestore.instance.collection("users").doc(uid).get().then((value) => code = value.get("group code"));
         SetData().set_journey(journey: journey, code: code);
       }
+      Navigator.pop(context, 'popped loading screen');
       Navigator.pushNamed(context, RoutingMap.routeName, arguments : journey);
     }
   }
@@ -467,6 +471,17 @@ class _ToPageState extends State<ToPage> {
       first = false;
       _markers = {UserMarker(user: UserPosition(args.center as LatLng))};
     }
+    if(loading_state) {
+      return LoadingScreen(
+        loaderColor: STANDARD_COLOR, 
+        image: Image.asset(
+          IMAGE_PATH, 
+          height: 125.0,
+          width: 125.0,), //Image.asset('assets/images/kanye_west.jpg'),
+        title: RichText(text: TextSpan(text: 'Generating Route')),
+        initialMessage : 'Generating Route',
+      );
+    }
     return MaterialApp(
         home: Scaffold(
           appBar: AppBar(
@@ -554,7 +569,7 @@ class _ToPageState extends State<ToPage> {
             //if(_showDetail && currPrediction != null ) _showDetailPage(),
 
             if(!_showDetail && _viewingDestinationList && !loading_state) _showDestinationList(),
-            if(loading_state) IgnorePointer(child: const LoadingWidget(loading_text: "Loading The Route"), ignoring: true,),
+            //IgnorePointer(child: const LoadingWidget(loading_text: "Loading The Route"), ignoring: true,),
           ]
         ),
       )
