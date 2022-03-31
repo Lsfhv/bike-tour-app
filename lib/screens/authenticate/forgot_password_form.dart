@@ -4,19 +4,17 @@ import 'package:provider/src/provider.dart';
 
 class EmailFieldValidator {
   static validate(value) {
-
-    String output = ""; 
+    String output = "";
 
     final RegExp _validEmailRegExp = RegExp(
-      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 
     if (!_validEmailRegExp.hasMatch(value!)) {
-        output += 'Not a valid email';
-      } 
-      return output;
+      output += 'Not a valid email';
+    }
+    return output;
   }
 }
-
 
 class ForgotPasswordFrom extends StatefulWidget {
   const ForgotPasswordFrom({Key? key}) : super(key: key);
@@ -55,7 +53,7 @@ class _ForgotPasswordFromState extends State<ForgotPasswordFrom> {
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: TextFormField(
                 validator: (value) {
-                  EmailFieldValidator.validate(value);
+                  return EmailFieldValidator.validate(value);
                 },
                 controller: _emailController,
                 decoration: const InputDecoration(
