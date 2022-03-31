@@ -45,6 +45,7 @@ class _ForgotPasswordFromState extends State<ForgotPasswordFrom> {
                     return 'Not a valid email';
                   }
                 },
+                key: const Key("EmailKey"),
                 controller: _emailController,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
@@ -54,6 +55,7 @@ class _ForgotPasswordFromState extends State<ForgotPasswordFrom> {
               ),
             ),
             Container(
+              key: const Key("ResetKey"),
               height: 50,
               width: 250,
               decoration: BoxDecoration(
