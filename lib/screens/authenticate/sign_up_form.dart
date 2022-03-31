@@ -113,7 +113,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   height: 50,
                   width: 250,
                   decoration: BoxDecoration(
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                           color: Colors.green,
                           blurRadius: 2,
