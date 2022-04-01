@@ -62,15 +62,20 @@ class _ForgotPasswordFromState extends State<ForgotPasswordFrom> {
                   color: const Color.fromARGB(202, 85, 190, 56),
                   borderRadius: BorderRadius.circular(10)),
               child: TextButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    var result = context
+                    var result = await context
                         .read<AuthService>()
                         .resetPassword(email: _emailController.text);
                     if (result == "Success") {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           content: Text(
                         'Please check your email to reset you password',
+                      )));
+                    } else if (result == "False") {
+                                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text(
+                        'Email doesnt exist',
                       )));
                     }
                   }
