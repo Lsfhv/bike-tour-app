@@ -67,13 +67,13 @@ class _ForgotPasswordFromState extends State<ForgotPasswordFrom> {
                     var result = await context
                         .read<AuthService>()
                         .resetPassword(email: _emailController.text);
-                    if (result == "Success") {
+                    if (result) {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           content: Text(
                         'Please check your email to reset you password',
                       )));
-                    } else if (result == "False") {
-                                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    } else {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           content: Text(
                         'Email doesnt exist',
                       )));
