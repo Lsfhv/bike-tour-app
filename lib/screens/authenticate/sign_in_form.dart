@@ -139,9 +139,6 @@ class _SignInFormState extends State<SignInForm> {
                   borderRadius: BorderRadius.circular(10)),
               child: TextButton(
                 onPressed: () async {
-
-                  
-                  print(_formKey.currentState!.validate());
                   if (_formKey.currentState!.validate()) {
                     ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Trying to Log in!')));
