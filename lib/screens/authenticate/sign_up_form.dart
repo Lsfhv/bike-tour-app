@@ -83,7 +83,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   key: _passwordKey,
                   validator: (value) {
                     if (!_validPasswordRegExp.hasMatch(value!)) {
-                      return r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length.""";
+                      return "Password must be at least one digit [0-9],\nat least one lowercase character [a-z],\nat least one uppercase character [A-Z],\nat least one special character[!@#\\\$&*~],\nat least 8 characters in length.";
                     } else {
                       return null;
                     }
@@ -113,7 +113,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   height: 50,
                   width: 250,
                   decoration: BoxDecoration(
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                           color: Colors.green,
                           blurRadius: 2,

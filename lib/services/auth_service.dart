@@ -39,14 +39,18 @@ class AuthService {
     }
   }
 
-  String resetPassword({required String email}) {
-    _firebaseAuth.sendPasswordResetEmail(email: email);
-    
-    return "Success";
-    // add then and on error catches
+  Future<bool> resetPassword({required String email}) async{
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
   }
+
+
 }
