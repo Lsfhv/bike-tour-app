@@ -1,43 +1,50 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:bike_tour_app/screens/authenticate/sign_in_form.dart';
-
+import 'valid_regex.dart';
 void main() {
   test('Empty email test', () {
-    final result = EmailValidator.validate('');
-    expect(result, 'Not a valid email');
+    var emptyInput = ' ';
+
+    var result = ValidRegex().getValidEmailRegExp().hasMatch(emptyInput);
+
+    expect(result, false);
   });
 
   
-  test('Given empty password input', (){
-    final result = PasswordValidator.validate('');
-    expect(result, 'Password must be 8 characters long, contain an Upper Case character, a Number and a Special character');
+  test('Given empty password input', () async {
+    var emptyInput = ' ';
+
+    var result = ValidRegex().getValidPasswordRegExp().hasMatch(emptyInput);
+
+    expect(result, false);
   });
 
   
-  test('Given valid email address', () {
-    final result = EmailValidator.validate('JohnDoe1@example.com');
-    expect(result, '');
+  test('Given valid email address', () async {
+    var result = ValidRegex().getValidEmailRegExp().hasMatch('JohnDoe1@example.com');
+
+    expect(result, true);
   });
 
   
   test('Given valid Password', () {  
-    final result = PasswordValidator.validate('Qwerty13!');
+    var result = ValidRegex().getValidPasswordRegExp().hasMatch('Qwerty13!');
 
-    expect(result, '');
+    expect(result, true);
   });
 
   
-  test('Given Invalid Email', (){
-     final result = EmailValidator.validate('johndoe.com');
+  test('Given invalid Email', (){
+     var result = ValidRegex().getValidEmailRegExp().hasMatch('JohnDoe1example.com');
 
-    expect(result, 'Not a valid email');
+    expect(result, false);
   });
 
   
-  test('Given Invalid Password', () {
-    final result = PasswordValidator.validate('happy');
+  test('Given invalid Password', () {
+    var result = ValidRegex().getValidPasswordRegExp().hasMatch('happy');
 
-    expect(result,  'Password must be 8 characters long, contain an Upper Case character, a Number and a Special character' );
+    expect(result, false);
   });
 
 }
+
