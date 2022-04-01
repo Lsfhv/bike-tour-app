@@ -1,16 +1,16 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, deprecated_member_use
 import 'package:bike_tour_app/screens/groupRouting/group_routing.dart';
 import 'package:bike_tour_app/models/tfl-api/get_api.dart';
-import 'package:bike_tour_app/screens/markers/bike_markers.dart';
 import 'package:bike_tour_app/screens/settings/settings.dart';
+import 'package:bike_tour_app/screens/widgets/tutorial_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:bike_tour_app/screens/navigation/from_page.dart';
+import 'package:introduction_screen/introduction_screen.dart';
 //import 'package:bike_tour_app/screens/navigation/route_planner.dart';
 import 'package:location/location.dart';
 
-import '../../live_test/live_navigation/integration_testing/navigation_test.dart';
 // ignore: unused_import
 import '../../live_test/live_navigation/src/DynamicTestingNavigation.dart';
 
@@ -26,7 +26,8 @@ class _TutorialMainMapState extends State<TutorialMainMap> {
   final LatLng _initialcameraposition = LatLng(51.507399, -0.127689);
   late GoogleMapController _controller;
   final Location _location = Location();
-
+  final introKey = GlobalKey<IntroductionScreenState>();
+  
   void _onMapCreated(GoogleMapController _cntlr) {
     _controller = _cntlr;
     _location.onLocationChanged.listen((l) {
@@ -41,7 +42,7 @@ class _TutorialMainMapState extends State<TutorialMainMap> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
+      home : Scaffold(
         body: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
@@ -53,21 +54,6 @@ class _TutorialMainMapState extends State<TutorialMainMap> {
                 mapType: MapType.normal,
                 onMapCreated: _onMapCreated,
                 myLocationEnabled: true,
-              ),
-              Align(
-                alignment: Alignment(0.8, 0.8),
-                child: FloatingActionButton(
-                  heroTag: "Testing",
-                  onPressed: () {
-                    // the settings button
-                    Navigator.pushNamed(
-                        context,
-                        NavigationTest.routeName);
-                  },
-                  backgroundColor:
-                      Color.fromARGB(202, 85, 190, 56).withOpacity(1),
-                  child: const Icon(Icons.abc),
-                ),
               ),
               Align(
                 alignment: Alignment(0.8, -0.8),
@@ -87,7 +73,9 @@ class _TutorialMainMapState extends State<TutorialMainMap> {
               ),
               Align(
                 alignment: Alignment(-0.8, -0.8),
-                child: FloatingActionButton(
+                child: TutorialWrapper(
+                  tutorialText: "Press this to join a group or create a group!",
+                  child: FloatingActionButton(
                   heroTag: "Persons",
                   onPressed: () {
                     // person
@@ -97,6 +85,7 @@ class _TutorialMainMapState extends State<TutorialMainMap> {
                       Color.fromARGB(202, 85, 190, 56).withOpacity(1),
                   child: const Icon(Icons.person),
                 ),
+                )
               ),
               Align(
                 alignment: Alignment(0, 0.63),
@@ -104,18 +93,21 @@ class _TutorialMainMapState extends State<TutorialMainMap> {
                   width: 250.0,
                   height: 75.0,
                   // ignore: deprecated_member_use
-                  child: RaisedButton(
-                    child: Text(
-                      'Plan Journey',
-                      style:
-                          GoogleFonts.lato(color: Colors.white, fontSize: 16.5),
+                  child: TutorialWrapper(
+                    tutorialText: "Press 'Plan Journey' to start a journey!",
+                    child: RaisedButton(
+                      child: Text(
+                        'Plan Journey',
+                        style:
+                            GoogleFonts.lato(color: Colors.white, fontSize: 16.5),
+                      ),
+                      color: Color.fromARGB(202, 85, 190, 56).withOpacity(1),
+                      onPressed: () async {
+                          
+                        Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => FromPage()));
+                      },
                     ),
-                    color: Color.fromARGB(202, 85, 190, 56).withOpacity(1),
-                    onPressed: () async {
-                        
-                      Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => FromPage()));
-                    },
                   ),
                 ),
               ),

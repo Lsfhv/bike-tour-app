@@ -5,7 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class BikeMarker extends Marker {
   BikePointModel? station;
   BikeMarker({required this.station})
-    : super(markerId: MarkerId(station!.id as String) ,draggable: false, position: LatLng(station!.lat, station!.lon),
+    : super(markerId: MarkerId(station!.id as String) ,draggable: false, position: LatLng(station.lat, station.lon),
     icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen));
 
   BikeMarker._fromFS(String id, LatLng pos) :super(markerId: MarkerId(id) ,draggable: false, position: pos,

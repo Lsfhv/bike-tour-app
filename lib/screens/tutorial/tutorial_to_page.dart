@@ -1,6 +1,4 @@
 
-import 'dart:isolate';
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:bike_tour_app/models/directions_model.dart';
@@ -8,7 +6,6 @@ import 'package:bike_tour_app/screens/markers/destination_marker.dart';
 import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
 import 'package:bike_tour_app/screens/widgets/destination_list_viewer.dart';
 import 'package:bike_tour_app/screens/widgets/loading_screen.dart';
-import 'package:bike_tour_app/screens/widgets/loading_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -26,8 +23,8 @@ import '../../repository/direction.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/set_data_service.dart';
 import '../markers/user_location_marker.dart';
+import '../navigation/constants.dart';
 import '../widgets/destination_retriever.dart';
-import 'tutorial_constants.dart';
 import 'tutorials_location_details.dart';
 
 

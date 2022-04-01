@@ -1,11 +1,14 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:bike_tour_app/models/user_model.dart';
+import 'package:bike_tour_app/screens/tutorial/tutorials_main_map.dart';
 import 'package:bike_tour_app/services/auth_service.dart';
 import 'package:bike_tour_app/services/set_data_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
+
+import '../tutorial/tutorial.dart';
 
 class SignUpForm extends StatefulWidget {
   const SignUpForm({Key? key}) : super(key: key);
@@ -130,8 +133,7 @@ class _SignUpFormState extends State<SignUpForm> {
                           _lastNameController.text.trim(),
                           _emailController.text.trim(),
                         );
-                        SetData()
-                            .saveUserData(userData: userData, uid: user!.uid);
+                        SetData().saveUserData(userData: userData, uid: user!.uid);
                         Navigator.pop(context);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(

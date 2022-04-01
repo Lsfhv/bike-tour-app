@@ -1,14 +1,21 @@
  // ignore_for_file: prefer_const_constructors
 import 'package:bike_tour_app/live_test/live_navigation/src/DynamicTestingNavigation.dart';
 import 'package:bike_tour_app/screens/groupRouting/join_page.dart';
+import 'package:bike_tour_app/screens/navigation/constants.dart';
 import 'package:bike_tour_app/screens/navigation/dynamic_navigation.dart';
 import 'package:bike_tour_app/screens/navigation/main_map.dart';
 import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
 import 'package:bike_tour_app/screens/navigation/route_planner_form.dart';
 import 'package:bike_tour_app/screens/navigation/to_page.dart';
+import 'package:bike_tour_app/screens/tutorial/tutorial.dart';
+import 'package:bike_tour_app/screens/tutorial/tutorial_dynamic_navigation.dart';
+import 'package:bike_tour_app/screens/tutorial/tutorial_to_page.dart';
+import 'package:bike_tour_app/screens/tutorial/tutorials_main_map.dart';
+import 'package:bike_tour_app/screens/tutorial/tutorials_route_choosing.dart';
 import 'package:bike_tour_app/screens/wrapper.dart';
 import 'package:bike_tour_app/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 import 'package:bike_tour_app/firebase_options.dart';
@@ -38,6 +45,14 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   var _postJson = [];
   final url = "https://api.tfl.gov.uk/BikePoint/";
+  // bool isNewUser=false;
+
+  // checkIfNewUser() async{
+  //   AuthCredential credential = AuthCredential(providerId: EmailAuthProvider.PROVIDER_ID, signInMethod: EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD );
+  //   User? firebaseUser =Provider.of<User?>(context, listen: false);
+  //   isNewUser = (await firebaseUser!.linkWithCredential(credential)).additionalUserInfo!.isNewUser;
+  // }
+
   void fetchPosts() async {
     try {
       final response = await get(Uri.parse(url));
@@ -52,8 +67,19 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    fetchPosts();
+    // SchedulerBinding.instance!.addPostFrameCallback((_) {
+    //   runInitTasks();
+    // });
+
   }
+
+  // @protected
+  // Future runInitTasks() async {
+  //   List<dynamic> initializers = [checkIfNewUser(), ];
+  //   /// Run each initializer method sequentially
+  //   Future.forEach(initializers, (init) => init!).whenComplete(() => print('done'));
+  // }
+
 
   @override
   Widget build(BuildContext context) {
@@ -77,10 +103,18 @@ class _MyAppState extends State<MyApp> {
           JoiningPage.routeName : (context) => const JoiningPage(),
           NavigationTest.routeName : (context) => const NavigationTest(),
           DynamicNavigation_Test.routeName : (context) => const DynamicNavigation_Test(),
+          TutorialMainMap.routeName :(context) => const MainMap(),
+          TutorialToPage.routeName : (context) => const ToPage(),
+          TutorialRoutingMap.routeName : (context) => const RoutingMap(),
+          TutorialDynamicNavigation.routeName : (context) => const DynamicNavigation(),
+          Tutorial.routeName : (context) => const Tutorial(),
+          // TutorialJoiningPage.routeName : (context) => const JoiningPage(),
+          // TutorialNavigationTest.routeName : (context) => const NavigationTest(),
+          //TutorialDynamicNavigation_Test.routeName : (context) => const DynamicNavigation_Test(),
         },
           title: 'London Cycle',
           theme: ThemeData(
-            primarySwatch: Colors.red,
+            primaryColor: STANDARD_COLOR ,
           ),
           home: Wrapper(),
         ));

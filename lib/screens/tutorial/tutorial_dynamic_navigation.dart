@@ -25,14 +25,14 @@ import '../../models/user_data.dart';
 
 
 
-class DynamicNavigation extends StatefulWidget {
-  const DynamicNavigation({Key? key}) : super(key: key);
-  static const routeName = '/dynamicNavigation';
+class TutorialDynamicNavigation extends StatefulWidget {
+  const TutorialDynamicNavigation({Key? key}) : super(key: key);
+  static const routeName = '/TutorialDynamicNavigation';
   @override
-  _DynamicNavigationState createState() => _DynamicNavigationState();
+  _TutorialDynamicNavigationState createState() => _TutorialDynamicNavigationState();
 }
 
-class _DynamicNavigationState extends State<DynamicNavigation> {
+class _TutorialDynamicNavigationState extends State<TutorialDynamicNavigation> {
   //Completer<GoogleMapController> _controller = Completer();
   int instruction_index = 1;
   late LatLng _center;
