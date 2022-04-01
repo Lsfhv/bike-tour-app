@@ -6,38 +6,6 @@ import 'package:bike_tour_app/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 
-<<<<<<< HEAD
-=======
-class EmailValidator {
-  static validate(value) {
-    String output = "";
-
-    final RegExp _validEmailRegExp = RegExp(
-        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
-
-    if (!_validEmailRegExp.hasMatch(value!)) {
-      output += 'Not a valid email';
-    }
-    return output;
-  }
-}
-
-class PasswordValidator {
-  static validate(value) {
-    String output = "";
-
-    final RegExp _validPasswordRegExp =
-        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
-
-    if (!_validPasswordRegExp.hasMatch(value!)) {
-      output +=
-          "Password must be at least one digit [0-9],\nat least one lowercase character [a-z],\nat least one uppercase character [A-Z],\nat least one special character[!@#\\\$&*~],\nat least 8 characters in length.";
-    }
-    return output;
-  }
-}
-
->>>>>>> 31c0dd1350ea3d1091822abb40a378d0f6ef9ecf
 class SignInForm extends StatefulWidget {
   const SignInForm({Key? key}) : super(key: key);
 
@@ -97,13 +65,9 @@ class _SignInFormState extends State<SignInForm> {
                 padding: EdgeInsets.symmetric(horizontal: 15),
                 child: TextFormField(
                   validator: (value) {
-<<<<<<< HEAD
                       if (!_validEmailRegExp.hasMatch(value!)) {
                       return 'Not a valid email';
                     }
-=======
-                    return EmailValidator.validate(value);
->>>>>>> 31c0dd1350ea3d1091822abb40a378d0f6ef9ecf
                   },
                   controller: _emailController,
                   decoration: InputDecoration(
@@ -122,13 +86,9 @@ class _SignInFormState extends State<SignInForm> {
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
               child: TextFormField(
                 validator: (value) {
-<<<<<<< HEAD
                     if (!_validPasswordRegExp.hasMatch(value!)) {
                     return 'Password must be 8 characters long, contain an Upper Case character, a Number and a Special character';
                   }
-=======
-                  return PasswordValidator.validate(value);
->>>>>>> 31c0dd1350ea3d1091822abb40a378d0f6ef9ecf
                 },
                 key: Key("PasswordFieldKey"),
                 controller: _passwordController,
