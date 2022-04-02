@@ -52,5 +52,13 @@ class AuthService {
     await _firebaseAuth.signOut();
   }
 
-
+  Future<bool> changePassword({required String password}) async {
+    User? user = _firebaseAuth.currentUser;
+    user!.updatePassword(password).then((_){
+      return true;
+    }).catchError((error){
+      return false;
+    });
+    return false;
+  }
 }
