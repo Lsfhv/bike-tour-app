@@ -1,3 +1,4 @@
+import 'package:bike_tour_app/screens/settings/change_password.dart';
 import 'package:bike_tour_app/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -93,14 +94,15 @@ class _SettingsPageState extends State<SettingsPage> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => ForgotPassword()));
+                                      builder: (context) => const ChangePassword()));
                             },
-                            child: const Text("Reset Password"))),
+                            child: const Text("Change Password"))),
                     SettingsTile.navigation(
                       title: TextButton(
                           onPressed: () {
                             var result = context.read<AuthService>().signOut();
                             Navigator.pop(context);
+
                           },
                           child: const Text("Logout")),
                     )
