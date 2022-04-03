@@ -49,6 +49,9 @@ class _SignUpFormState extends State<SignUpForm> {
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+            Padding(
+                padding: const EdgeInsets.only(
+                    left: 15.0, right: 15.0, top: 15, bottom: 5)),
             Column(
               children: <Widget>[
                 TextFormField(
@@ -56,15 +59,25 @@ class _SignUpFormState extends State<SignUpForm> {
                   controller: _firstNameController,
                   decoration: InputDecoration(
                     labelText: "First name",
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50))),
                   ),
                 ),
+                Padding(
+                    padding: const EdgeInsets.only(
+                        left: 15.0, right: 15.0, top: 15, bottom: 5)),
                 TextFormField(
                   key: Key("LastNameField"),
                   controller: _lastNameController,
                   decoration: InputDecoration(
                     labelText: "Last name",
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50))),
                   ),
                 ),
+                Padding(
+                    padding: const EdgeInsets.only(
+                        left: 15.0, right: 15.0, top: 15, bottom: 5)),
                 TextFormField(
                   key: _emailKey,
                   validator: (value) {
@@ -77,8 +90,13 @@ class _SignUpFormState extends State<SignUpForm> {
                   controller: _emailController,
                   decoration: InputDecoration(
                     labelText: "Email",
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50))),
                   ),
                 ),
+                Padding(
+                    padding: const EdgeInsets.only(
+                        left: 15.0, right: 15.0, top: 15, bottom: 5)),
                 TextFormField(
                   key: _passwordKey,
                   validator: (value) {
@@ -92,8 +110,13 @@ class _SignUpFormState extends State<SignUpForm> {
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: "Password",
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50))),
                   ),
                 ),
+                Padding(
+                    padding: const EdgeInsets.only(
+                        left: 15.0, right: 15.0, top: 15, bottom: 5)),
                 TextFormField(
                   key: _passwordConfirmKey,
                   validator: (value) {
@@ -107,8 +130,13 @@ class _SignUpFormState extends State<SignUpForm> {
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: "Confirm Password",
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50))),
                   ),
                 ),
+                Padding(
+                    padding: const EdgeInsets.only(
+                        left: 15.0, right: 15.0, top: 15, bottom: 5)),
                 Container(
                   height: 50,
                   width: 250,
@@ -121,7 +149,7 @@ class _SignUpFormState extends State<SignUpForm> {
                           spreadRadius: 1,
                         )
                       ],
-                      color: Colors.green,
+                      color: Color.fromARGB(202, 85, 190, 56),
                       borderRadius: BorderRadius.circular(20)),
                   child: TextButton(
                     onPressed: () async {
