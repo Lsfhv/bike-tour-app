@@ -154,7 +154,8 @@ class _SignUpFormState extends State<SignUpForm> {
                   child: TextButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        try {
+                          ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Registering!')));
                         await context.read<AuthService>().signUp(
                               email: _emailController.text.trim(),
@@ -169,6 +170,11 @@ class _SignUpFormState extends State<SignUpForm> {
                         SetData()
                             .saveUserData(userData: userData, uid: user!.uid);
                         Navigator.pop(context);
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Email already in use!')));
+                        }
+
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
