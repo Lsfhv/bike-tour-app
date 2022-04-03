@@ -39,7 +39,7 @@ class _ForgotPasswordFromState extends State<ForgotPasswordFrom> {
             ),
             Padding(
               padding: const EdgeInsets.only(
-                  left: 15.0, right: 15.0, top: 15, bottom: 5),
+                  left: 15.0, right: 15.0, top: 15, bottom: 25),
               child: TextFormField(
                 validator: (value) {
                   if (!_validEmailRegExp.hasMatch(value!)) {
