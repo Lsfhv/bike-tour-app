@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:bike_tour_app/screens/navigation/from_page.dart';
+import 'package:http/http.dart';
 //import 'package:bike_tour_app/screens/navigation/route_planner.dart';
 import 'package:location/location.dart';
 import 'package:bike_tour_app/screens/navigation/request.dart';
@@ -145,16 +146,35 @@ class _MainMapState extends State<MainMap> {
     );
   }
 
-  getPointData() async {
-    var data = await getData('http://10.0.2.2:5000/');
-    return await data;
+  Future<String> getPointData() async {
+    Uri url = Uri.parse("https://api.tfl.gov.uk/BikePoint/");
+
+    /*
+    final response = await get(Uri.parse(url));
+    final jsonData = jsonDecode(response.body);
+    */
+
+    final response = await get(url);
+
+    if (response.statusCode == 200) {
+      // If the call to the server was successful, parse the JSON
+      String values =
+          json.decode(response.body);
+          print(values);
+      return values;
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('Failed to load post');
+    }
   }
 
   Set<Marker> getmarkers() {
     setState(() {
-      var data = getPointData();
-      var decodedData = jsonDecode(data);
-
+      var decodedData;
+      getPointData().then((data) => decodedData = jsonDecode(data));
+      if (decodedData == null) {
+        throw Exception("no data found");
+      }
       for (var data in decodedData) {
         var point = Point(
             data["commonName"],
