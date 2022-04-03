@@ -48,9 +48,11 @@ class _ForgotPasswordFromState extends State<ForgotPasswordFrom> {
                 key: const Key("EmailKey"),
                 controller: _emailController,
                 decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
+                  //border: OutlineInputBorder(),
                   labelText: 'Email',
                   hintText: 'Enter valid email id as abc@gmail.com',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50))),
                 ),
               ),
             ),
@@ -73,7 +75,7 @@ class _ForgotPasswordFromState extends State<ForgotPasswordFrom> {
                         'Please check your email to reset you password',
                       )));
                     } else {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           content: Text(
                         'Email doesnt exist',
                       )));
