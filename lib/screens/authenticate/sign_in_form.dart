@@ -4,6 +4,7 @@ import 'package:bike_tour_app/screens/authenticate/forgot_password.dart';
 import 'package:bike_tour_app/screens/authenticate/sign_up.dart';
 import 'package:bike_tour_app/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:google_place/google_place.dart';
 import 'package:provider/src/provider.dart';
 
 class SignInForm extends StatefulWidget {
@@ -65,7 +66,7 @@ class _SignInFormState extends State<SignInForm> {
                 padding: EdgeInsets.symmetric(horizontal: 15),
                 child: TextFormField(
                   validator: (value) {
-                      if (!_validEmailRegExp.hasMatch(value!)) {
+                    if (!_validEmailRegExp.hasMatch(value!)) {
                       return 'Not a valid email';
                     }
                   },
@@ -86,7 +87,7 @@ class _SignInFormState extends State<SignInForm> {
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
               child: TextFormField(
                 validator: (value) {
-                    if (!_validPasswordRegExp.hasMatch(value!)) {
+                  if (!_validPasswordRegExp.hasMatch(value!)) {
                     return 'Password must be 8 characters long, contain an Upper Case character, a Number and a Special character';
                   }
                 },
