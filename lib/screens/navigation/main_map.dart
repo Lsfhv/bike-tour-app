@@ -147,7 +147,7 @@ class _MainMapState extends State<MainMap> {
 
   getPointData() async {
     var data = await getData('http://10.0.2.2:5000/');
-    return data;
+    return await data;
   }
 
   Set<Marker> getmarkers() {
