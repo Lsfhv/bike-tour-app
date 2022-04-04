@@ -42,6 +42,13 @@ class _SignUpFormState extends State<SignUpForm> {
   final _passwordKey = Key("PasswordField");
   final _passwordConfirmKey = Key("PasswordConfirmField");
 
+  void _saveForm() {
+    final isValid = _formKey.currentState!.validate();
+    if (!isValid) {
+      return;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -55,26 +62,40 @@ class _SignUpFormState extends State<SignUpForm> {
             Column(
               children: <Widget>[
                 TextFormField(
-                  key: Key("FirstNameField"),
-                  controller: _firstNameController,
-                  decoration: InputDecoration(
-                    labelText: "First name",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50))),
-                  ),
-                ),
+                    key: Key("FirstNameField"),
+                    controller: _firstNameController,
+                    decoration: InputDecoration(
+                      labelText: "First name",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50))),
+                    ),
+                    validator: (text) {
+                      if (!(text!.length >= 2) && text.isNotEmpty) {
+                        return "Enter a valid first name of more than or equal to 2 characters!";
+                      } else if (text.isEmpty) {
+                        return "Enter a valid first name.";
+                      }
+                      return null;
+                    }),
                 Padding(
                     padding: const EdgeInsets.only(
                         left: 15.0, right: 15.0, top: 15, bottom: 5)),
                 TextFormField(
-                  key: Key("LastNameField"),
-                  controller: _lastNameController,
-                  decoration: InputDecoration(
-                    labelText: "Last name",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50))),
-                  ),
-                ),
+                    key: Key("LastNameField"),
+                    controller: _lastNameController,
+                    decoration: InputDecoration(
+                      labelText: "Last name",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50))),
+                    ),
+                    validator: (text) {
+                      if (!(text!.length >= 2) && text.isNotEmpty) {
+                        return "Enter a valid first name of more than or equal to 2 characters!";
+                      } else if (text.isEmpty) {
+                        return "Enter a valid first name.";
+                      }
+                      return null;
+                    }),
                 Padding(
                     padding: const EdgeInsets.only(
                         left: 15.0, right: 15.0, top: 15, bottom: 5)),
@@ -156,25 +177,25 @@ class _SignUpFormState extends State<SignUpForm> {
                       if (_formKey.currentState!.validate()) {
                         try {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Registering!')));
-                        await context.read<AuthService>().signUp(
-                              email: _emailController.text.trim(),
-                              password: _passwordController.text,
-                            );
-                        User? user = context.read<AuthService>().currentUser;
-                        UserData userData = UserData(
-                          _firstNameController.text.trim(),
-                          _lastNameController.text.trim(),
-                          _emailController.text.trim(),
-                        );
-                        SetData()
-                            .saveUserData(userData: userData, uid: user!.uid);
-                        Navigator.pop(context);
+                              const SnackBar(content: Text('Registering!')));
+                          await context.read<AuthService>().signUp(
+                                email: _emailController.text.trim(),
+                                password: _passwordController.text,
+                              );
+                          User? user = context.read<AuthService>().currentUser;
+                          UserData userData = UserData(
+                            _firstNameController.text.trim(),
+                            _lastNameController.text.trim(),
+                            _emailController.text.trim(),
+                          );
+                          SetData()
+                              .saveUserData(userData: userData, uid: user!.uid);
+                          Navigator.pop(context);
                         } catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Email already in use!')));
+                              const SnackBar(
+                                  content: Text('Email already in use!')));
                         }
-
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
