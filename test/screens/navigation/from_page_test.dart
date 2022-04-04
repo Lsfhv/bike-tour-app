@@ -4,17 +4,32 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group("Test", () {
-    testWidgets("Test1", (WidgetTester tester) async {
+    testWidgets("Check if widget exists", (WidgetTester tester) async {
       await tester.pumpWidget(const MaterialApp(
           home: Scaffold(
         body: FromPage(),
       )));
+
+      var location = find.byKey(const Key("LocationKey"));
+      expect(location, findsOneWidget);
+
+      var map = find.byKey(const Key("MapKey"));
+      expect(map, findsOneWidget);
     });
 
-    testWidgets("Test2", (WidgetTester tester) async {});
+    // testWidgets("test2", (WidgetTester tester) async {
+    //   await tester.pumpWidget(const MaterialApp(
+    //       home: Scaffold(
+    //     body: FromPage(),
+    //   )));
 
-    testWidgets("Test3", (WidgetTester tester) async {});
+    //   var map = find.byKey(const Key("MapKey"));
+    //   var location = find.byKey(const Key("LocationKey"));
 
-    testWidgets("Test4", (WidgetTester tester) async {});
+    //   await tester.tap(location);
+    //   await tester.pump();
+
+    //   expect(find.text("A"), findsOneWidget);
+    // });
   });
 }
