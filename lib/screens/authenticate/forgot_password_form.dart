@@ -75,7 +75,7 @@ class _ForgotPasswordFromState extends State<ForgotPasswordFrom> {
                     } else {
                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           content: Text(
-                        'Email doesnt exist',
+                        'Email doesn\'t exist',
                       )));
                     }
                   }
