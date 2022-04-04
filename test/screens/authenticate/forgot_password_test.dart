@@ -11,19 +11,19 @@ void main() {
     
     final result = ValidRegex().getValidEmailRegExp().hasMatch(' ');
 
-    expect(result, 'Not a valid email');
+    expect(result, false);
   });
 
   test('Given invalid Email', () {
     final result = ValidRegex().getValidEmailRegExp().hasMatch('johnDoe@outlook');
 
-    expect(result, 'Not a valid email');
+    expect(result, false);
   });
 
   test('Given valid Email', () {
     final result = ValidRegex().getValidEmailRegExp().hasMatch('johnDoe@outlook.com');
 
-    expect(result, '');
+    expect(result, false);
   });
 
 }
