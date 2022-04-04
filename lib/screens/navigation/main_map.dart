@@ -44,6 +44,7 @@ class _MainMapState extends State<MainMap> {
           child: Stack(
             children: <Widget>[
               GoogleMap(
+                key: Key("GoogleMapKey"),
                 initialCameraPosition:
                     CameraPosition(target: _initialcameraposition),
                 mapType: MapType.normal,
@@ -51,6 +52,7 @@ class _MainMapState extends State<MainMap> {
                 myLocationEnabled: true,
               ),
               Align(
+                key: Key("SettingsKey"),
                 alignment: Alignment(0.8, -0.8),
                 child: FloatingActionButton(
                   heroTag: "Settings",
@@ -67,12 +69,16 @@ class _MainMapState extends State<MainMap> {
                 ),
               ),
               Align(
+                key: Key("PersonsKey"),
                 alignment: Alignment(-0.8, -0.8),
                 child: FloatingActionButton(
                   heroTag: "Persons",
                   onPressed: () {
                     // person
-                    Navigator.push(context, MaterialPageRoute(builder: ((context) => GroupRoutingPage())));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: ((context) => GroupRoutingPage())));
                   },
                   backgroundColor:
                       Color.fromARGB(202, 85, 190, 56).withOpacity(1),
@@ -80,6 +86,7 @@ class _MainMapState extends State<MainMap> {
                 ),
               ),
               Align(
+                key: Key("PlanJourneyKey"),
                 alignment: Alignment(0, 0.63),
                 child: SizedBox(
                   width: 250.0,
@@ -93,9 +100,8 @@ class _MainMapState extends State<MainMap> {
                     ),
                     color: Color.fromARGB(202, 85, 190, 56).withOpacity(1),
                     onPressed: () async {
-                        
                       Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => FromPage()));
+                          MaterialPageRoute(builder: (context) => FromPage()));
                     },
                   ),
                 ),

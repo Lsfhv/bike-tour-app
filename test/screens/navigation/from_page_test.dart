@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group("Test", () {
-    testWidgets("Check if widget exists", (WidgetTester tester) async {
+    testWidgets("Check if widget loads", (WidgetTester tester) async {
       await tester.pumpWidget(const MaterialApp(
           home: Scaffold(
         body: FromPage(),
@@ -29,7 +29,7 @@ void main() {
     //   await tester.tap(location);
     //   await tester.pump();
 
-    //   expect(find.text("A"), findsOneWidget);
+    //   expect(find.text("@"), findsWidgets);
     // });
   });
 }
