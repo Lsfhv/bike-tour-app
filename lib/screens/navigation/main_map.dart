@@ -10,6 +10,7 @@ import 'package:bike_tour_app/screens/navigation/from_page.dart';
 //import 'package:bike_tour_app/screens/navigation/route_planner.dart';
 import 'package:location/location.dart';
 
+// ignore: unused_import
 import '../../live_test/live_navigation/integration_testing/navigation_test.dart';
 // ignore: unused_import
 import '../../live_test/live_navigation/src/DynamicTestingNavigation.dart';
@@ -54,19 +55,6 @@ class _MainMapState extends State<MainMap> {
                 mapType: MapType.normal,
                 onMapCreated: _onMapCreated,
                 myLocationEnabled: true,
-              ),
-              Align(
-                alignment: Alignment(0.8, 0.8),
-                child: FloatingActionButton(
-                  heroTag: "Testing",
-                  onPressed: () {
-                    // the settings button
-                    Navigator.pushNamed(context, NavigationTest.routeName);
-                  },
-                  backgroundColor:
-                      Color.fromARGB(202, 85, 190, 56).withOpacity(1),
-                  child: const Icon(Icons.abc),
-                ),
               ),
               Align(
                 key: Key("SettingsKey"),

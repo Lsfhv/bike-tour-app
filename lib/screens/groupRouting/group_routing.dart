@@ -5,6 +5,8 @@ import 'package:googleapis/admob/v1.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:bike_tour_app/screens/navigation/main_map.dart';
 
+import '../../live_test/live_navigation/integration_testing/navigation_test.dart';
+
 class GroupRoutingPage extends StatefulWidget {
   const GroupRoutingPage({Key? key}) : super(key: key);
 
@@ -70,6 +72,28 @@ class _GroupRoutingPageState extends State<GroupRoutingPage> {
                   ),
                   color: Color.fromARGB(202, 85, 190, 56).withOpacity(1),
                   onPressed: _joinGroup,
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment(0, 0.6),
+              child: SizedBox(
+                width: 250.0,
+                height: 75.0,
+                // ignore: deprecated_member_use
+                child: RaisedButton(
+                  child: Text(
+                    'DEMO RUN',
+                    style:
+                        GoogleFonts.lato(color: Colors.white, fontSize: 16.5),
+                  ),
+                  color: Color.fromARGB(202, 85, 190, 56).withOpacity(1),
+                  onPressed: () {
+                    // the settings button
+                    Navigator.pushNamed(
+                        context,
+                        NavigationTest.routeName);
+                  },
                 ),
               ),
             ),

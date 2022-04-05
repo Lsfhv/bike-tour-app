@@ -120,14 +120,12 @@ class JourneyData {
   }
    init() async{
        
-       
-       Stopwatch stopwatch = Stopwatch()..start();
     
 
     Map<String , List<BikePointModel>> bikePoints = await bike_api.fetchBikePointsGroupedByPostCode();
     if(destinations.length > 1){
       await routeOptimize();
-      print('route Optimise executed in ${stopwatch.elapsed}');
+
       
     }
     waypoints = [];
@@ -154,13 +152,13 @@ class JourneyData {
         String start_postcode = await bike_api.getPostCode((start as Destination).position);
         starting_dock = choosingDock(await bike_api.getNearbyBikingDocks((start as Destination).position, bikePoints, start_postcode, uses: number_of_bikers));
       }
-      print('starting dock choosing executed in ${stopwatch.elapsed}');
+    
       if(starting_dock != null){
         String end_postcode = await bike_api.getPostCode((end as Destination).position);
         ending_dock = choosingDock(await bike_api.getNearbyParkingDocks(end.position, bikePoints, end_postcode,uses: number_of_bikers));
         if(ending_dock != null){
           //add starting_dock,destination,ending_dock
-          waypoints.add(LatLng(starting_dock.lat, starting_dock.lon));
+          waypoints.add(new LatLng(starting_dock.lat, starting_dock.lon));
           waypoints.add(LatLng(ending_dock.lat,ending_dock.lon));
           waypoints.add(end.position);
 
@@ -173,7 +171,7 @@ class JourneyData {
           await bike_api.increaseBikeUsed(starting_dock, number: number_of_bikers);
           await bike_api.increaseParkingUsed(ending_dock, number: number_of_bikers);
         }
-        print('ending dock choosing executed in ${stopwatch.elapsed}');
+    
       }
       else{
         waypoints.add(end.position);
@@ -181,7 +179,6 @@ class JourneyData {
       }
     } 
 
-      print('executed in ${stopwatch.elapsed}');
 
   }
 
@@ -223,7 +220,7 @@ class JourneyData {
   Future<bool> _checkValidityOfCode(String code)async {
     try{
       bool exist = false;
-      print(code);
+
       await FirebaseFirestore.instance.collection("group_journey").doc(code).get().then((value) => {
         if(value.exists){
           exist = true

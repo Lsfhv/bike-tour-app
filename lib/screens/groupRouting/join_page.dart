@@ -53,7 +53,6 @@ class _JoiningPageState extends State<JoiningPage> {
   Future<bool> _checkValidityOfCode(String code) async {
     try {
       bool exist = false;
-      print(code);
       await FirebaseFirestore.instance
           .collection("group_journey")
           .doc(code)

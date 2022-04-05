@@ -31,7 +31,6 @@ class _InstructionWidgetState extends State<InstructionWidget> {
   @override
   Widget build(BuildContext context) {
     _init();
-    print(direction);
     return Row( 
       children: [
         Expanded(child: 

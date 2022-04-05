@@ -9,6 +9,7 @@ class UserMarker extends Marker {
           markerId: MarkerId('current_location'),
           draggable: false,
           position: user.center as LatLng,
-          icon: BitmapDescriptor.defaultMarkerWithHue(100),
+          // icon: BitmapDescriptor.defaultMarkerWithHue(100),
+          icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
         );
 }

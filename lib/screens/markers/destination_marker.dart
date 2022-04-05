@@ -14,7 +14,8 @@ class DestinationMarker extends Marker {
           markerId: MarkerId(destination.name as String),
           draggable: false,
           position: destination.position,
-          icon: BitmapDescriptor.defaultMarkerWithHue(107),
+          //icon: BitmapDescriptor.defaultMarkerWithHue(107),
+          icon : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
           onTap: tap_func,
         );
 }

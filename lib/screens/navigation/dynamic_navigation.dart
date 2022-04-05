@@ -58,6 +58,8 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
 
   var ttsState;
 
+  bool started = false;
+
   
 
    _onMapCreated(GoogleMapController controller) async {
@@ -192,6 +194,20 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
                       onPressed: () async => await _reroute(),
                     ),
                   ),
+                  Card(
+                    child: IconButton(
+                      iconSize: 20,
+                      icon: Icon(Icons.pause),
+                      onPressed: ()async => await _pauseListening(),
+                    ),
+                  ),
+                  Card(
+                    child : IconButton(
+                      icon: Icon(Icons.play_arrow),
+                      iconSize: 20,
+                      onPressed: () async => await _listenLocation(),
+                    ),
+                  ),
                 ]
                 ),      
                 behavior: HitTestBehavior.translucent,
@@ -217,15 +233,13 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
   updatePinOnMap() async {
    
     if(mounted){
+      _reached();
       _pastPoint();
       setState(() {
         _center = LatLng(current_position.latitude as double, current_position.longitude as double);
         _markers.removeWhere((m) => m.markerId.value == 'current_location');
         Marker _new_marker = UserMarker(user: UserPosition(_center) );
         _markers.add(_new_marker);
-        if(instructions != null && nextCheckPoint !=null ){
-          print(nextCheckPoint); 
-        }
       });
       if(_reached_next_check_point()){
         _update_instruction();
@@ -327,7 +341,26 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
     }
     else{
       //indicate reached location
-      reached = true;
+      setState(() {
+        reached = true ;
+      });
+    }
+  }
+
+  _reached(){
+    if(
+        (
+          _calculate_distance(from: LatLng(current_position.latitude as double, current_position.longitude as double), to: jdwr!.journeyData.getLastDockingStation()) < 20 
+          &&
+          instruction_index > instructions.instructions.length -2
+        ) 
+      ||
+        _calculate_distance(from: LatLng(current_position.latitude as double, current_position.longitude as double), to: LatLng(polylinepoints.last.latitude as double, polylinepoints.last.longitude as double, )) < 20
+    ){
+      setState(() {
+        reached = true;
+        started = false;
+      });
     }
   }
 
@@ -384,19 +417,19 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
   }
 
   Future<void> _listenLocation() async {
-    _locationSubscription = location.onLocationChanged.handleError((onError) async {
-      print(onError);
-      await _handleError();
-    }).listen((loc.LocationData cLoc) async {
-      // cLoc contains the lat and long of the
-      // current user's position in real time,
-      // so we're holding on to it
-      current_position = cLoc;
-      await updatePinOnMap();
-      if(cancelled || reached){
-        await _stopListening();
-      }
-   });
+    _locationSubscription ??= location.onLocationChanged.handleError((onError) async {
+        print(onError);
+        await _handleError();
+      }).listen((loc.LocationData cLoc) async {
+        // cLoc contains the lat and long of the
+        // current user's position in real time,
+        // so we're holding on to it
+        current_position = cLoc;
+        await updatePinOnMap();
+        if(cancelled || reached){
+          await _stopListening();
+        }
+    });
   }
 
   _stopListening() async {
@@ -404,6 +437,12 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
     setState(() {
       _locationSubscription = null;
     });
+  }
+
+  
+
+  _pauseListening() {
+    _locationSubscription!.pause(_listenLocation());
   }
 
   _requestPermission() async {

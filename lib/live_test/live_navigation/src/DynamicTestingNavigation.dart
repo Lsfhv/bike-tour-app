@@ -14,6 +14,7 @@ import 'package:bike_tour_app/screens/widgets/instruction_widget.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
@@ -44,6 +45,7 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
   late Instruction? current_instruction =null;
   late Instructions instructions;
   late List<PointLatLng> polylinepoints =[];
+  bool started = false;
   
   late GoogleMapController mapController;
   late List<LatLng> _locationStream = [];
@@ -56,6 +58,7 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
   bool cancelled = false;
   List<LatLng> past_journeys =[];
   bool muted = false;
+  final flutterTts = FlutterTts();
 
   var ttsState;
 
@@ -95,17 +98,19 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
   }
 
   _endTrip() {
+
     showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
       title : const Text("Trip Cancelled!"),
       actions : <Widget>[
-        TextButton(onPressed: () => _navigateNextPage(), child: const Text("Ok")),
+        TextButton(onPressed: () async => await _navigateNextPage(), child: const Text("Ok")),
       ]
     )
     );
     
   }
 
-  _navigateNextPage(){
+  _navigateNextPage() async{
+    await flutterTts.stop();
     Navigator.popUntil(context, ModalRoute.withName(MainMap.routeName));
     Navigator.pushNamed(context, MainMap.routeName);
 
@@ -169,13 +174,6 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
                       onPressed: () async => await _reroute(),
                     ),
                   ),
-                  Card(
-                    child : IconButton(
-                      icon: Icon(Icons.star),
-                      iconSize: 20,
-                      onPressed: () async => _listenLocation(),
-                    ),
-                  ),
                 ]
                 ),      
                 behavior: HitTestBehavior.translucent,
@@ -183,6 +181,26 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
               ,left :40,
               bottom: 10,
             ),
+            if(!started)
+            Align(
+              key: Key("PlanJourneyKey"),
+              alignment: Alignment(0, 0.63) ,
+              child: SizedBox(
+                width: 250.0,
+                height: 75.0,
+                // ignore: deprecated_member_use
+                child: RaisedButton(
+                  child: Text(
+                    'Start Demo',
+                    style:
+                        GoogleFonts.lato(color: Colors.white, fontSize: 16.5),
+                  ),
+                  color: Color.fromARGB(202, 85, 190, 56).withOpacity(1),
+                  onPressed: () async => _listenLocation(),
+                ),
+              ),
+            ),
+
         if(!reached)
         Positioned(
           child :GestureDetector(
@@ -201,15 +219,13 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
   updatePinOnMap() async {
    
     if(mounted){
+      _reached();
       _pastPoint();
       setState(() {
         _center = LatLng(current_position.latitude as double, current_position.longitude as double);
         _markers.removeWhere((m) => m.markerId.value == 'current_location');
         Marker _new_marker = UserMarker(user: UserPosition(_center) );
         _markers.add(_new_marker);
-        if(instructions != null && nextCheckPoint !=null ){
-          print(nextCheckPoint); 
-        }
       });
       if(_reached_next_check_point()){
         _update_instruction();
@@ -227,7 +243,7 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
   }
 
   _speak() async{
-    final flutterTts = FlutterTts();
+
     
     var result = await flutterTts.speak(_editString(current_instruction!.instruction));
   }
@@ -298,6 +314,7 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
     else if(reached){
       current_instruction = REACHED_INSTRUCTION;
       nextCheckPoint = REACHED_LOC;
+
     }
     else if(!stillOnCurrentInstruction){
       if(!onRoute){
@@ -308,10 +325,28 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
     }
     else{
       //indicate reached location
-      reached = true;
+      setState(() {
+        reached = true ;
+      });
     }
   }
 
+  _reached(){
+    if(
+        (
+          _calculate_distance(from: LatLng(current_position.latitude as double, current_position.longitude as double), to: jdwr!.journeyData.getLastDockingStation()) < 20 
+          &&
+          instruction_index > instructions.instructions.length -2
+        ) 
+      ||
+        _calculate_distance(from: LatLng(current_position.latitude as double, current_position.longitude as double), to: LatLng(polylinepoints.last.latitude as double, polylinepoints.last.longitude as double, )) < 20
+    ){
+      setState(() {
+        reached = true;
+        started = false;
+      });
+    }
+  }
 
   double _calculate_distance({required LatLng from,required LatLng to}){
       double distance = 0;
@@ -350,7 +385,6 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
     LatLng cur_point = LatLng(current_position.latitude as double, current_position.longitude as double);
     const int TOLEARANCE =20;
     LatLng reached_point = LatLng(_info!.polylinePoints.first.latitude, _info!.polylinePoints.first.longitude);
-    print(_calculate_distance(from: cur_point, to: reached_point));
     if(_calculate_distance(from: cur_point, to: reached_point) <= TOLEARANCE ){
       setState(()  {
         PointLatLng past_point = _info!.polylinePoints.removeAt(0);
@@ -360,14 +394,17 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
   }
 
   Future<void> _listenLocation() async {
+    setState(() {
+      started = true;
+    });
   for(LatLng cLoc in _locationStream){
     // cLoc contains the lat and long of the
     // current user's position in real time,
     // so we're holding on to it
     current_position = cLoc;
-    print('taking location');
     await updatePinOnMap();
     await Future.delayed(Duration(seconds: 1));
+    
     }
   }
 }
