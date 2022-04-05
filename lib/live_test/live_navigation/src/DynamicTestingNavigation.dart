@@ -402,6 +402,7 @@ class _DynamicNavigation_TestState extends State<DynamicNavigation_Test> {
     // current user's position in real time,
     // so we're holding on to it
     current_position = cLoc;
+    mapController.animateCamera(CameraUpdate.newLatLng(LatLng(current_position.latitude as double, current_position.longitude as double)));
     await updatePinOnMap();
     await Future.delayed(Duration(seconds: 1));
     

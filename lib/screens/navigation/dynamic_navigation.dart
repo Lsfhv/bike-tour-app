@@ -426,6 +426,8 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
         // so we're holding on to it
         current_position = cLoc;
         await updatePinOnMap();
+
+        mapController.animateCamera(CameraUpdate.newLatLng(LatLng(current_position.latitude as double, current_position.longitude as double)));
         if(cancelled || reached){
           await _stopListening();
         }
