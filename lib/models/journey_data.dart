@@ -16,28 +16,26 @@ import 'user_data.dart';
 class JourneyData {
   UserPosition currentPosition;
   List<Destination> destinations;
-  List<Destination> formated_list = [];
   GetApi bike_api = GetApi();
   List<LatLng> waypoints = [];
+  List<dynamic> order =[];
   Set<Marker> markers = {};
   Compass compass = Compass();
   int number_of_bikers = 1;
   JourneyData(this.currentPosition, this.destinations);
-  JourneyData._fromFS(this.currentPosition, this.destinations, 
-                      this.formated_list, this.markers, this.waypoints
+  JourneyData._fromFS(this.currentPosition, this.destinations, this.markers, this.waypoints,
                       );
   Set<BikePointModel> bikePointsUsed ={};
 
 
   factory JourneyData.fromFS(Map<String, dynamic> value, UserPosition user){
     //destination list dealt with
-    List<Destination> destinations = [];
     final Map<String,dynamic>_destdata = value["destinations"];
+    List<Destination> destinations = List.empty(growable: true);
     for(int i =0; i< _destdata.values.length ; i++){
       destinations.insert(i,
         Destination.fromFS(_destdata[i.toString()])
       );
-      i++;
     }
 
 
@@ -50,74 +48,44 @@ class JourneyData {
     }
     
     final Map<String,dynamic> _bikePointsData = value["bike_points_used"];
-    for(int j =0; j<_bikePointsData.values.length; j++){
-      marker.add(BikeMarker.fromFS(_bikePointsData["j"]));
-    }
+    
+    // for(int j =0; j<_bikePointsData.values.length; j++){
+    //   marker.add(BikeMarker.fromFS(_bikePointsData[j]));
+    // }
+    _bikePointsData.forEach(
+      (key, value) => {marker.add(BikeMarker.fromFS({key : value}))}
+    );
 
     
 
-    //destination list dealt with
-    List<Destination> formated_list = [];
-    if(destinations.length >2){
-      final Map<String,dynamic> data = value["formated_list"];
-      for(var v in data.values){
-        formated_list.add(
-          Destination.fromFS(v)
-        );
-      }
-    }
 
         //destination list dealt with
     List<LatLng> waypoints = [];
-    final Map<String,dynamic> w_data = value["waypoint"];
-    for(int k =0; k < w_data.values.length; k++){
-      waypoints.insert(k, LatLng( (w_data[k.toString()]).latitude, (w_data[k.toString()]).longitude));
+    final List<dynamic> w_data = value["waypoint"];
+    for(int k =0; k < w_data.length; k++){
+      waypoints.insert(k, LatLng( (w_data[k]).latitude, (w_data[k]).longitude));
+      waypoints.insert(k, LatLng( (w_data[k]).latitude, (w_data[k]).longitude));
     }
+
+    List order = value['waypointOrder'];
+
     
     
 
-    return JourneyData._fromFS(user, destinations, formated_list, marker, waypoints);
+    final JourneyData result = JourneyData._fromFS(user, destinations, marker, waypoints);
+    result.order = order;
+    return result;
     
   }
 
   Map<String,dynamic> toJson(){
-    if(formated_list.isNotEmpty ){
-      return {
-        "destinations" : Map.fromIterable(destinations, 
-          key : (e) => destinations.indexOf(e).toString(),
-          value: (e) => (e as Destination).toJson()
-        ),
-        "formated_list" : Map.fromIterable(formated_list, 
-          key: (e) => formated_list.indexOf(e).toString(), 
-          value : (e) => (e as Destination).toJson()
-        ),
-        // "waypoint" :Map.fromIterable(
-        //   waypoints,
-        //   key: (element) => waypoints.indexOf(element),
-        //   value: (e) => GeoPoint((e as LatLng).latitude, (e as LatLng).longitude),
-        // ),
-        'markers' : Map.fromIterable(
-          markers,
-          key: (e) => (e as Marker).markerId.value,
-          value: (e) => [GeoPoint((e as Marker).position.latitude, (e as Marker).position.longitude), e.runtimeType],
-          ),
-        'bike_points_used' : Map.fromIterable(
-          bikePointsUsed,
-          key: (e) => (e as BikePointModel).id,
-          value: (e) => GeoPoint((e as BikePointModel).lat,(e as BikePointModel).lon)
-        )
-      };
-    }
     return {
         "destinations" : Map.fromIterable(destinations, 
           key : (e) => destinations.indexOf(e).toString(),
           value: (e) => (e as Destination).toJson()
         ),
-        // "waypoint" :Map.fromIterable(
-        //   waypoints,
-        //   key: (element) => waypoints.indexOf(element).toString(),
-        //   value: (e) => GeoPoint((e as LatLng).latitude, (e as LatLng).longitude),
-        // ),
+        'waypointOrder' : order,
+        'waypoint' : List.generate(waypoints.length, (index) => GeoPoint( waypoints[index].latitude, waypoints[index].longitude)),
         'markers' : Map.fromIterable(
           markers,
           key: (e) => (e as Marker).markerId.toString(),
@@ -132,13 +100,15 @@ class JourneyData {
   }
   rerouteWaypoints(Directions? args){
     List<Destination> buffer=List.of(destinations);
-    //_destinations.clear();
-    for(var i in args!.waypointsOrder){
-      destinations.add(buffer[i]);
+   List<Destination> formated_list = [];
+   order = args!.waypointsOrder;
+    for(var i in args.waypointsOrder){
+      formated_list.add(buffer[i]);
     }
+    destinations = formated_list;
   }
 
-  routeOptimize() async {
+   routeOptimize() async {
     //choose the last destination
     List<LatLng> list = List<LatLng>.generate(destinations.length, (i)=> destinations[i].position);
     await DirectionsRepository().getDirections(origin: currentPosition.center as LatLng, ending_bike_dock: currentPosition.center as LatLng , destinations: list, optimize: true).
@@ -148,16 +118,17 @@ class JourneyData {
     //get directions
     //
   }
-  init() async{
+   init() async{
        
        
        Stopwatch stopwatch = Stopwatch()..start();
     
-    
+
     Map<String , List<BikePointModel>> bikePoints = await bike_api.fetchBikePointsGroupedByPostCode();
     if(destinations.length > 1){
       await routeOptimize();
       print('route Optimise executed in ${stopwatch.elapsed}');
+      
     }
     waypoints = [];
     markers = {};
@@ -295,8 +266,8 @@ class JourneyData {
  endTrip() async{
   for(int i =0; i < markers.length; i++){
     if(markers.elementAt(i).runtimeType == BikeMarker){
-    BikePointModel starting_dock = (markers.elementAt(i) as BikeMarker).station;
-    BikePointModel end_dock = (markers.elementAt(i+2) as BikeMarker).station;
+    BikePointModel starting_dock = (markers.elementAt(i) as BikeMarker).station as BikePointModel;
+    BikePointModel end_dock = (markers.elementAt(i+2) as BikeMarker).station as BikePointModel;
 
     i = i+2;
 

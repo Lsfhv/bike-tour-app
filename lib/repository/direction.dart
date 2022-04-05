@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../.env.dart';
 import '../models/directions_model.dart';
 
 class DirectionsRepository {
@@ -21,14 +22,19 @@ class DirectionsRepository {
     String destinations_out = '';
     if(optimize){
       destinations_out +='optimize:true|';
+      for(LatLng destination in destinations){
+        destinations_out += '${destination.latitude},${destination.longitude}|';     
+      }
     }
-    for(LatLng destination in destinations){
-      destinations_out += 'via:${destination.latitude},${destination.longitude}|';     
+    else{
+      for(LatLng destination in destinations){
+        destinations_out += 'via:${destination.latitude},${destination.longitude}|';     
+      }
     }
     if(destinations_out.isEmpty){
       return '';
     }
-    return destinations_out.substring(0, destinations_out.length - 1);
+    return destinations_out;
   }
 
   Future<Directions?> getDirections({
@@ -38,20 +44,18 @@ class DirectionsRepository {
     bool optimize = false,
   }) async {
     final response = await _dio.get(
-      _baseUrl,
+      DirectionsRepository._baseUrl,
       queryParameters: {
         'origin': '${origin.latitude},${origin.longitude}',
         'destination': '${ending_bike_dock.latitude},${ending_bike_dock.longitude}',
         'waypoints' : destinations_string(destinations, optimize),
-        'key': "AIzaSyCZTV0UOqPHZ4Skv6_OcrPmrORhzP316n4",
-        'mode' : 'walking',
+        'key': googleAPIKey,
+        'mode' : 'cycling',
         'region' : 'uk',
         'units' : 'metric',
       },
     );
-    if(optimize){
-      //print(Map<String, dynamic>.from(response.data['routes'][0])['waypoint_order']);
-    }
+
 
     // Check if response is successful
     if (response.statusCode == 200) {
