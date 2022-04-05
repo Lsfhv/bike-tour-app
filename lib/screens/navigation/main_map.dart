@@ -61,9 +61,7 @@ class _MainMapState extends State<MainMap> {
                   heroTag: "Testing",
                   onPressed: () {
                     // the settings button
-                    Navigator.pushNamed(
-                        context,
-                        NavigationTest.routeName);
+                    Navigator.pushNamed(context, NavigationTest.routeName);
                   },
                   backgroundColor:
                       Color.fromARGB(202, 85, 190, 56).withOpacity(1),
@@ -75,6 +73,7 @@ class _MainMapState extends State<MainMap> {
                 alignment: Alignment(0.8, -0.8),
                 child: FloatingActionButton(
                   heroTag: "Settings",
+                  key: Key("SettingsKey2"),
                   onPressed: () {
                     // the settings button
                     Navigator.push(

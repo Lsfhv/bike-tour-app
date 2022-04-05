@@ -7,8 +7,6 @@ import 'package:mockito/mockito.dart';
 
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
-// class MockAppNavigator extends Mock implements AppNavigator {}
-
 void main() {
   group("Test", () {
     testWidgets("Test if all components of widget loads",
@@ -31,29 +29,43 @@ void main() {
       expect(planjourney, findsOneWidget);
     });
 
-    testWidgets("Tap settings", (WidgetTester tester) async {
-      // final mockObserver = MockNavigatorObserver();
-      // final appNavigator = MockAppNavigator();
-
-      // await tester.pumpWidget(
-      //   MaterialApp(
-      //     home: const MainMap(),
-      //     navigatorObservers: [mockObserver],
-      //   ),
-      // );
+    testWidgets("Tap settings button", (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(
+          home: Scaffold(
+        body: MainMap(),
+      )));
 
       var settings = find.byKey(const Key("SettingsKey"));
       expect(settings, findsOneWidget);
 
-      await tester.tap(settings);
-      await tester.pumpAndSettle();
+      var settings2 = find.byKey(const Key("SettingsKey2"));
+      expect(settings2, findsOneWidget);
 
-      // verify(appNavigator.showNextscreen());
-      // expect(find.byType(SettingsPage), findsWidgets);
+      await tester.tap(settings2, warnIfMissed: false);
     });
 
-    testWidgets("Test3", (WidgetTester tester) async {});
+    testWidgets("Tap persons button", (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(
+          home: Scaffold(
+        body: MainMap(),
+      )));
 
-    testWidgets("Test4", (WidgetTester tester) async {});
+      var persons = find.byKey(const Key("PersonsKey"));
+      expect(persons, findsOneWidget);
+
+      await tester.tap(persons, warnIfMissed: false);
+    });
+
+    testWidgets("Tap plan journey button", (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(
+          home: Scaffold(
+        body: MainMap(),
+      )));
+
+      var planjourney = find.byKey(const Key("PlanJourneyKey"));
+      expect(planjourney, findsOneWidget);
+
+      await tester.tap(planjourney, warnIfMissed: false);
+    });
   });
 }
