@@ -198,7 +198,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
                     child: IconButton(
                       iconSize: 20,
                       icon: Icon(Icons.pause),
-                      onPressed: ()async => await _pauseListening(),
+                      onPressed: () =>  _pauseListening(),
                     ),
                   ),
                   Card(
@@ -417,7 +417,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
   }
 
   Future<void> _listenLocation() async {
-    _locationSubscription ??= location.onLocationChanged.handleError((onError) async {
+    _locationSubscription =  location.onLocationChanged.handleError((onError) async {
         print(onError);
         await _handleError();
       }).listen((loc.LocationData cLoc) async {
@@ -442,7 +442,9 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
   
 
   _pauseListening() {
-    _locationSubscription!.pause(_listenLocation());
+    setState(() {
+      _locationSubscription!.pause();
+    });
   }
 
   _requestPermission() async {
