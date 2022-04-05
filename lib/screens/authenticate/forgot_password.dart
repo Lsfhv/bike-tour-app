@@ -15,7 +15,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Sign up"),
+        title: const Text("Forgot Password"),
+        backgroundColor: Color.fromARGB(202, 85, 190, 56),
       ),
       body: const ForgotPasswordFrom(),
     );

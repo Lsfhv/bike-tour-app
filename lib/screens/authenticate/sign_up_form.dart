@@ -44,6 +44,13 @@ class _SignUpFormState extends State<SignUpForm> {
   final _passwordKey = Key("PasswordField");
   final _passwordConfirmKey = Key("PasswordConfirmField");
 
+  void _saveForm() {
+    final isValid = _formKey.currentState!.validate();
+    if (!isValid) {
+      return;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -51,22 +58,49 @@ class _SignUpFormState extends State<SignUpForm> {
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+            Padding(
+                padding: const EdgeInsets.only(
+                    left: 15.0, right: 15.0, top: 15, bottom: 5)),
             Column(
               children: <Widget>[
                 TextFormField(
-                  key: Key("FirstNameField"),
-                  controller: _firstNameController,
-                  decoration: InputDecoration(
-                    labelText: "First name",
-                  ),
-                ),
+                    key: Key("FirstNameField"),
+                    controller: _firstNameController,
+                    decoration: InputDecoration(
+                      labelText: "First name",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50))),
+                    ),
+                    validator: (text) {
+                      if (!(text!.length >= 2) && text.isNotEmpty) {
+                        return "Enter a valid first name of more than or equal to 2 characters!";
+                      } else if (text.isEmpty) {
+                        return "Enter a valid first name.";
+                      }
+                      return null;
+                    }),
+                Padding(
+                    padding: const EdgeInsets.only(
+                        left: 15.0, right: 15.0, top: 15, bottom: 5)),
                 TextFormField(
-                  key: Key("LastNameField"),
-                  controller: _lastNameController,
-                  decoration: InputDecoration(
-                    labelText: "Last name",
-                  ),
-                ),
+                    key: Key("LastNameField"),
+                    controller: _lastNameController,
+                    decoration: InputDecoration(
+                      labelText: "Last name",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50))),
+                    ),
+                    validator: (text) {
+                      if (!(text!.length >= 2) && text.isNotEmpty) {
+                        return "Enter a valid first name of more than or equal to 2 characters!";
+                      } else if (text.isEmpty) {
+                        return "Enter a valid first name.";
+                      }
+                      return null;
+                    }),
+                Padding(
+                    padding: const EdgeInsets.only(
+                        left: 15.0, right: 15.0, top: 15, bottom: 5)),
                 TextFormField(
                   key: _emailKey,
                   validator: (value) {
@@ -79,13 +113,18 @@ class _SignUpFormState extends State<SignUpForm> {
                   controller: _emailController,
                   decoration: InputDecoration(
                     labelText: "Email",
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50))),
                   ),
                 ),
+                Padding(
+                    padding: const EdgeInsets.only(
+                        left: 15.0, right: 15.0, top: 15, bottom: 5)),
                 TextFormField(
                   key: _passwordKey,
                   validator: (value) {
                     if (!_validPasswordRegExp.hasMatch(value!)) {
-                      return r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length.""";
+                      return "Password must be at least one digit [0-9],\nat least one lowercase character [a-z],\nat least one uppercase character [A-Z],\nat least one special character[!@#\\\$&*~],\nat least 8 characters in length.";
                     } else {
                       return null;
                     }
@@ -94,8 +133,13 @@ class _SignUpFormState extends State<SignUpForm> {
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: "Password",
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50))),
                   ),
                 ),
+                Padding(
+                    padding: const EdgeInsets.only(
+                        left: 15.0, right: 15.0, top: 15, bottom: 5)),
                 TextFormField(
                   key: _passwordConfirmKey,
                   validator: (value) {
@@ -109,31 +153,52 @@ class _SignUpFormState extends State<SignUpForm> {
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: "Confirm Password",
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50))),
                   ),
                 ),
+                Padding(
+                    padding: const EdgeInsets.only(
+                        left: 15.0, right: 15.0, top: 15, bottom: 5)),
                 Container(
                   height: 50,
                   width: 250,
                   decoration: BoxDecoration(
-                      color: Colors.blue,
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.green,
+                          blurRadius: 2,
+                          offset: Offset(2, 2),
+                          spreadRadius: 1,
+                        )
+                      ],
+                      color: Color.fromARGB(202, 85, 190, 56),
                       borderRadius: BorderRadius.circular(20)),
                   child: TextButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Registering!')));
-                        await context.read<AuthService>().signUp(
-                              email: _emailController.text.trim(),
-                              password: _passwordController.text,
-                            );
-                        User? user = context.read<AuthService>().currentUser;
-                        UserData userData = UserData(
-                          _firstNameController.text.trim(),
-                          _lastNameController.text.trim(),
-                          _emailController.text.trim(),
-                        );
-                        SetData().saveUserData(userData: userData, uid: user!.uid);
-                        Navigator.pop(context);
+
+                        try {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Registering!')));
+                          await context.read<AuthService>().signUp(
+                                email: _emailController.text.trim(),
+                                password: _passwordController.text,
+                              );
+                          User? user = context.read<AuthService>().currentUser;
+                          UserData userData = UserData(
+                            _firstNameController.text.trim(),
+                            _lastNameController.text.trim(),
+                            _emailController.text.trim(),
+                          );
+                          SetData()
+                              .saveUserData(userData: userData, uid: user!.uid);
+                          Navigator.pop(context);
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Email already in use!')));
+                        }
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(

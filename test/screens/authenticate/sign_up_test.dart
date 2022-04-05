@@ -1,15 +1,55 @@
 import 'package:bike_tour_app/screens/authenticate/sign_up.dart';
+import 'package:bike_tour_app/screens/authenticate/sign_up_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'valid_regex.dart';
 
 void main() {
-  group("Test", () {
-    testWidgets("Test1", (WidgetTester tester) async {});
+  test('Empty email test', () {
+    var emptyInput = ' ';
 
-    testWidgets("Test2", (WidgetTester tester) async {});
+    var result = ValidRegex().getValidEmailRegExp().hasMatch(emptyInput);
 
-    testWidgets("Test3", (WidgetTester tester) async {});
-
-    testWidgets("Test4", (WidgetTester tester) async {});
+    expect(result, false);
   });
+
+  test('Given empty password input', () async {
+    var emptyInput = ' ';
+
+    var result = ValidRegex().getValidPasswordRegExp().hasMatch(emptyInput);
+
+    expect(result, false);
+  });
+
+  test('Given valid email address', () async {
+    var result =
+        ValidRegex().getValidEmailRegExp().hasMatch('JohnDoe1@example.com');
+
+    expect(result, true);
+  });
+
+  test('Given valid Password', () {
+    var result = ValidRegex().getValidPasswordRegExp().hasMatch('Qwerty13!');
+
+    expect(result, true);
+  });
+
+  test('Given invalid Email', () {
+    var result =
+        ValidRegex().getValidEmailRegExp().hasMatch('JohnDoe1example.com');
+
+    expect(result, false);
+  });
+
+  test('Given invalid Password', () {
+    var result = ValidRegex().getValidPasswordRegExp().hasMatch('happy');
+
+    expect(result, false);
+  });
+
+  // test('Given empty first name input', () {
+  //   var result = ValidRegex().getValidPasswordRegExp().hasMatch('happy');
+
+  //   expect(result, false);
+  // });
 }

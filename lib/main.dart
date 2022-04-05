@@ -77,7 +77,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(      
+    return MultiProvider(
         providers: [
           Provider<AuthService>(
             create: (_) => AuthService(FirebaseAuth.instance),

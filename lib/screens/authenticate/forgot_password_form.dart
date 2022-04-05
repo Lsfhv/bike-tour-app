@@ -11,8 +11,7 @@ class ForgotPasswordFrom extends StatefulWidget {
 
 class _ForgotPasswordFromState extends State<ForgotPasswordFrom> {
   final _emailController = TextEditingController();
-
-  final RegExp _vaidEmailRegExp = RegExp(
+  final RegExp _validEmailRegExp = RegExp(
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 
   @override
@@ -39,36 +38,49 @@ class _ForgotPasswordFromState extends State<ForgotPasswordFrom> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
+              padding: const EdgeInsets.only(
+                  left: 15.0, right: 15.0, top: 15, bottom: 25),
               child: TextFormField(
                 validator: (value) {
-                  if (!_vaidEmailRegExp.hasMatch(value!)) {
+                  if (!_validEmailRegExp.hasMatch(value!)) {
                     return 'Not a valid email';
                   }
                 },
+                key: const Key("EmailKey"),
                 controller: _emailController,
                 decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
+                  //border: OutlineInputBorder(),
                   labelText: 'Email',
                   hintText: 'Enter valid email id as abc@gmail.com',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50))),
                 ),
               ),
             ),
             Container(
+              key: const Key("ResetKey"),
               height: 50,
               width: 250,
               decoration: BoxDecoration(
-                  color: Colors.blue, borderRadius: BorderRadius.circular(20)),
+                  color: const Color.fromARGB(202, 85, 190, 56),
+                  borderRadius: BorderRadius.circular(10)),
               child: TextButton(
-                onPressed: () {
-                  var result = context
-                      .read<AuthService>()
-                      .resetPassword(email: _emailController.text);
-                  if (result == "Success") {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text(
-                      'Please check your email to reset you password',
-                    )));
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    var result = await context
+                        .read<AuthService>()
+                        .resetPassword(email: _emailController.text);
+                    if (result) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text(
+                        'Please check your email to reset you password',
+                      )));
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text(
+                        'Email doesn\'t exist',
+                      )));
+                    }
                   }
                 },
                 child: const Text(

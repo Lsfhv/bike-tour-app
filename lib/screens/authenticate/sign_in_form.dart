@@ -4,6 +4,7 @@ import 'package:bike_tour_app/screens/authenticate/forgot_password.dart';
 import 'package:bike_tour_app/screens/authenticate/sign_up.dart';
 import 'package:bike_tour_app/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:google_place/google_place.dart';
 import 'package:provider/src/provider.dart';
 
 class SignInForm extends StatefulWidget {
@@ -17,7 +18,7 @@ class _SignInFormState extends State<SignInForm> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  final RegExp _vaidEmailRegExp = RegExp(
+  final RegExp _validEmailRegExp = RegExp(
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 
   final RegExp _validPasswordRegExp =
@@ -39,8 +40,20 @@ class _SignInFormState extends State<SignInForm> {
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+            Container(
+              padding: EdgeInsets.fromLTRB(1.0, 50.0, 0.0, 0.0),
+              child: Text('London',
+                  style:
+                      TextStyle(fontSize: 50.0, fontWeight: FontWeight.bold)),
+            ),
+            Container(
+              padding: EdgeInsets.fromLTRB(4.0, 5.0, 0.0, 0.0),
+              child: Text('Cycle',
+                  style:
+                      TextStyle(fontSize: 70.0, fontWeight: FontWeight.bold)),
+            ),
             Padding(
-              padding: const EdgeInsets.only(top: 60.0),
+              padding: const EdgeInsets.only(top: 1.0),
               child: Center(
                 child: SizedBox(
                   width: 200,
@@ -53,14 +66,20 @@ class _SignInFormState extends State<SignInForm> {
                 padding: EdgeInsets.symmetric(horizontal: 15),
                 child: TextFormField(
                   validator: (value) {
-                    if (!_vaidEmailRegExp.hasMatch(value!)) {
+                    if (!_validEmailRegExp.hasMatch(value!)) {
                       return 'Not a valid email';
                     }
                   },
                   controller: _emailController,
                   decoration: InputDecoration(
-                      border: OutlineInputBorder(),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50))),
                       labelText: 'Email',
+                      prefix: Icon(
+                        Icons.person_outline,
+                        size: 1,
+                      ),
+                      fillColor: Colors.blue,
                       hintText: 'Enter valid email id as abc@gmail.com'),
                 )),
             Padding(
@@ -69,14 +88,16 @@ class _SignInFormState extends State<SignInForm> {
               child: TextFormField(
                 validator: (value) {
                   if (!_validPasswordRegExp.hasMatch(value!)) {
-                    return r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length.""";
+                    return 'Password must be 8 characters long, contain an Upper Case character, a Number and a Special character';
                   }
                 },
                 key: Key("PasswordFieldKey"),
                 controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                        borderRadius: BorderRadius.all(Radius.circular(50))),
                     labelText: 'Password',
                     hintText: 'Enter secure password'),
               ),
@@ -88,7 +109,7 @@ class _SignInFormState extends State<SignInForm> {
               },
               child: Text("Forgot Password"),
               style: TextButton.styleFrom(
-                primary: Colors.blue,
+                primary: Colors.green,
               ),
             ),
             Container(
@@ -96,7 +117,8 @@ class _SignInFormState extends State<SignInForm> {
               height: 50,
               width: 250,
               decoration: BoxDecoration(
-                  color: Colors.blue, borderRadius: BorderRadius.circular(20)),
+                  color: Color.fromARGB(202, 85, 190, 56),
+                  borderRadius: BorderRadius.circular(10)),
               child: TextButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
@@ -114,7 +136,8 @@ class _SignInFormState extends State<SignInForm> {
                 },
                 child: Text(
                   'Login',
-                  style: TextStyle(color: Colors.white, fontSize: 25),
+                  style: TextStyle(
+                      color: Colors.white, fontSize: 25, letterSpacing: 3),
                 ),
               ),
             ),
@@ -128,7 +151,7 @@ class _SignInFormState extends State<SignInForm> {
               },
               child: Text("New User? Create Account"),
               style: TextButton.styleFrom(
-                primary: Colors.blue,
+                primary: Color.fromARGB(202, 85, 190, 56),
               ),
             ),
           ],

@@ -24,9 +24,10 @@ class _FromPageState extends State<FromPage> {
   LatLng _center = const LatLng(51.507399, -0.127689);
   Icon customIcon = const Icon(Icons.search);
   bool _fetchingLocation = false;
-  Marker? _currLoc = null; 
+  Marker? _currLoc = null;
   late TextEditingController _controller;
-  final _searcher = GoogleGeocodingApi("AIzaSyA75AqNa-yxMDYqffGrN0AqyUPumqkmuEs");
+  final _searcher =
+      GoogleGeocodingApi("AIzaSyA75AqNa-yxMDYqffGrN0AqyUPumqkmuEs");
   @override
   void initState() {
     super.initState();
@@ -39,111 +40,112 @@ class _FromPageState extends State<FromPage> {
     super.dispose();
   }
 
-
-
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
 
-  Future<void> _getCurrentLocation() async{
-    locationPermission = (await Permission.location.request().isGranted) || (await Permission.locationWhenInUse.serviceStatus.isEnabled);
-    if(locationPermission){
+  Future<void> _getCurrentLocation() async {
+    locationPermission = (await Permission.location.request().isGranted) ||
+        (await Permission.locationWhenInUse.serviceStatus.isEnabled);
+    if (locationPermission) {
       setState(() {
         _fetchingLocation = true;
       });
-      await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
-        .then((Position position) {
-          setState(() {
-            LatLng pos =  LatLng(position.latitude, position.longitude);
-            _center = pos;
-            mapController.animateCamera(CameraUpdate.newLatLng(_center));
-            _currentPosition = UserPosition(pos);
-            _fetchingLocation = false;
-
-          });
-          showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
-            title : Text("Your journey starts now!" ),//+tag),
-            actions : <Widget>[
-              TextButton(onPressed: () => _onPress(), child: const Text("Ok!"))
-            ]
-            )
-          ); 
-        }).catchError((e) {
-          print(e);
+      await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.best)
+          .then((Position position) {
+        setState(() {
+          LatLng pos = LatLng(position.latitude, position.longitude);
+          _center = pos;
+          mapController.animateCamera(CameraUpdate.newLatLng(_center));
+          _currentPosition = UserPosition(pos);
+          _fetchingLocation = false;
         });
-    }
-    else{
+        showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+                    title: Text("Your journey starts now!"), //+tag),
+                    actions: <Widget>[
+                      TextButton(
+                          onPressed: () => _onPress(), child: const Text("Ok!"))
+                    ]));
+      }).catchError((e) {
+        print(e);
+      });
+    } else {
       //await openAppSettings();
     }
-   }
-
-  _onPress(){
-    Navigator.pop(context); 
-    Navigator.pushNamed(context, ToPage.routeName, arguments : _currentPosition);
   }
 
+  _onPress() {
+    Navigator.pop(context);
+    Navigator.pushNamed(context, ToPage.routeName, arguments: _currentPosition);
+  }
 
-  _handleSubmit(String location) async{
+  _handleSubmit(String location) async {
     String edited_loc = location + " London";
-    GoogleGeocodingResponse loc =  await _searcher.search(edited_loc);
+    GoogleGeocodingResponse loc = await _searcher.search(edited_loc);
     setState(() {
-      LatLng pos = LatLng(loc.results.first.geometry!.location.lat, loc.results.first.geometry!.location.lng);
+      LatLng pos = LatLng(loc.results.first.geometry!.location.lat,
+          loc.results.first.geometry!.location.lng);
       _center = pos;
       mapController.animateCamera(CameraUpdate.newLatLng(_center));
-      _currentPosition = UserPosition( pos);
+      _currentPosition = UserPosition(pos);
       _currLoc = UserMarker(user: _currentPosition as UserPosition);
-
     });
     //Pop that you are adding new destination
-    showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
-      title : Text("Your journey starts now!" ),//+tag),
-      actions : <Widget>[
-        TextButton(onPressed: () => Navigator.pushNamed(context, ToPage.routeName, arguments : _currentPosition), child: const Text("Ok!"))
-      ]
-    )
-    );
+    showDialog(
+        context: context,
+        builder: (BuildContext context) =>
+            AlertDialog(title: Text("Your journey starts now!"), //+tag),
+                actions: <Widget>[
+                  TextButton(
+                      onPressed: () => Navigator.pushNamed(
+                          context, ToPage.routeName,
+                          arguments: _currentPosition),
+                      child: const Text("Ok!"))
+                ]));
     //Navigate to next page
     //Navigator.pushNamed(context, ToPage.routeName, arguments : _currentPosition);
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title : LocationGetter(onSubmitted: _handleSubmit, onTap : () async => _getCurrentLocation()),
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-          backgroundColor: STANDARD_COLOR,
-          ),
-
-          body: Stack(alignment: Alignment.center,
-          children: [
-            Center(
-              child: GoogleMap(
-                onMapCreated: _onMapCreated,
-                markers: {if (_currLoc != null) _currLoc as Marker},
-                initialCameraPosition: CameraPosition(target: _center, zoom: 15),
-              ),
+        home: Scaffold(
+            appBar: AppBar(
+              key: const Key("LocationKey"),
+              title: LocationGetter(
+                  onSubmitted: _handleSubmit,
+                  onTap: () async => _getCurrentLocation()),
+              automaticallyImplyLeading: false,
+              centerTitle: true,
+              backgroundColor: STANDARD_COLOR,
             ),
-            if(_fetchingLocation && locationPermission) Center(child: LoadingWidget(loading_text: "Finding Your Location",)),
-            
-          ]
-          ,) 
-
-      )
-    );
+            body: Stack(
+              key: const Key("MapKey"),
+              alignment: Alignment.center,
+              children: [
+                Center(
+                  child: GoogleMap(
+                    onMapCreated: _onMapCreated,
+                    markers: {if (_currLoc != null) _currLoc as Marker},
+                    initialCameraPosition:
+                        CameraPosition(target: _center, zoom: 15),
+                  ),
+                ),
+                if (_fetchingLocation && locationPermission)
+                  const Center(
+                      child: LoadingWidget(
+                    loading_text: "Finding Your Location",
+                  )),
+              ],
+            )));
   }
 
-
   //void _generateBikeMarkers(){
-    //List<BikeDockPoint> stations = FirebaseFunctions.instance('getBikeStations');
+  //List<BikeDockPoint> stations = FirebaseFunctions.instance('getBikeStations');
 
   //}
 
-
-
-
 }
-
-

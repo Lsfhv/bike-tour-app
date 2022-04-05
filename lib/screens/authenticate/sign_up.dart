@@ -31,6 +31,7 @@ class _SignUpState extends State<SignUp> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("Sign up"),
+        backgroundColor: Color.fromARGB(202, 85, 190, 56),
       ),
       body: SignUpForm(),
     );
