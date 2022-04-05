@@ -88,7 +88,7 @@ class _SignInFormState extends State<SignInForm> {
               child: TextFormField(
                 validator: (value) {
                   if (!_validPasswordRegExp.hasMatch(value!)) {
-                    return 'Password must be 8 characters long, contain an Upper Case character, a Number and a Special character';
+                    return "Password must be at least one digit [0-9],\nat least one lowercase character [a-z],\nat least one uppercase character [A-Z],\nat least one special character[!@#\\\$&*~],\nat least 8 characters in length.";
                   }
                 },
                 key: Key("PasswordFieldKey"),

@@ -8,7 +8,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 
-
 class SignUpForm extends StatefulWidget {
   const SignUpForm({Key? key}) : super(key: key);
 
@@ -124,7 +123,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   key: _passwordKey,
                   validator: (value) {
                     if (!_validPasswordRegExp.hasMatch(value!)) {
-                      return "Password must be at least one digit [0-9],\nat least one lowercase character [a-z],\nat least one uppercase character [A-Z],\nat least one special character[!@#\\\$&*~],\nat least 8 characters in length.";
+                      return r"""Password must be at least one digit [0-9], at least one lowercase character [a-z], at least one uppercase character [A-Z], at least one special character [!@#\$&*~], at least 8 characters in length.""";
                     } else {
                       return null;
                     }
@@ -177,7 +176,6 @@ class _SignUpFormState extends State<SignUpForm> {
                   child: TextButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-
                         try {
                           ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Registering!')));
