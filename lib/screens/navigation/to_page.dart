@@ -65,6 +65,8 @@ class _ToPageState extends State<ToPage> {
   bool loading_state = false;
   String suggested_postcode = "";
 
+  late LatLng _user_pos;
+
 
   
   _handleNavigateToNextPage(UserPosition args){
@@ -95,6 +97,10 @@ class _ToPageState extends State<ToPage> {
     LatLng origin = args.currentPosition.center as LatLng;
     LatLng destination = args.getLastDockingStation();
     Directions? directions = await DirectionsRepository().getDirections(origin: origin, ending_bike_dock: destination, destinations: args.waypoints); 
+    if(directions == null){
+      Future.delayed(Duration(seconds: 30));
+      directions = await DirectionsRepository().getDirections(origin: origin, ending_bike_dock: destination, destinations: args.waypoints); 
+    }
     if(args.order.isNotEmpty){
       directions!.waypointsOrder = args.order;
     }
@@ -182,7 +188,7 @@ class _ToPageState extends State<ToPage> {
 
   void autoCompleteSearch(String value) async {
     String edited_value = value + "";//" london";
-    var result = await googlePlace.autocomplete.get(edited_value, region: 'uk');
+    var result = await googlePlace.autocomplete.get(edited_value, region: 'uk', location:LatLon(_user_pos.latitude, _user_pos.longitude));
     if (result != null && result.predictions != null && mounted) {
       setState(() {
         _showDetail = false;
@@ -475,6 +481,7 @@ class _ToPageState extends State<ToPage> {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as UserPosition;
     _center = args.center as LatLng;
+    _user_pos = args.center as LatLng;
     if (args.center != null && first) {
       first = false;
       _markers = {UserMarker(user: UserPosition(args.center as LatLng))};

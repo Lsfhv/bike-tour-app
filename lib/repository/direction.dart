@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../.env.dart';
 import '../models/directions_model.dart';
 
 class DirectionsRepository {
@@ -33,7 +34,7 @@ class DirectionsRepository {
     if(destinations_out.isEmpty){
       return '';
     }
-    return destinations_out.substring(0, destinations_out.length - 1);
+    return destinations_out;
   }
 
   Future<Directions?> getDirections({
@@ -43,12 +44,12 @@ class DirectionsRepository {
     bool optimize = false,
   }) async {
     final response = await _dio.get(
-      _baseUrl,
+      DirectionsRepository._baseUrl,
       queryParameters: {
         'origin': '${origin.latitude},${origin.longitude}',
         'destination': '${ending_bike_dock.latitude},${ending_bike_dock.longitude}',
         'waypoints' : destinations_string(destinations, optimize),
-        'key': "AIzaSyCZTV0UOqPHZ4Skv6_OcrPmrORhzP316n4",
+        'key': googleAPIKey,
         'mode' : 'cycling',
         'region' : 'uk',
         'units' : 'metric',

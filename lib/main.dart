@@ -5,13 +5,7 @@ import 'package:bike_tour_app/screens/navigation/constants.dart';
 import 'package:bike_tour_app/screens/navigation/dynamic_navigation.dart';
 import 'package:bike_tour_app/screens/navigation/main_map.dart';
 import 'package:bike_tour_app/screens/navigation/route_choosing.dart';
-import 'package:bike_tour_app/screens/navigation/route_planner_form.dart';
 import 'package:bike_tour_app/screens/navigation/to_page.dart';
-import 'package:bike_tour_app/screens/tutorial/tutorial.dart';
-import 'package:bike_tour_app/screens/tutorial/tutorial_dynamic_navigation.dart';
-import 'package:bike_tour_app/screens/tutorial/tutorial_to_page.dart';
-import 'package:bike_tour_app/screens/tutorial/tutorials_main_map.dart';
-import 'package:bike_tour_app/screens/tutorial/tutorials_route_choosing.dart';
 import 'package:bike_tour_app/screens/wrapper.dart';
 import 'package:bike_tour_app/services/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -99,18 +93,10 @@ class _MyAppState extends State<MyApp> {
           ToPage.routeName : (context) => const ToPage(),
           RoutingMap.routeName : (context) => const RoutingMap(),
           DynamicNavigation.routeName : (context) => const DynamicNavigation(),
-          DestinationSelector.routeName : (context) => const DestinationSelector(),
           JoiningPage.routeName : (context) => const JoiningPage(),
           NavigationTest.routeName : (context) => const NavigationTest(),
           DynamicNavigation_Test.routeName : (context) => const DynamicNavigation_Test(),
-          TutorialMainMap.routeName :(context) => const MainMap(),
-          TutorialToPage.routeName : (context) => const ToPage(),
-          TutorialRoutingMap.routeName : (context) => const RoutingMap(),
-          TutorialDynamicNavigation.routeName : (context) => const DynamicNavigation(),
-          Tutorial.routeName : (context) => const Tutorial(),
-          // TutorialJoiningPage.routeName : (context) => const JoiningPage(),
-          // TutorialNavigationTest.routeName : (context) => const NavigationTest(),
-          //TutorialDynamicNavigation_Test.routeName : (context) => const DynamicNavigation_Test(),
+
         },
           title: 'London Cycle',
           theme: ThemeData(

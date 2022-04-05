@@ -2,7 +2,6 @@
 
 import 'package:bike_tour_app/screens/authenticate/sign_in.dart';
 import 'package:bike_tour_app/screens/navigation/main_map.dart';
-import 'package:bike_tour_app/screens/tutorial/tutorials_main_map.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
@@ -21,7 +20,7 @@ class Wrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User?>();
-    final isNewUser = ModalRoute.of(context)!.settings.arguments as String;
+    //final isNewUser = ModalRoute.of(context)!.settings.arguments as String;
     if (firebaseUser != null) {
       return const MainMap();
     }

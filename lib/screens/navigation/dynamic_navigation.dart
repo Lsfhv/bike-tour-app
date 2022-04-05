@@ -372,7 +372,7 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
 
   _pastPoint()  {
     LatLng cur_point = LatLng(current_position.latitude as double, current_position.longitude as double);
-    const int TOLEARANCE =50;
+    const int TOLEARANCE =20;
     LatLng reached_point = LatLng(_info!.polylinePoints.first.latitude, _info!.polylinePoints.first.longitude);
     print(_calculate_distance(from: cur_point, to: reached_point));
     if(_calculate_distance(from: cur_point, to: reached_point) <= TOLEARANCE ){
@@ -394,13 +394,13 @@ class _DynamicNavigationState extends State<DynamicNavigation> {
       current_position = cLoc;
       await updatePinOnMap();
       if(cancelled || reached){
-        _stopListening();
+        await _stopListening();
       }
    });
   }
 
-  _stopListening() {
-    _locationSubscription?.cancel();
+  _stopListening() async {
+    await _locationSubscription?.cancel();
     setState(() {
       _locationSubscription = null;
     });

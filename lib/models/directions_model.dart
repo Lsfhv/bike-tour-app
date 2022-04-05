@@ -86,7 +86,7 @@ class Directions {
     List<Instruction> instructions = [];
     // Get route information
     final data = Map<String, dynamic>.from(map['routes'][0]);
-    List<dynamic> order;
+    List<dynamic> order = [];
 
 
     // Bounds
@@ -107,7 +107,7 @@ class Directions {
     }
     Instructions _instructions = Instructions.fromMap(map);
     order = data['waypoint_order'];
-  if(order.isNotEmpty){
+  // if(order.isNotEmpty){
     return Directions(
       bounds: bounds,
       polylinePoints: PolylinePoints().decodePolyline(data['overview_polyline']['points']),
@@ -117,17 +117,17 @@ class Directions {
       waypointsOrder: order,
       polypointsEncoded : data['overview_polyline']['points'] as String
     );
-  }
-  else{
-    return Directions(
-      bounds: bounds,
-      polylinePoints: PolylinePoints().decodePolyline(data['overview_polyline']['points']),
-      totalDistance: distance,
-      totalDuration: duration,
-      instruction: Instructions.fromMap(map),
-      polypointsEncoded : data['overview_polyline']['points'] as String
-    );
-  }
+  // }
+  // else{
+  //   return Directions(
+  //     bounds: bounds,
+  //     polylinePoints: PolylinePoints().decodePolyline(data['overview_polyline']['points']),
+  //     totalDistance: distance,
+  //     totalDuration: duration,
+  //     instruction: Instructions.fromMap(map),
+  //     polypointsEncoded : data['overview_polyline']['points'] as String
+  //   );
+  // }
   }
 
   List<List<double>> getPolypoints(){
