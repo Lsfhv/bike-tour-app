@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class LoadingWidget extends StatelessWidget {
   const LoadingWidget({ Key? key, required this.loading_text}) : super(key: key);
   final String loading_text;
+  final String IMAGE_PATH = 'assets/images/cycling.gif';
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -28,6 +29,7 @@ class LoadingWidget extends StatelessWidget {
               child : CircularProgressIndicator(
                 backgroundColor: STANDARD_COLOR,
               ),
+              //child: Image.asset(IMAGE_PATH, ),
               padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
             ),
           ],
