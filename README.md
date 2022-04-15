@@ -36,6 +36,18 @@ valid login credentials for testing purposes would be
 email - sudo@example.com 
 password - Password123!
 
+****
+
+## How to run?
+
+- Download and install flutter from [here](https://docs.flutter.dev/get-started/install/linux)
+- Clone the repo ``` git clone git@github.com:Lsfhv/bike-tour-app.git ```
+- Change directory into the project ``` cd bike-tour-app ```
+- Download the flutter managed dependencies ``` flutter pub get ```
+- Run the app ``` flutter run ``` 
+
+
+
 
 
 
