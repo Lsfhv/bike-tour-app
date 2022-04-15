@@ -27,6 +27,10 @@ Our project is the Bike tour App and we have given it the name **London Cycle**.
 - We have used code snippets from the [Google Maps API documentation](https://codelabs.developers.google.com/codelabs/google-maps-in-flutter#0)
 - 
 
+****
+
+## Deployed Version 
+Deployed Versions of the app can be found [here](https://github.com/Lsfhv/bike-tour-app/releases/tag/Deployment)
 
 
 
