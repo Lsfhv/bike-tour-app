@@ -33,8 +33,8 @@ Our project is the Bike tour App and we have given it the name **London Cycle**.
 Deployed Versions of the app can be found [here](https://github.com/Lsfhv/bike-tour-app/releases/tag/Deployment)
 
 valid login credentials for testing purposes would be 
-email - sudo@example.com 
-password - Password123!
+email - ```sudo@example.com ```
+password -``` Password123!```
 
 ****
 
