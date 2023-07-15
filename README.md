@@ -13,12 +13,9 @@ Our project is the Bike tour App and we have given it the name **London Cycle**.
 <ul>
   <li>Mohammed Moin Uddin</li>
   <li>Jakub Mrozcek</li>
-  <li>Malaz Osman</li>
   <li>Berke Muftuoglu</li>
   <li>Kai Shun Teoh</li>
-  <li>Oluwamurewa Fagun</li>
   <li>Ejaz Karim</li>
-  <li>Shermiaya Raymond</li>
 </ul>
 
 ****
